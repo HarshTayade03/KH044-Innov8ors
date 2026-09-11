@@ -475,3 +475,12 @@ Blocker: the root `AGENT_HANDOFF.md` path referenced by the task was absent; the
 - Added a regression test that mutates persisted evidence and verifies direct retrieval and the HTTP evidence endpoint reject it.
 - Verification: `venv\\Scripts\\python.exe -m pytest tests\\test_validation.py -q` — 8 passed.
 - Real Docker execution, live feeds, and orchestration remain deferred; no unverified capability is marked complete.
+
+## Final integration verification — `feature/final-15min-verification` (2026-09-12)
+
+- Created from `feature/hackathon-verification` without modifying `main`.
+- Integrated completed evidence integrity commit `3833d09` (`feature/remaining-core-essentials`), with case-query and frontend case-inspection work already present through the hackathon branch ancestry, and merged completed `feature/context-completion-guardrails` (`232d1ba`, `48aa360`). No real merge conflicts occurred.
+- Preserved unrelated user files in pre-existing stashes; they were not included in the integration commit.
+- Verification: `venv\Scripts\python.exe -m pytest tests\ -q` — 60 passed, 2 skipped; `venv\Scripts\python.exe -m pip check` — no broken requirements; `node --check src\app\static\dashboard.js` passed; `git diff --check` passed.
+- Uvicorn on `127.0.0.1:8000`: `/`, `/health`, and `/openapi.json` returned 200; `/api/v1/cases` returned 200; a nonexistent evidence resource returned expected 404. Server stopped after checks.
+- Deferred explicitly: live feeds, Docker execution, orchestration, Slack/Jira integrations, polling, and webhooks. Simulations remain labeled/mock and Docker-disabled; human analysts retain final review authority.
