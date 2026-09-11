@@ -6,8 +6,8 @@ Updated: 2026-09-12. [Current state](CURRENT_STATE.md) records source evidence;
 ## Work already done
 
 The backend has bootstrap/configuration/storage, scanner normalization, synthetic data,
-four-view extraction, embeddings with a fallback, deduplication, and mock-based prioritization.
-P0-P5 have implementation; R0 resolves the reopened dedup/lifecycle baseline gaps. Live feeds remain deferred. P6-P9 remain unimplemented.
+four-view extraction, embeddings with a fallback, deduplication, mock-based prioritization,
+and offline lab validation with evidence. P0-P6 have implementation; live feeds and Docker remain deferred. P7-P9 remain unimplemented.
 A registered route or database table is not a completed feature.
 
 ## Revised sequence and completion gates
@@ -16,7 +16,7 @@ A registered route or database table is not a completed feature.
 |---|---|---|---|
 | Done | R0: reliable baseline | Reproducible runtime, isolated tests, dedup invariants and lifecycle, truthful feed/model provenance | Clean install; current and regression tests pass; health/API smoke checks pass; reruns do not duplicate active issues. |
 | Done | F0: validation frontend | Basic browser console over implemented APIs | Import, workflow, detail, error and responsive browser checks pass; unavailable phases are labeled. |
-| 2 | P6 / M5: lab validation and evidence | Contracts, local simulator, immutable redacted artifacts, repository/API, risk integration | Three lab scenarios round-trip through API/storage; timeout/unknown inconclusive; allowlist rejection; verified hashes; no real target requests. |
+| Done | P6 / M5: lab validation and evidence | Contracts, local simulator, immutable redacted artifacts, repository/API, risk integration | 55 tests pass; three scenarios round-trip; timeout/unknown inconclusive; allowlist and Docker rejected; hashes verified; no real target requests. |
 | 3 | P7 / M6: cases and review | Assembly, state transitions, required reasons, audit history, overrides | Assembly/review tests; missing IDs, invalid/repeated and concurrent decisions handled; actor/reason/history preserved. |
 | 4 | P8 / M7: dashboard | Metrics, upload/manual form, queue/detail/views/evidence, cluster inspector, reviews/audit | Browser checks of core flows and loading/empty/error states; clear mock/simulation labels. |
 | 5 | P9: integration/demo | Pipeline orchestration, full-corpus test, demo, setup docs/diagram | All 110 inputs accounted for; provenance preserved; no forbidden merges; human review; rerun and partial-failure recovery. |
@@ -39,7 +39,7 @@ A registered route or database table is not a completed feature.
 
 R0 is complete: 49 tests pass, pip check passes, and actual Uvicorn HTTP smoke checks pass. See
 [the R0 contract](MODULE_SPECS/R0_baseline.md) and TASK_LOG.md for results. Live clients remain deferred.
-The next phase is P6: lab validation and evidence.
+The next phase is P7: case assembly and human review. See `AGENT_HANDOFF.md` for pickup packages.
 
 F0 was added at the user's request to validate the implemented backend before P6. It is a
 small no-build frontend, not completion of P8: case review and validation evidence depend on

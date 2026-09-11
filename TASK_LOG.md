@@ -320,3 +320,22 @@ real Docker execution, live feeds and full P6-P9 integration are not claimed by 
   deprecation warning. `node --check src/app/static/dashboard.js` and `git diff --check` passed.
 - Sandbox validation and case review remain visibly unavailable until P6/P7; F0 does not claim
   the dedicated metrics endpoint or full P8 dashboard as complete.
+
+## 2026-09-12 P6 Lab Validation and Multi-Agent Handoff
+
+This completion section supersedes the unchecked historical M5 rows above. Next phase: P7 cases
+and human review. Detailed pickup boundaries are in `docs/AGENT_HANDOFF.md`.
+
+| ID | Status | Completion evidence |
+|---|---|---|
+| M5-01 | `[x]` | Typed validation request, result and artifact contracts. |
+| M5-02 | `[x]` | Offline deterministic SQLi, XSS and SSRF simulation; no target requests or payload execution. |
+| M5-03 | `[-]` | Real Docker deferred; requests fail explicitly with HTTP 422. |
+| M5-04 | `[x]` | Append-only artifacts with SHA-256 over exact retained UTF-8 bytes. |
+| M5-05 | `[x]` | Derived evidence is redacted before persistence and retrieval. |
+| M5-06 | `[x]` | Validate, result and evidence APIs return typed responses and correct 404/422 errors. |
+| M5-07 | `[x]` | Scenario, timeout, allowlist, Docker, redaction, integrity, persistence and risk tests. |
+| DOC-05 | `[x]` | Added handoff-ready critical path with dependencies, file boundaries and acceptance outcomes. |
+
+Verification: `venv/Scripts/python.exe -m pytest tests/ -q` reported **55 passed** with one
+upstream Starlette/AnyIO deprecation warning. `pip check` and `git diff --check` passed.

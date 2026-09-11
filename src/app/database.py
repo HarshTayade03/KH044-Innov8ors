@@ -522,6 +522,9 @@ def init_db() -> None:
             ("canonical_issues", "active", "INTEGER NOT NULL DEFAULT 1"),
             ("cases", "stale", "INTEGER NOT NULL DEFAULT 0"),
             ("threat_intelligence", "source_fingerprint", "TEXT"),
+            ("validation_runs", "scenario", "TEXT NOT NULL DEFAULT 'unknown'"),
+            ("validation_runs", "target_host", "TEXT NOT NULL DEFAULT ''"),
+            ("validation_runs", "limitations", "TEXT NOT NULL DEFAULT '[]'"),
         ):
             columns = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
             if column not in columns:

@@ -15,7 +15,7 @@ are recorded in TASK_LOG.md; historical pass claims are kept separately.
 | M2 / P3 views and embeddings | `schemas/views.py`, `services/extractor.py`, `services/embedding.py`, `api/findings.py` | Four views, redaction, single/batch operations, weighted similarity. Lazy SentenceTransformer; fallback is pure Python SHA-256 token hashing, not HashingVectorizer. Backend/version and input text hashes are persisted accurately; downloads are opt-in. |
 | M3 / P4 deduplication | `schemas/dedup.py`, `services/deduplicator.py`, `repositories/dedup_repo.py`, `api/clusters.py` | Fingerprint groups, optional HDBSCAN, canonical issues, merge/split handlers. Pairwise hard blocks in both stages; stable IDs, atomic active snapshots and repeatable analyst merge/split actions. |
 | M4 / P5 prioritization | `schemas/risk.py`, `services/risk_engine.py`, `services/threat_intel.py`, `repositories/risk_repo.py`, priority routes in `api/cases.py` | Mock KEV/EPSS and SQLite cache; weighted score, three tiers, explanations. Unsupported live flags return 503; content hashes refresh mock cache; all contributions and neutral validation prior are explicit. |
-| M5 / P6 validation | DB tables `validation_runs`, `artifacts`; `schemas/validation.py`, `api/validation.py` | Schema comments and three HTTP 501 routes. No simulator, sandbox service, evidence repository, or Docker executor. |
+| M5 / P6 validation | `schemas/validation.py`, `services/sandbox.py`, `repositories/validation_repo.py`, `api/validation.py`; validation/evidence tables | Deterministic offline SQLi/XSS/SSRF simulation, allowlist, immutable redacted evidence with verified hashes, retrieval APIs and risk integration. Real Docker execution is explicitly rejected and deferred. |
 | M6 / P7 cases | DB tables `cases`, `reviews`, `audit_events`; `schemas/case.py`, case routes | Schema stub and seven HTTP 501 case/review routes. No case assembly, state machine, or append-only audit implementation. |
 | F0 / early frontend | `static/index.html`, `dashboard.css`, `dashboard.js` | Basic validation console for JSON/SARIF upload, direct/manual ingestion, views, embeddings, deduplication, cluster merge/split, active issues, and mock-feed risk scoring. Counts are aggregated from existing APIs. |
 | M7 / P8 dashboard | `api/dashboard.py` and F0 console | Dedicated metrics API remains HTTP 501. Case queue, validation evidence, approval/rejection controls, and audit timeline await P6/P7. |
@@ -57,9 +57,9 @@ Application routes use `/api/v1`; `/`, `/health`, and `/docs` are root routes.
   consistency over large-scale concurrent throughput. Cluster lists include historical clusters.
 - Cached learned models may be used; R0 tests use offline hashing and real sklearn HDBSCAN.
   Learned-model accuracy is not established by these regression tests.
-- Validation, human case review, dedicated dashboard metrics and the full orchestrated pipeline
-  remain unimplemented. F0 provides a basic browser workflow over the implemented backend and
-  uses the public product description. Only M0-M2, R0 and F0 specs exist.
+- Human case review, dedicated dashboard metrics and the full orchestrated pipeline remain
+  unimplemented. F0 provides a basic browser workflow over the implemented backend and
+  uses the public product description. M5's API is implemented but not yet exposed in F0.
 
 ## Done-work interpretation
 

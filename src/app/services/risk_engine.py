@@ -14,6 +14,7 @@ from src.app.schemas.risk import PriorityResult, RemediationTier, ThreatEnrichme
 from src.app.repositories.findings_repo import repo as findings_repo
 from src.app.repositories.dedup_repo import dedup_repo
 from src.app.repositories.risk_repo import risk_repo
+from src.app.repositories.validation_repo import validation_repo
 from src.app.services.threat_intel import threat_intel_service
 
 
@@ -81,7 +82,9 @@ class RiskEngine:
         kev_norm = 1.0 if kev_flag else 0.0
         asset_norm = self._get_asset_criticality_factor(asset_crit)
         exposure_norm = 1.0 if internet_facing else 0.5
-        val_norm = 0.5  # Sandbox default prior to validation
+        validation = validation_repo.latest_for_issue(canonical_issue_id)
+        validation_factors = {"simulated_match": 0.75, "simulated_no_match": 0.25}
+        val_norm = validation_factors.get(validation.status.value, 0.5) if validation else 0.5
 
         # Weights from config
         w_cvss = settings.risk_weight_cvss
@@ -124,7 +127,10 @@ class RiskEngine:
         contributions = {key: 100.0 * weights_used[key] * value for key, value in normalized.items()}
         explanation = [f"{key.upper()}: factor {normalized[key]:.4f} x weight {weights_used[key]:.4f} contributes {value:.2f} pts."
                        for key, value in contributions.items()]
-        explanation.append("Validation uses a neutral 0.5 prior: no sandbox validation has run.")
+        if validation:
+            explanation.append(f"Validation factor uses latest {validation.status.value} offline simulation; simulation does not prove exploitability.")
+        else:
+            explanation.append("Validation uses a neutral 0.5 prior: no sandbox validation has run.")
         explanation.append("Threat intelligence uses synthetic mock files, not current live feeds.")
         if kev_flag:
             explanation.append("Immediate tier: CVE is present in the mock KEV fixture; this is not a live exploitation claim.")
@@ -135,9 +141,10 @@ class RiskEngine:
             "kev_flag": kev_flag,
             "asset_criticality": asset_crit,
             "internet_facing": internet_facing,
-            "sandbox_validated": False,
+            "sandbox_validated": bool(validation and validation.status.value == "simulated_match"),
             "cve_ids": sorted(all_cves),
-            "validation_status": "not_attempted",
+            "validation_status": validation.status.value if validation else "not_attempted",
+            "validation_id": validation.validation_id if validation else None,
             "validation_factor": val_norm,
             "contributions": contributions,
             "threat_intelligence": [item.model_dump(mode="json") for item in threat_enrichments],
