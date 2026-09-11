@@ -1,6 +1,6 @@
 # VulnTriager — Master Task Log & Progress Tracker
 
-> Last Updated: 2026-09-12 IST | F0 BASIC FRONTEND COMPLETE | Next implementation phase: P6 lab validation and evidence
+> Last Updated: 2026-09-12 IST | P6 LAB VALIDATION COMPLETE | Next 12-hour critical path: P7 reviewable cases and integrated analyst flow
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
@@ -45,6 +45,7 @@
 | 2026-09-11 23:24 | sklearn `HashingVectorizer` fallback for sentence embeddings | Guarantees vector embeddings even if `sentence-transformers` ML package is absent |
 | 2026-09-11 23:24 | Two-Stage Deduplication (Fingerprint + HDBSCAN) | Stage A groups exact fingerprints, Stage B performs HDBSCAN semantic density clustering |
 | 2026-09-11 23:38 | Composite Risk Scoring + KEV/EPSS Enrichment | 0–100 risk score combining weighted CVSS, EPSS, CISA KEV flag, asset criticality, network exposure |
+| 2026-09-12 02:25 | 12-hour core-feature execution backlog | Contextualisation, prioritization, and sandbox evidence follow one traceable analyst flow; raw evidence stays preserved, derived artifacts are sanitized, mock/simulated results stay labeled, and humans alone approve or reject cases |
 
 ---
 
@@ -164,12 +165,12 @@
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
-| M6-01 | Define `schemas/case.py` — Case, ReviewAction, AuditEvent | `[ ]` | — | — |
-| M6-02 | Implement `services/case_service.py` — case assembly | `[ ]` | — | Aggregates all pipeline outputs |
-| M6-03 | Implement case state machine (pending → approved/rejected) | `[ ]` | — | Reject MUST have reason |
-| M6-04 | Implement append-only audit event log | `[ ]` | — | Immutable, timestamped |
-| M6-05 | Implement `api/cases.py` — all case endpoints + review actions | `[ ]` | — | — |
-| M6-06 | Write case generation tests | `[ ]` | — | — |
+| M6-01 | Define `schemas/case.py` — Case, ReviewAction, AuditEvent | `[x]` | `schemas/case.py`, M6 spec | Contracts implemented; tested 2026-09-12 |
+| M6-02 | Implement `services/case_service.py` — case assembly | `[x]` | `services/case_service.py`, `repositories/case_repo.py` | Active issue snapshot includes findings/views/priority/validation/evidence; baseline tests + case test pass |
+| M6-03 | Implement case state machine (pending → approved/rejected) | `[x]` | `services/case_service.py` | Actor/reason required; terminal transitions conflict; evidence requests supported |
+| M6-04 | Implement append-only audit event log | `[x]` | `repositories/case_repo.py` | Review and audit inserted in same transaction |
+| M6-05 | Implement `api/cases.py` — all case endpoints + review actions | `[x]` | `api/cases.py` | Generate/list/detail and review routes wired |
+| M6-06 | Write case generation tests | `[x]` | `tests/test_cases.py` | `venv\Scripts\python.exe -m pytest tests\test_baseline.py tests\test_cases.py -q`: 4 passed |
 
 ---
 
@@ -339,3 +340,56 @@ and human review. Detailed pickup boundaries are in `docs/AGENT_HANDOFF.md`.
 
 Verification: `venv/Scripts/python.exe -m pytest tests/ -q` reported **55 passed** with one
 upstream Starlette/AnyIO deprecation warning. `pip check` and `git diff --check` passed.
+
+
+## 2026-09-12 12-Hour Core Feature Execution Backlog
+
+This backlog is the implementation-focused deep dive for the hackathon critical path. It
+does not reopen completed M2/M4/M5 foundations; it converts their contracts into reviewable
+integration work. Time boxes are estimates, not permission to weaken acceptance criteria.
+Tasks over 30 minutes must be split or have a shortcut agreed before implementation.
+
+### Track A - Contextualisation: multi-view extraction and embeddings
+
+| ID | Task | Status | Time box | Acceptance evidence |
+|---|---|---|---:|---|
+| CTX-01 | Freeze the contextualisation contract across `schemas/views.py`, `extractor.py`, and persistence | `[ ]` | 20m | Four views (`description`, `location`, `reproduction`, `impact`) have explicit missing/partial/available behavior; source fields, confidence, warnings, and extraction method survive a round trip. |
+| CTX-02 | Verify defense-in-depth redaction boundaries for derived view text and embedding inputs | `[ ]` | 25m | Bearer/basic auth, cookies, passwords, API keys, and tokens are absent from stored/displayed derived text; raw scanner evidence remains unchanged and separately retrievable. |
+| CTX-03 | Verify embedding provenance and compatibility guards | `[ ]` | 25m | Every generated vector records backend/version/dimension and input-text hashes; missing views clear stale vectors; incompatible model provenance returns no similarity instead of silently comparing vectors. |
+| CTX-04 | Add a focused contextualisation regression slice for native scanner variants and incomplete evidence | `[ ]` | 30m | Representative SARIF/ZAP/Nessus/manual inputs produce stable views; empty location/reproduction/impact paths are explicit and do not fabricate exploit evidence. |
+
+### Track B - Threat intelligence and prioritization engine
+
+| ID | Task | Status | Time box | Acceptance evidence |
+|---|---|---|---:|---|
+| TRI-01 | Freeze and verify the six-factor score contract | `[ ]` | 20m | `Risk Score = wcvss*Scvss + wepss*Sepss + wkev*Skev + wasset*Sasset + wnet*Snet + wval*Sval`; configured weights sum to 1, normalized factors are bounded, and the API exposes every contribution. |
+| TRI-02 | Verify threat-feed provenance, cache freshness, and failure behavior | `[ ]` | 25m | KEV/EPSS mock results include source fingerprints and timestamps; changed mock content invalidates cache; malformed/missing feeds and live-mode flags fail explicitly rather than becoming clean results. |
+| TRI-03 | Verify prioritization decisions and explanations against analyst-readable scenarios | `[ ]` | 30m | KEV or score >=80 produces Immediate, score >=50 produces Accelerated, otherwise Standard; no-CVE findings remain valid; explanations identify factors, weights, contributions, and mock-data limitations. |
+| TRI-04 | Add a focused prioritization regression slice after validation state changes | `[ ]` | 25m | Latest validation status changes only `Sval` and its recorded explanation; reprioritization is explicit after feed or membership changes; retired issues cannot receive a new priority. |
+
+### Track C - Sandbox validation and immutable evidence
+
+| ID | Task | Status | Time box | Acceptance evidence |
+|---|---|---|---:|---|
+| SBX-01 | Freeze the validation/evidence contract and human-safety gates | `[ ]` | 20m | Lab simulator is the default; target hosts must be allowlisted; unsupported scenarios/timeouts are inconclusive; submitted scanner payloads are never executed; Docker remains rejected by default. |
+| SBX-02 | Verify immutable artifact retention and derived-artifact sanitization | `[ ]` | 25m | Validation runs/artifacts are append-only; redaction occurs before persistence/display; SHA-256 covers the exact retained UTF-8 bytes; retrieval recomputes and verifies the hash. |
+| SBX-03 | Verify validation-to-risk semantics without claiming exploitability | `[ ]` | 25m | `simulated_match`, `simulated_no_match`, and `inconclusive` map to explicit validation factors; explanations say simulation does not prove exploitability; raw evidence and derived artifacts remain distinguishable. |
+
+### Track D - 12-hour integration and analyst handoff
+
+| ID | Task | Status | Time box | Depends on | Acceptance evidence |
+|---|---|---|---:|---|---|
+| FLOW-01 | Implement one repeatable vertical-flow checklist: ingest -> views -> embeddings -> dedup -> prioritize -> simulate -> case input | `[ ]` | 30m | CTX-01, TRI-01, SBX-01 | A synthetic SQLi/XSS/SSRF finding can be followed by ID through each stage with source provenance, status labels, and no hidden fallbacks. |
+| FLOW-02 | Add case-review boundary checks before any dashboard work | `[ ]` | 25m | FLOW-01 | No service auto-approves/rejects a case; analyst actor and reason are required for decisions; stale/retired issue references are surfaced rather than silently reused. |
+| FLOW-03 | Run the smallest end-to-end verification set and record blockers honestly | `[ ]` | 30m | FLOW-01, FLOW-02 | Targeted tests plus API smoke cover one happy path, one redaction path, one feed failure, one inconclusive validation, and one prohibited Docker request; results are logged here. |
+
+### Task creation completion note
+
+- Added a time-boxed backlog for contextualisation, threat intelligence/prioritization, sandbox
+  evidence, and the integrated analyst flow.
+- Anchored tasks to the existing service/repository separation instead of duplicating completed
+  M2, M4, and M5 implementation rows.
+- Made the six-term risk formula, provenance requirements, immutable evidence rules, and human
+  approval boundary explicit acceptance criteria.
+- No runtime code, secrets, schema contracts, or environment files were changed in this planning
+  pass; implementation tasks remain `[ ]` until their checks are actually run.

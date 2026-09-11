@@ -24,7 +24,8 @@ def redact_secrets(text: Optional[str]) -> Optional[str]:
 
     redacted = text
     redacted = re.sub(r"Authorization:\s*Bearer\s+\S+", "Authorization: Bearer <REDACTED>", redacted)
-    redacted = re.sub(r"Authorization:\s*Basic\s+\S+", "Authorization: Basic <REDACTED>", redacted)
+    redacted = re.sub(r"(?i)Authorization:\s*Basic\s+\S+", "Authorization: Basic <REDACTED>", redacted)
+    redacted = re.sub(r"(?i)Authorization:\s*(?!(?:Bearer|Basic)\s|<REDACTED>)[^\s]+", "Authorization: <REDACTED>", redacted)
     redacted = re.sub(r"(?i)(password|passwd|pwd)[:=]\s*\S+", r"\1=<REDACTED>", redacted)
     redacted = re.sub(r"(?i)(api[_-]?key|apikey|x-api-key)[:=]\s*\S+", r"\1=<REDACTED>", redacted)
     redacted = re.sub(r"(?i)(token|access_token|auth_token)[:=]\s*\S+", r"\1=<REDACTED>", redacted)
