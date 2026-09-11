@@ -46,6 +46,7 @@ class FindingViews(BaseModel):
 
 
 class FindingEmbeddings(BaseModel):
+    model_config = {"protected_namespaces": ()}
     finding_id: str
     embedding_model: str
     model_version: Optional[str] = None
@@ -54,3 +55,4 @@ class FindingEmbeddings(BaseModel):
     combined_embedding: Optional[list[float]] = None
     generated_at: datetime
     missing_views: list[str] = Field(default_factory=list)
+

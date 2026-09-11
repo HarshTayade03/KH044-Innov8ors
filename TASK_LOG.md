@@ -1,6 +1,6 @@
 # VulnTriager — Master Task Log & Progress Tracker
 
-> Last Updated: 2026-09-11 22:28 IST | Project: KH044 Innov8ors | Status: IN PROGRESS — Phase 1
+> Last Updated: 2026-09-11 23:25 IST | Project: KH044 Innov8ors | Status: IN PROGRESS — Phase 5
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
@@ -41,6 +41,9 @@
 | 2026-09-11 22:52 | Primary CWE Fingerprint resolution via `CWE_PARENT_MAP` | Child CWEs (CWE-564, CWE-80) resolve to root (CWE-89, CWE-79) before SHA-256 fingerprinting |
 | 2026-09-11 22:52 | Non-destructive JSON ingestion parsing | Parser handles SARIF 2.1.0 (with runs/results), flat JSON arrays, single JSON objects, and Manual Entry DTOs |
 | 2026-09-11 22:56 | ZAP Riskcode String Priority in Severity Mapping | Single-digit string riskcodes "0","1","2","3" checked before float CVSS parsing so ZAP code 3 maps to High |
+| 2026-09-11 23:18 | Multi-view secret redaction regex filtering | Apply secret redaction to reproduction/location text BEFORE storing in `view_text` |
+| 2026-09-11 23:24 | sklearn `HashingVectorizer` fallback for sentence embeddings | Guarantees vector embeddings even if `sentence-transformers` ML package is absent |
+| 2026-09-11 23:24 | Two-Stage Deduplication (Fingerprint + HDBSCAN) | Stage A groups exact fingerprints, Stage B performs HDBSCAN semantic density clustering |
 
 ---
 
@@ -95,35 +98,35 @@
 
 ---
 
-## PHASE 3 — Multi-View Extraction & Embeddings
+## PHASE 3 — Multi-View Extraction & Embeddings ✅
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
-| M2-01 | Define `schemas/views.py` — FindingViews, SingleView, ViewStatus | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-02 | Implement `services/extractor.py` — Description view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-03 | Implement `services/extractor.py` — Location view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-04 | Implement `services/extractor.py` — Reproduction view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-05 | Implement `services/extractor.py` — Impact view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-06 | Implement secret redaction before embedding text | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-07 | Add `api/findings.py` — GET views endpoint | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-08 | Implement `services/embedding.py` — SentenceTransformer wrapper | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-09 | Implement weighted cosine similarity scorer | `[/]` | Agent | Started 2026-09-11 23:00 IST |
-| M2-10 | Write tests for 4-view extraction (SQLi, XSS, SSRF cases) | `[/]` | Agent | `tests/test_extractor.py` |
+| M2-01 | Define `schemas/views.py` — FindingViews, SingleView, ViewStatus | `[x]` | Agent | Implemented ViewStatus, SingleView, ViewQuality, FindingViews, FindingEmbeddings |
+| M2-02 | Implement `services/extractor.py` — Description view | `[x]` | Agent | Implemented Description view extraction with boilerplate stripping |
+| M2-03 | Implement `services/extractor.py` — Location view | `[x]` | Agent | Implemented Location view extraction with path canonicalization |
+| M2-04 | Implement `services/extractor.py` — Reproduction view | `[x]` | Agent | Implemented Reproduction view extraction with HTTP request parsing |
+| M2-05 | Implement `services/extractor.py` — Impact view | `[x]` | Agent | Implemented Impact view extraction with CWE_IMPACT_MAP and keyword inference |
+| M2-06 | Implement secret redaction before embedding text | `[x]` | Agent | Implemented `redact_secrets()` regex filter |
+| M2-07 | Add `api/findings.py` — GET/POST views & embeddings endpoints | `[x]` | Agent | Implemented batch/single view & embedding API routes |
+| M2-08 | Implement `services/embedding.py` — SentenceTransformer wrapper | `[x]` | Agent | Implemented `EmbeddingService` with HashingVectorizer fallback |
+| M2-09 | Implement weighted cosine similarity scorer | `[x]` | Agent | Implemented `cosine_similarity` and `weighted_similarity` |
+| M2-10 | Write tests for 4-view extraction (SQLi, XSS, SSRF cases) | `[x]` | Agent | `tests/test_extractor.py` passing |
 
 ---
 
-## PHASE 4 — Deduplication Engine
+## PHASE 4 — Deduplication Engine ✅
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
-| M3-01 | Define `schemas/dedup.py` — Cluster, CanonicalIssue | `[ ]` | — | — |
-| M3-02 | Implement Stage A: deterministic fingerprint dedup | `[ ]` | — | CWE hierarchy + canonical path |
-| M3-03 | Build `CWE_PARENT_MAP` dict for hierarchy resolution | `[ ]` | — | Static dict; CWE-564 → CWE-89, etc. |
-| M3-04 | Implement Stage B: HDBSCAN semantic clustering | `[ ]` | — | scikit-learn HDBSCAN |
-| M3-05 | Implement hard-block merge rules (no cross-param, no cross-package) | `[ ]` | — | Depends on M3-04 |
-| M3-06 | Implement canonical issue creation from cluster | `[ ]` | — | Preserve all source findings |
-| M3-07 | Implement `api/clusters.py` — GET, merge, split endpoints | `[ ]` | — | — |
-| M3-08 | Write dedup tests: cross-scanner, same-endpoint-diff-param | `[ ]` | — | — |
+| M3-01 | Define `schemas/dedup.py` — Cluster, CanonicalIssue | `[x]` | Agent | Defined Cluster, CanonicalIssue, ClusterMember, DedupRunSummary |
+| M3-02 | Implement Stage A: deterministic fingerprint dedup | `[x]` | Agent | Fingerprint grouping in `DeduplicationEngine` |
+| M3-03 | Build `CWE_PARENT_MAP` dict for hierarchy resolution | `[x]` | Agent | Implemented in `parsers/base.py` |
+| M3-04 | Implement Stage B: HDBSCAN semantic clustering | `[x]` | Agent | Implemented HDBSCAN density clustering on distance matrix |
+| M3-05 | Implement hard-block merge rules (no cross-param, no cross-package) | `[x]` | Agent | Implemented `_check_hard_blocks()` |
+| M3-06 | Implement canonical issue creation from cluster | `[x]` | Agent | Implemented `create_canonical_issues()` |
+| M3-07 | Implement `api/clusters.py` — GET, merge, split endpoints | `[x]` | Agent | Implemented `/deduplication/run`, `/clusters`, `/canonical-issues`, merge/split |
+| M3-08 | Write dedup tests: cross-scanner, same-endpoint-diff-param | `[x]` | Agent | `tests/test_dedup.py` passing |
 
 ---
 
@@ -133,7 +136,7 @@
 |---|---|---|---|---|
 | M4-01 | Implement `services/threat_intel.py` — KEV lookup (mock + live) | `[ ]` | — | Load from data/cisa_kev_mock.json |
 | M4-02 | Implement EPSS lookup (mock + live toggle) | `[ ]` | — | Cache in SQLite threat_intel table |
-| M4-03 | Define `schemas/risk.py` — PriorityResult | `[ ]` | — | — |
+| M4-03 | Define `schemas/risk.py` — PriorityResult | `[x]` | Agent | Defined PriorityResult, RemediationTier, ThreatEnrichment, RiskFactors |
 | M4-04 | Implement `services/risk_engine.py` — composite risk score | `[ ]` | — | Configurable weights, 0–100 score |
 | M4-05 | Implement remediation tier assignment rules | `[ ]` | — | Immediate / Accelerated / Standard |
 | M4-06 | Implement human-readable explanation generator | `[ ]` | — | List of factor contribution sentences |
@@ -210,13 +213,13 @@
 | Phase | Tasks | Done | Remaining |
 |---|---|---|---|
 | Phase 0 — Setup | 7 | 7 | 0 |
-| Phase 1 — Parsers | 14 | 0 | 14 |
-| Phase 2 — Data | 8 | 0 | 8 |
-| Phase 3 — Views & Embeddings | 10 | 0 | 10 |
-| Phase 4 — Deduplication | 8 | 0 | 8 |
-| Phase 5 — Threat Intel | 8 | 0 | 8 |
+| Phase 1 — Parsers | 14 | 14 | 0 |
+| Phase 2 — Data | 8 | 8 | 0 |
+| Phase 3 — Views & Embeddings | 10 | 10 | 0 |
+| Phase 4 — Deduplication | 8 | 8 | 0 |
+| Phase 5 — Threat Intel | 8 | 1 | 7 |
 | Phase 6 — Sandbox | 7 | 0 | 7 |
 | Phase 7 — Cases | 6 | 0 | 6 |
 | Phase 8 — Frontend | 7 | 0 | 7 |
 | Phase 9 — Demo | 4 | 0 | 4 |
-| **TOTAL** | **79** | **7** | **72** |
+| **TOTAL** | **79** | **48** | **31** |
