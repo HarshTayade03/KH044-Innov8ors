@@ -7,6 +7,7 @@ from pathlib import Path
 from src.app.config import settings
 from src.app.repositories.threat_intel_repo import threat_intel_repo
 from src.app.schemas.risk import ThreatEnrichment
+from pydantic import ValidationError
 
 
 class ThreatIntelUnavailable(RuntimeError):
@@ -47,7 +48,7 @@ class ThreatIntelService:
                 data_source='mock', source_fingerprint=fingerprint,
                 fetched_at=datetime.now(timezone.utc),
             )
-        except (OSError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, ValidationError) as exc:
             raise ThreatIntelUnavailable(f'Mock threat feed unavailable or malformed: {exc}') from exc
         threat_intel_repo.save(enrichment)
         return enrichment

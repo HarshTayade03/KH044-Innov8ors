@@ -31,7 +31,7 @@ class SandboxService:
         now, validation_id = datetime.now(timezone.utc), f"val-{uuid.uuid4()}"
         content = redact_secrets(json.dumps({"simulation": True, "scenario": scenario, "target_host": host, "finding_id": finding.finding_id, "status": status.value, "summary": summary, "source_excerpt": finding.evidence.summary or ""}, sort_keys=True)) or ""
         retained = content.encode("utf-8")
-        artifact = Artifact(artifact_id=f"art-{uuid.uuid4()}", validation_id=validation_id, artifact_type="validation_summary", content=content, content_hash=hashlib.sha256(retained).hexdigest(), content_size=len(retained), metadata={"simulation": True, "content_type": "application/json"}, created_at=now)
+        artifact = Artifact(artifact_id=f"art-{uuid.uuid4()}", validation_id=validation_id, artifact_type="validation_summary", content=content, content_hash=hashlib.sha256(retained).hexdigest(), content_size=len(retained), redacted=True, metadata={"simulation": True, "content_type": "application/json", "hash_encoding": "utf-8"}, created_at=now)
         result = ValidationResult(validation_id=validation_id, canonical_issue_id=issue_id, finding_id=finding.finding_id, status=status, confidence=confidence, sandbox_mode=request.mode, scenario=scenario, target_host=host, execution_summary=summary, limitations=[LIMITATION], executed_at=now, timeout_seconds=settings.sandbox_timeout_seconds, artifact_ids=[artifact.artifact_id], created_at=now)
         validation_repo.save(result, [artifact])
         return result

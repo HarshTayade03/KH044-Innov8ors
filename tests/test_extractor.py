@@ -67,6 +67,13 @@ def test_secret_redaction():
     assert "mysecretpass" not in redacted
 
 
+def test_authorization_values_are_redacted():
+    redacted = redact_secrets("Authorization: Bearer live-token Authorization: Basic dXNlcjpwYXNz")
+    assert "live-token" not in redacted
+    assert "dXNlcjpwYXNz" not in redacted
+    assert redacted.count("<REDACTED>") == 2
+
+
 def test_extract_views_sqli():
     finding = create_mock_finding()
     views = extractor_service.extract_views(finding)
