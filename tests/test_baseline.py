@@ -20,7 +20,9 @@ def test_startup_and_ingestion_persist_across_clients():
         assert 'Vulnerability Triage Lab' in page
         assert 'Synthetic scanner corpus' in page
         assert '/static/dashboard.js' in page
+        assert '/static/pastel.css' in page
         assert client.get('/static/dashboard.css').status_code == 200
+        assert client.get('/static/pastel.css').status_code == 200
         assert client.get('/static/dashboard.js').status_code == 200
     with TestClient(app) as client:
         assert client.get('/api/v1/findings').json()['total'] == 1

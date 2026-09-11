@@ -1,0 +1,19 @@
+/* Pastel depth layered over the editorial base. Actions remain warm ink. */
+body{background:linear-gradient(180deg,#f5f5f5 0%,#f8f1ef 34%,#f0f6f2 68%,#f5f5f5 100%)}
+.card{border-color:#dedbd8;background:#ffffffdc;backdrop-filter:blur(14px)}
+.dataset-item{background:linear-gradient(145deg,#fff 55%,#f8ebe4)}
+.dataset-item:nth-child(2n){background:linear-gradient(145deg,#fff 55%,#eaf6f1)}
+.dataset-item:nth-child(3n){background:linear-gradient(145deg,#fff 55%,#f0eafa)}
+.metrics article{background:linear-gradient(145deg,#fff,#f4e8f0)}
+.metrics article:nth-child(2){background:linear-gradient(145deg,#fff,#e5f4ee)}
+.metrics article:nth-child(3){background:linear-gradient(145deg,#fff,#eee8f7)}
+.metrics article:nth-child(4){background:linear-gradient(145deg,#fff,#e7f0f8)}
+.metrics article:nth-child(5){background:linear-gradient(145deg,#fff,#faece3)}
+.stage{background:linear-gradient(155deg,#fff,#f9f5f2)}
+.stage:nth-child(2){background:linear-gradient(155deg,#fff,#f0f6f3)}
+.stage:nth-child(3){background:linear-gradient(155deg,#fff,#f3eff8)}
+.stage:nth-child(4){background:linear-gradient(155deg,#fff,#edf3f8)}
+.stage.active{background:linear-gradient(145deg,#fff,#e4eff9)}
+.stage.active i{box-shadow:0 0 0 7px #a8c8e833}
+.explorer{box-shadow:0 24px 70px #c8b8e029}
+dialog{background:linear-gradient(155deg,#fff 65%,#f2ecf7)}
