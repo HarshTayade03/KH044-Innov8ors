@@ -74,10 +74,11 @@ class Settings(BaseSettings):
         """Return the sandbox allowlist as a set of hostnames for O(1) lookup."""
         return {h.strip() for h in self.sandbox_allowlist.split(",") if h.strip()}
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": False,
+    }
 
 
 # Module-level singleton — import this in all other modules:
