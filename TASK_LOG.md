@@ -401,3 +401,16 @@ Tasks over 30 minutes must be split or have a shortcut agreed before implementat
   approval boundary explicit acceptance criteria.
 - No runtime code, secrets, schema contracts, or environment files were changed in this planning
   pass; implementation tasks remain `[ ]` until their checks are actually run.
+
+## Frontend analyst flow (2026-09-12)
+
+| ID | Task | Status | Notes |
+|---|---|---|---|
+| FLOW-03 | Extend static analyst flow for simulation, risk provenance, case queue and review controls | `[x]` | Updated `src/app/static/index.html`, `dashboard.js`, and `dashboard.css`. Uses existing validation/cases endpoints when available; renders empty/error states otherwise. Simulation is labeled lab-only/inconclusive and Docker-disabled. |
+
+### FLOW-03 verification
+- `node --check src/app/static/dashboard.js` passed.
+- `git diff --check` passed.
+- `venv\\Scripts\\python.exe -m pytest tests\\test_baseline.py -q` passed (3 tests; existing deprecation warnings only).
+- No browser runner is configured in `package.json`; browser-level checks were not available.
+- Backend assumptions: `/api/v1/cases`, `/api/v1/cases/{id}`, case review actions, and `/api/v1/canonical-issues/{id}/validate` follow current schemas; unavailable endpoints are surfaced as analyst-facing errors.

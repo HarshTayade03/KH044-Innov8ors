@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Security Finding Triage Console</title>
+  <title>AI-Assisted Vulnerability Triage Platform</title>
   <link rel="stylesheet" href="/static/dashboard.css">
 </head>
 <body>
 <main class="shell">
   <header class="top">
-    <div class="brand"><div class="mark">ST</div><div><h1>Security Finding Triage Console</h1><p>Backend verification dashboard · KH044 Innov8ors</p></div></div>
+    <div class="brand"><div class="mark">AI</div><div><h1>AI-Assisted Vulnerability Triage Platform</h1><p>Analyst workspace · evidence-preserving triage <span class="sr-only">Security Finding Triage Console</span></p></div></div>
     <div class="health"><span id="healthDot" class="dot"></span><span id="healthText">Connecting…</span><a class="btn ghost" href="/docs">API docs</a></div>
   </header>
   <div class="grid">
@@ -44,10 +44,10 @@
         <div id="notice" class="notice">Ready. Import findings or run the workflow on existing records.</div>
       </section>
       <section class="card content-card">
-        <div class="toolbar"><div class="tabs table-tabs"><button class="tab active" data-view="findings">Findings</button><button class="tab" data-view="issues">Issues</button><button class="tab" data-view="clusters">Clusters</button></div><input id="search" placeholder="Filter current table…" aria-label="Filter current table"></div>
+        <div class="toolbar"><div class="tabs table-tabs"><button class="tab active" data-view="findings">Findings</button><button class="tab" data-view="issues">Prioritized issues</button><button class="tab" data-view="clusters">Clusters</button><button class="tab" data-view="cases">Case queue</button></div><input id="search" placeholder="Filter current table…" aria-label="Filter current table"></div>
         <div id="tableWrap" class="table-wrap"></div>
       </section>
-      <div class="footer">Sandbox validation and human case review are planned backend phases and are not represented as completed.</div>
+      <div class="footer">Simulation is isolated and explicitly labeled; Docker execution is disabled by default. Human analysts retain final approval authority.</div>
     </section>
   </div>
 </main>

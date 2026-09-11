@@ -1,5 +1,5 @@
 'use strict';
-const API='/api/v1', state={findings:[],issues:[],clusters:[],priorities:[],view:'findings',busy:false};
+const API='/api/v1', state={findings:[],issues:[],clusters:[],priorities:[],cases:[],view:'findings',busy:false};
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const short=v=>esc(String(v??'').slice(0,12));
@@ -18,11 +18,11 @@ function pill(value){return `<span class="pill ${esc(value)}">${esc(value||'Unkn
 async function refresh(){
   const calls=await Promise.allSettled([
     request(`${API}/findings?limit=500`),request(`${API}/canonical-issues?limit=500`),
-    request(`${API}/clusters?limit=500`),request(`${API}/priorities?limit=500`)
+    request(`${API}/clusters?limit=500`),request(`${API}/priorities?limit=500`),request(`${API}/cases?limit=500`)
   ]);
   calls.forEach((result,index)=>{
-    const key=['findings','issues','clusters','priorities'][index];
-    state[key]=result.status==='fulfilled'?(result.value[key]||result.value.canonical_issues||[]):[];
+    const key=['findings','issues','clusters','priorities','cases'][index];
+    state[key]=result.status==='fulfilled'?(Array.isArray(result.value)?result.value:(result.value[key]||result.value.canonical_issues||[])):state[key];
   });
   $('#mFindings').textContent=state.findings.length; $('#mIssues').textContent=state.issues.length;
   $('#mClusters').textContent=state.clusters.length; $('#mPriorities').textContent=state.priorities.length;
@@ -30,7 +30,7 @@ async function refresh(){
 }
 function filtered(items){const q=$('#search').value.toLowerCase().trim();return q?items.filter(x=>JSON.stringify(x).toLowerCase().includes(q)):items}
 function empty(label){return `<div class="empty">No ${label} yet.</div>`}
-function render(){const wrap=$('#tableWrap');({findings:renderFindings,issues:renderIssues,clusters:renderClusters}[state.view])(wrap)}
+function render(){const wrap=$('#tableWrap');({findings:renderFindings,issues:renderIssues,clusters:renderClusters,cases:renderCases}[state.view]||renderFindings)(wrap)}
 function renderFindings(w){
   const rows=filtered(state.findings); if(!rows.length){w.innerHTML=empty('findings');return}
   w.innerHTML=`<table><thead><tr><th>Finding</th><th>Scanner</th><th>Severity</th><th>Location</th><th>Quality</th><th></th></tr></thead><tbody>${rows.map(f=>`<tr><td class="title-cell"><b>${esc(f.vulnerability.title)}</b><span class="mono">${short(f.finding_id)} · ${esc(f.vulnerability.cwe_primary||'No CWE')}</span></td><td>${esc(f.source_scanner)}</td><td>${pill(f.vulnerability.severity)}</td><td>${esc(f.location.host||f.asset.asset_name)}<div class="mono">${esc(f.location.path||f.location.url||'—')} ${f.location.parameter?'· '+esc(f.location.parameter):''}</div></td><td>${Math.round((f.quality.completeness_score||0)*100)}%</td><td><button class="btn ghost" data-finding="${esc(f.finding_id)}">Inspect</button></td></tr>`).join('')}</tbody></table>`;
@@ -44,6 +44,10 @@ function renderClusters(w){
   const rows=filtered(state.clusters);if(!rows.length){w.innerHTML=empty('clusters');return}
   w.innerHTML=`<table><thead><tr><th>Cluster</th><th>Method</th><th>Status</th><th>Members</th><th>Similarity</th><th>Review action</th></tr></thead><tbody>${rows.map(c=>`<tr><td class="mono">${short(c.cluster_id)}</td><td>${esc(c.cluster_method)}</td><td>${pill(c.status)}</td><td>${c.members.length}</td><td>${c.similarity_score==null?'—':Math.round(c.similarity_score*100)+'%'}</td><td class="actions"><button class="btn ghost" data-cluster="${esc(c.cluster_id)}">Inspect</button><button class="btn primary" data-merge="${esc(c.cluster_id)}">Merge</button><button class="btn danger" data-split="${esc(c.cluster_id)}">Keep separate</button></td></tr>`).join('')}</tbody></table>`;
 }
+function renderCases(w){
+  const rows=filtered(state.cases);if(!rows.length){w.innerHTML=empty('reviewable cases; generate one from a prioritized issue');return}
+  w.innerHTML=`<table><thead><tr><th>Case</th><th>Issue</th><th>Status</th><th>Priority</th><th>Evidence</th><th></th></tr></thead><tbody>${rows.map(c=>`<tr><td class="title-cell"><b>${esc(c.title||'Untitled case')}</b><span class="mono">${short(c.case_id)}</span></td><td class="mono">${short(c.canonical_issue_id)}</td><td>${pill(c.status)}</td><td>${c.priority_snapshot?.risk_score??'—'}</td><td>${c.validation_snapshot?'Attached':'Pending'}</td><td><button class="btn ghost" data-case="${esc(c.case_id)}">Review</button></td></tr>`).join('')}</tbody></table>`;
+}
 async function inspectFinding(id){
   try{
     const [finding,views,embeddings]=await Promise.all([request(`${API}/findings/${id}`),request(`${API}/findings/${id}/views`),request(`${API}/findings/${id}/embeddings`).catch(()=>null)]);
@@ -55,8 +59,28 @@ async function inspectFinding(id){
 function inspectIssue(id){
   const issue=state.issues.find(x=>x.canonical_issue_id===id),priority=priorityFor(id);
   $('#modalTitle').textContent=issue.title;
-  $('#modalBody').innerHTML=`<dl class="kv"><dt>Issue ID</dt><dd class="mono">${esc(issue.canonical_issue_id)}</dd><dt>Source findings</dt><dd>${issue.source_finding_ids.map(short).join(', ')}</dd><dt>Scanners</dt><dd>${esc(issue.source_scanners.join(', '))}</dd><dt>Merge reason</dt><dd>${esc(issue.merge_reason.join(' · '))}</dd></dl>${priority?`<h2>Risk ${priority.risk_score} · ${pill(priority.remediation_tier)}</h2><div class="contrib">${Object.entries(priority.factors.contributions||{}).map(([k,v])=>`<div><span class="note">${esc(k)}</span><br><b>${Number(v).toFixed(2)} pts</b></div>`).join('')}</div><ul>${priority.explanation.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'<p class="note">This issue has not been prioritized.</p>'}`;
+  $('#modalBody').innerHTML=`<dl class="kv"><dt>Issue ID</dt><dd class="mono">${esc(issue.canonical_issue_id)}</dd><dt>Source findings</dt><dd>${issue.source_finding_ids.map(short).join(', ')}</dd><dt>Scanners</dt><dd>${esc(issue.source_scanners.join(', '))}</dd><dt>Merge reason</dt><dd>${esc(issue.merge_reason.join(' · '))}</dd></dl>${priority?`<h2>Risk ${priority.risk_score} · ${pill(priority.remediation_tier)}</h2><div class="contrib">${Object.entries(priority.factors.contributions||{}).map(([k,v])=>`<div><span class="note">${esc(k)}</span><br><b>${Number(v).toFixed(2)} pts</b></div>`).join('')}</div><ul>${(priority.explanation||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul><div class="actions"><button class="btn primary" data-validate="${esc(id)}">Run lab simulation</button><button class="btn ghost" data-generate-case="${esc(id)}">Generate review case</button></div><p class="note">Risk enrichment is based on configured mock feeds; it is not a live threat-intelligence claim.</p>`:'<p class="note">This issue has not been prioritized.</p>'}`;
   $('#detailDialog').showModal();
+}
+async function inspectCase(id){
+  try{const result=await request(`${API}/cases/${id}`),c=result.case;
+    $('#modalTitle').textContent=c.title||'Case review';
+    $('#modalBody').innerHTML=`<dl class="kv"><dt>Status</dt><dd>${pill(c.status)}</dd><dt>Issue</dt><dd class="mono">${esc(c.canonical_issue_id)}</dd><dt>Source findings</dt><dd>${(c.source_finding_ids||[]).map(short).join(', ')||'Unavailable'}</dd><dt>Validation</dt><dd>${c.validation_snapshot?'Attached':'Not attached'}</dd></dl><h2>Human review</h2><p class="note">Decisions require an analyst actor and non-blank reason. The platform never auto-approves cases.</p><div class="field"><label for="reviewActor">Analyst actor</label><input id="reviewActor" placeholder="analyst@example.test"></div><div class="field"><label for="reviewReason">Reason</label><textarea id="reviewReason" rows="3" placeholder="Record the evidence for this decision"></textarea></div><div class="actions"><button class="btn primary" data-review="approve" data-case-id="${esc(id)}">Approve</button><button class="btn danger" data-review="reject" data-case-id="${esc(id)}">Reject</button><button class="btn ghost" data-review="request-evidence" data-case-id="${esc(id)}">Request evidence</button></div><h2>Audit timeline</h2><ul>${(result.audit||[]).map(a=>`<li>${esc(a.action||a.event_type||'review')} · ${esc(a.actor||'')}</li>`).join('')||'<li class="note">No review events.</li>'}</ul>`;
+    $('#detailDialog').showModal();
+  }catch(e){message(`Case unavailable: ${e.message}`,true)}
+}
+async function validateIssue(id){
+  const scenario=prompt('Scenario for lab simulation (optional):','default');
+  if(scenario===null)return;
+  try{const result=await request(`${API}/canonical-issues/${id}/validate`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'lab_simulator',scenario})});
+    $('#modalTitle').textContent='Lab simulation result';
+    $('#modalBody').innerHTML=`<div class="notice">${pill(result.status)} · ${esc(result.execution_summary)}</div><dl class="kv"><dt>Mode</dt><dd>LAB SIMULATOR (simulated only)</dd><dt>Confidence</dt><dd>${result.confidence==null?'—':Math.round(result.confidence*100)+'%'}</dd><dt>Scenario</dt><dd>${esc(result.scenario)}</dd><dt>Limitations</dt><dd>${(result.limitations||[]).map(esc).join('<br>')||'No additional limitations reported.'}</dd></dl><p class="note">This result is inconclusive for real exploitability. Docker execution is disabled by default; no production target was contacted.</p>`;
+  }catch(e){message(`Simulation unavailable: ${e.message}. Docker remains disabled by default.`,true)}
+}
+async function reviewCase(id,action){
+  const actor=$('#reviewActor').value.trim(),reason=$('#reviewReason').value.trim();
+  if(!actor||!reason){message('Analyst actor and reason are required for every review decision.',true);return}
+  try{await request(`${API}/cases/${id}/${action}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({actor,reason})});message(`Case ${action.replace('-',' ')} recorded by ${actor}.`);$('#detailDialog').close();await refresh()}catch(e){message(`Review failed: ${e.message}`,true)}
 }
 function inspectCluster(id){
   const c=state.clusters.find(x=>x.cluster_id===id);$('#modalTitle').textContent='Cluster details';
@@ -90,6 +114,6 @@ $('#sampleBtn').onclick=()=>{$('#jsonInput').value=JSON.stringify([{name:'SQL In
 $('#jsonForm').onsubmit=e=>{e.preventDefault();submit(e.currentTarget,()=>{let findings;try{findings=JSON.parse($('#jsonInput').value)}catch{throw new Error('JSON is not valid')}if(!Array.isArray(findings))throw new Error('JSON input must be an array');return request(`${API}/findings`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source_scanner:$('#jsonScanner').value,findings})})})};
 $('#fileForm').onsubmit=e=>{e.preventDefault();submit(e.currentTarget,()=>{const data=new FormData();data.append('source_scanner',$('#fileScanner').value);data.append('file',$('#fileInput').files[0]);return request(`${API}/findings/upload`,{method:'POST',body:data})})};
 $('#manualForm').onsubmit=e=>{e.preventDefault();submit(e.currentTarget,()=>{const d=Object.fromEntries(new FormData(e.currentTarget));const payload={title:d.title,asset_name:d.asset_name,severity:d.severity,url:d.url||null,parameter:d.parameter||null,cwe_ids:d.cwe?[d.cwe]:[]};return request(`${API}/findings/manual`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})})};
-$('#tableWrap').onclick=async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.finding)return inspectFinding(b.dataset.finding);if(b.dataset.issue)return inspectIssue(b.dataset.issue);if(b.dataset.cluster)return inspectCluster(b.dataset.cluster);if(b.dataset.prioritize){busy(true);try{await request(`${API}/canonical-issues/${b.dataset.prioritize}/prioritize`,{method:'POST'});message('Priority calculated.');await refresh()}catch(x){message(x.message,true)}finally{busy(false)}}if(b.dataset.merge||b.dataset.split){const merge=!!b.dataset.merge,id=b.dataset.merge||b.dataset.split;busy(true);try{await request(`${API}/clusters/${id}/${merge?'merge':'split'}`,{method:'POST'});message(merge?'Cluster merged.':'Cluster kept separate.');await refresh()}catch(x){message(x.message,true)}finally{busy(false)}}};
+$('#tableWrap').onclick=async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.finding)return inspectFinding(b.dataset.finding);if(b.dataset.issue)return inspectIssue(b.dataset.issue);if(b.dataset.cluster)return inspectCluster(b.dataset.cluster);if(b.dataset.case)return inspectCase(b.dataset.case);if(b.dataset.validate)return validateIssue(b.dataset.validate);if(b.dataset.generateCase){try{await request(`${API}/canonical-issues/${b.dataset.generateCase}/generate-case`,{method:'POST'});message('Review case generated.');await refresh()}catch(x){message(`Case generation unavailable: ${x.message}`,true)}}if(b.dataset.review)return reviewCase(b.dataset.caseId,b.dataset.review);if(b.dataset.prioritize){busy(true);try{await request(`${API}/canonical-issues/${b.dataset.prioritize}/prioritize`,{method:'POST'});message('Priority calculated.');await refresh()}catch(x){message(x.message,true)}finally{busy(false)}}if(b.dataset.merge||b.dataset.split){const merge=!!b.dataset.merge,id=b.dataset.merge||b.dataset.split;busy(true);try{await request(`${API}/clusters/${id}/${merge?'merge':'split'}`,{method:'POST'});message(merge?'Cluster merged.':'Cluster kept separate.');await refresh()}catch(x){message(x.message,true)}finally{busy(false)}}};
 $('#search').oninput=render;$('#refreshBtn').onclick=refresh;$('#runBtn').onclick=runWorkflow;$('#closeModal').onclick=()=>$('#detailDialog').close();
 (async()=>{try{const h=await request('/health');$('#healthDot').classList.add('ok');$('#healthText').textContent=`Backend online · ${h.tables_initialized} tables · ${h.threat_intelligence_mode} feeds`;await refresh()}catch(e){$('#healthText').textContent='Backend unavailable';message(e.message,true)}})();
