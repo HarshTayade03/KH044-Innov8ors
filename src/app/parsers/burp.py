@@ -12,7 +12,7 @@ class BurpParser(BaseScannerParser):
     scanner_name = "burp"
 
     def parse(self, raw_record: dict[str, Any]) -> dict[str, Any]:
-        title = raw_record.get("name") or raw_record.get("issue_name") or "Burp Suite Finding"
+        title = raw_record.get("title") or raw_record.get("name") or raw_record.get("issue_name") or "Burp Suite Finding"
         description = raw_record.get("issue_background") or raw_record.get("description") or raw_record.get("issue_detail")
 
         # Location parsing

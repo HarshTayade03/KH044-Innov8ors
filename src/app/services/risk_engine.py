@@ -1,0 +1,154 @@
+"""
+services/risk_engine.py — Composite risk scoring and remediation tier assignment engine.
+
+Defined according to docs/MODULE_SPECS/M4_threat_intel_prioritization.md.
+"""
+
+import uuid
+from datetime import datetime, timezone
+from typing import Optional
+
+from src.app.config import settings
+from src.app.schemas.dedup import CanonicalIssue
+from src.app.schemas.risk import PriorityResult, RemediationTier, ThreatEnrichment
+from src.app.repositories.findings_repo import repo as findings_repo
+from src.app.repositories.dedup_repo import dedup_repo
+from src.app.repositories.risk_repo import risk_repo
+from src.app.services.threat_intel import threat_intel_service
+
+
+class RiskEngine:
+    """Calculates composite risk score (0-100) and remediation tier for canonical issues."""
+
+    def _get_asset_criticality_factor(self, criticality: Optional[str]) -> float:
+        c = (criticality or "medium").lower()
+        if c == "critical":
+            return 1.0
+        elif c == "high":
+            return 0.75
+        elif c == "medium":
+            return 0.50
+        elif c == "low":
+            return 0.25
+        return 0.50
+
+    def calculate_priority(self, canonical_issue_id: str) -> PriorityResult:
+        """
+        Calculate composite risk score for a CanonicalIssue.
+        """
+        issue = dedup_repo.get_canonical_issue(canonical_issue_id)
+        if not issue:
+            raise ValueError(f"Canonical issue '{canonical_issue_id}' not found.")
+
+        # Aggregate finding details
+        findings = []
+        for fid in issue.source_finding_ids:
+            f = findings_repo.get_normalized_finding(fid)
+            if f:
+                findings.append(f)
+
+        if not findings:
+            raise ValueError(f"No source findings found for issue '{canonical_issue_id}'.")
+
+        # Use maximum severity/CVSS finding as primary anchor
+        primary = max(findings, key=lambda x: x.vulnerability.cvss_score or 0.0)
+
+        # Threat Intel enrichment for all CVEs
+        all_cves = set()
+        for f in findings:
+            all_cves.update(f.vulnerability.cve_ids)
+
+        threat_enrichments: list[ThreatEnrichment] = []
+        for cve in all_cves:
+            threat_enrichments.append(threat_intel_service.enrich_cve(cve))
+
+        kev_flag = any(t.kev_flag for t in threat_enrichments)
+        max_epss = max((t.epss_score for t in threat_enrichments), default=0.0)
+
+        cvss_score = primary.vulnerability.cvss_score or 0.0
+        asset_crit = primary.asset.criticality or "medium"
+        internet_facing = primary.asset.internet_facing
+
+        # Normalize factors (0.0 to 1.0)
+        cvss_norm = cvss_score / 10.0
+        epss_norm = max_epss
+        kev_norm = 1.0 if kev_flag else 0.0
+        asset_norm = self._get_asset_criticality_factor(asset_crit)
+        exposure_norm = 1.0 if internet_facing else 0.5
+        val_norm = 0.5  # Sandbox default prior to validation
+
+        # Weights from config
+        w_cvss = settings.risk_weight_cvss
+        w_epss = settings.risk_weight_epss
+        w_kev = settings.risk_weight_kev
+        w_asset = settings.risk_weight_asset
+        w_exposure = settings.risk_weight_exposure
+        w_validation = settings.risk_weight_validation
+
+        weights_used = {
+            "cvss": w_cvss,
+            "epss": w_epss,
+            "kev": w_kev,
+            "asset": w_asset,
+            "exposure": w_exposure,
+            "validation": w_validation,
+        }
+
+        # Composite score
+        raw_score = 100.0 * (
+            w_cvss * cvss_norm
+            + w_epss * epss_norm
+            + w_kev * kev_norm
+            + w_asset * asset_norm
+            + w_exposure * exposure_norm
+            + w_validation * val_norm
+        )
+        risk_score = round(min(100.0, max(0.0, raw_score)), 2)
+
+        # Remediation Tier assignment rules
+        if kev_flag or risk_score >= 80.0:
+            tier = RemediationTier.IMMEDIATE
+        elif risk_score >= 50.0:
+            tier = RemediationTier.ACCELERATED
+        else:
+            tier = RemediationTier.STANDARD
+
+        # Explanation generation
+        explanation = []
+        if kev_flag:
+            explanation.append("CRITICAL: Vulnerability is listed in CISA KEV catalog (actively exploited in the wild).")
+        explanation.append(f"CVSS Base Score ({cvss_score}/10) contributes {round(100.0 * w_cvss * cvss_norm, 1)} pts.")
+        if max_epss > 0.0:
+            explanation.append(f"EPSS Exploit Prediction Score ({round(max_epss * 100, 1)}%) contributes {round(100.0 * w_epss * epss_norm, 1)} pts.")
+        explanation.append(f"Asset Criticality '{asset_crit}' contributes {round(100.0 * w_asset * asset_norm, 1)} pts.")
+        exposure_str = "Internet-Facing" if internet_facing else "Internal / Restricted"
+        explanation.append(f"Network Exposure ({exposure_str}) contributes {round(100.0 * w_exposure * exposure_norm, 1)} pts.")
+
+        factors = {
+            "cvss_score": cvss_score,
+            "epss_score": max_epss,
+            "kev_flag": kev_flag,
+            "asset_criticality": asset_crit,
+            "internet_facing": internet_facing,
+            "sandbox_validated": False,
+            "cve_ids": list(all_cves),
+        }
+
+        now_dt = datetime.now(timezone.utc)
+        result = PriorityResult(
+            priority_id=f"prio-{uuid.uuid4()}",
+            canonical_issue_id=canonical_issue_id,
+            risk_score=risk_score,
+            remediation_tier=tier,
+            factors=factors,
+            weights_used=weights_used,
+            explanation=explanation,
+            calculation_version="risk-model-1.0",
+            calculated_at=now_dt,
+        )
+
+        risk_repo.save_priority(result)
+        return result
+
+
+risk_engine = RiskEngine()

@@ -1,6 +1,6 @@
 # VulnTriager — Master Task Log & Progress Tracker
 
-> Last Updated: 2026-09-11 23:25 IST | Project: KH044 Innov8ors | Status: IN PROGRESS — Phase 5
+> Last Updated: 2026-09-11 23:40 IST | Project: KH044 Innov8ors | Status: IN PROGRESS — Phase 6
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
@@ -44,6 +44,7 @@
 | 2026-09-11 23:18 | Multi-view secret redaction regex filtering | Apply secret redaction to reproduction/location text BEFORE storing in `view_text` |
 | 2026-09-11 23:24 | sklearn `HashingVectorizer` fallback for sentence embeddings | Guarantees vector embeddings even if `sentence-transformers` ML package is absent |
 | 2026-09-11 23:24 | Two-Stage Deduplication (Fingerprint + HDBSCAN) | Stage A groups exact fingerprints, Stage B performs HDBSCAN semantic density clustering |
+| 2026-09-11 23:38 | Composite Risk Scoring + KEV/EPSS Enrichment | 0–100 risk score combining weighted CVSS, EPSS, CISA KEV flag, asset criticality, network exposure |
 
 ---
 
@@ -130,18 +131,18 @@
 
 ---
 
-## PHASE 5 — Threat Intel & Prioritization
+## PHASE 5 — Threat Intel & Prioritization ✅
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
-| M4-01 | Implement `services/threat_intel.py` — KEV lookup (mock + live) | `[ ]` | — | Load from data/cisa_kev_mock.json |
-| M4-02 | Implement EPSS lookup (mock + live toggle) | `[ ]` | — | Cache in SQLite threat_intel table |
+| M4-01 | Implement `services/threat_intel.py` — KEV lookup (mock + live) | `[x]` | Agent | Implemented CISA KEV catalog lookup & DB caching |
+| M4-02 | Implement EPSS lookup (mock + live toggle) | `[x]` | Agent | Implemented FIRST.org EPSS score/percentile lookup & DB caching |
 | M4-03 | Define `schemas/risk.py` — PriorityResult | `[x]` | Agent | Defined PriorityResult, RemediationTier, ThreatEnrichment, RiskFactors |
-| M4-04 | Implement `services/risk_engine.py` — composite risk score | `[ ]` | — | Configurable weights, 0–100 score |
-| M4-05 | Implement remediation tier assignment rules | `[ ]` | — | Immediate / Accelerated / Standard |
-| M4-06 | Implement human-readable explanation generator | `[ ]` | — | List of factor contribution sentences |
-| M4-07 | Add prioritization API endpoints | `[ ]` | — | — |
-| M4-08 | Write risk engine tests (KEV → Immediate, no-CVE → Standard) | `[ ]` | — | — |
+| M4-04 | Implement `services/risk_engine.py` — composite risk score | `[x]` | Agent | 0–100 composite score with configurable weights |
+| M4-05 | Implement remediation tier assignment rules | `[x]` | Agent | Rules: Immediate (KEV or >=80), Accelerated (>=50), Standard |
+| M4-06 | Implement human-readable explanation generator | `[x]` | Agent | Sentence generator describing risk factor weights & score contribution |
+| M4-07 | Add prioritization API endpoints | `[x]` | Agent | `/canonical-issues/{id}/prioritize`, `/priorities`, `/priorities/{id}` |
+| M4-08 | Write risk engine tests (KEV → Immediate, no-CVE → Standard) | `[x]` | Agent | `tests/test_risk_engine.py` — 3 unit tests passing |
 
 ---
 
@@ -217,9 +218,9 @@
 | Phase 2 — Data | 8 | 8 | 0 |
 | Phase 3 — Views & Embeddings | 10 | 10 | 0 |
 | Phase 4 — Deduplication | 8 | 8 | 0 |
-| Phase 5 — Threat Intel | 8 | 1 | 7 |
+| Phase 5 — Threat Intel | 8 | 8 | 0 |
 | Phase 6 — Sandbox | 7 | 0 | 7 |
 | Phase 7 — Cases | 6 | 0 | 6 |
 | Phase 8 — Frontend | 7 | 0 | 7 |
 | Phase 9 — Demo | 4 | 0 | 4 |
-| **TOTAL** | **79** | **48** | **31** |
+| **TOTAL** | **79** | **55** | **24** |
