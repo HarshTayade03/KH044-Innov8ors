@@ -412,3 +412,11 @@ Tasks over 30 minutes must be split or have a shortcut agreed before implementat
 | Runtime/API smoke | `[x]` | `venv\\Scripts\\python.exe -m pip check`: no broken requirements; `compileall -q src tests`; Uvicorn `GET /health` and `GET /openapi.json`: 200/200; `git diff --check` passed. |
 
 Blocker: the root `AGENT_HANDOFF.md` path referenced by the task was absent; the available handoff at `docs/AGENT_HANDOFF.md` was read instead. Unrelated `src/app/parsers/__init__.py`, `data/pipeline_testing_guide.md`, and `data/sample_upload.json` changes were preserved and not included in this debug commit.
+
+## 2026-09-12 Frontend feature access (feature/frontend-feature-access)
+
+| Scope | Status | Evidence |
+|---|---|---|
+| Analyst access layer | `[x]` | Reworked the static page to expose ingestion, four views, embedding provenance, dedup clusters, six-factor risk contributions/mock labels, offline validation limitations, case queue/detail, required actor/reason review actions, and per-case audit timeline. |
+| Graceful states and safety labels | `[x]` | Loading/unavailable/error and empty states remain visible; UI states that simulation is inconclusive evidence and Docker execution is disabled. Raw evidence is distinguished from escaped derived display text. |
+| Frontend/backend validation | `[x]` | `node --check src\\app\\static\\dashboard.js`, `git diff --check`, and `venv\\Scripts\\python.exe -m pytest tests\\test_validation.py tests\\test_cases.py -q` passed (9 passed, 2 existing deprecation warnings). Backend services and unrelated working-tree files were not modified. |
