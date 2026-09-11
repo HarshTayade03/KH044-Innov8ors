@@ -19,6 +19,19 @@
 
 ---
 
+## Backend case query/review fix — `feature/fix-backend-case-queries` (2026-09-12)
+
+- Reproduced two backend inspection defects: case detail returned audit events but omitted the
+  persisted review history, and `priority_override` incorrectly changed a pending case to
+  `more_evidence_requested`. Invalid case-list status strings were also accepted as empty
+  results rather than rejected by FastAPI validation.
+- Added review-history retrieval to case detail, constrained list status to `CaseStatus`, and
+  kept priority overrides in the current reviewable state while still recording the review and
+  audit event. Added regression coverage for override state and inspection history.
+- Verification: focused case tests `3 passed`; full suite `59 passed, 2 skipped`.
+
+---
+
 ## How to Use This Log (Agent Instructions)
 
 1. **Before starting any task**: Read this file. Find your assigned task. Change its status from `[ ]` to `[/]`.
