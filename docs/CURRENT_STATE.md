@@ -1,7 +1,7 @@
 # Current modules and features
 
 Audit: 2026-09-12. Evidence: source files, schemas, routes, fixtures, and tests.
-Implemented means code exists, not that it passed runtime checks in this audit.
+Implemented means code exists; verified means the recorded checks passed on the current integration branch. Deferred and partial work is called out explicitly below.
 R0 found bundled Python 3.12.14 outside PATH and created a local venv. All 49 tests, pip check and actual Uvicorn smoke checks passed; results
 are recorded in TASK_LOG.md; historical pass claims are kept separately.
 
@@ -17,8 +17,8 @@ are recorded in TASK_LOG.md; historical pass claims are kept separately.
 | M4 / P5 prioritization | `schemas/risk.py`, `services/risk_engine.py`, `services/threat_intel.py`, `repositories/risk_repo.py`, priority routes in `api/cases.py` | Mock KEV/EPSS and SQLite cache; weighted score, three tiers, explanations. Unsupported live flags return 503; content hashes refresh mock cache; all contributions and neutral validation prior are explicit. |
 | M5 / P6 validation | `schemas/validation.py`, `services/sandbox.py`, `repositories/validation_repo.py`, `api/validation.py`; validation/evidence tables | Deterministic offline SQLi/XSS/SSRF simulation, allowlist, immutable redacted evidence with verified hashes, retrieval APIs and risk integration. Save and retrieval paths reject hash/size mismatches so tampered evidence is never served. Real Docker execution is explicitly rejected and deferred. |
 | M6 / P7 cases | DB tables `cases`, `reviews`, `audit_events`; `schemas/case.py`, `repositories/case_repo.py`, `services/case_service.py`, case routes | Case assembly, active/retired and stale guards, transactional human review, review history and append-only audit inspection are implemented. Priority override preserves review state; broader dashboard integration remains pending. |
-| F0 / early frontend | `static/index.html`, `dashboard.css`, `dashboard.js` | Basic validation console for JSON/SARIF upload, direct/manual ingestion, views, embeddings, deduplication, cluster merge/split, active issues, and mock-feed risk scoring. Counts are aggregated from existing APIs. |
-| M7 / P8 dashboard | `api/dashboard.py` and F0 console | Dedicated metrics API remains HTTP 501. Case queue, validation evidence, approval/rejection controls, and audit timeline await P6/P7. |
+| F0 / analyst console | `static/index.html`, `dashboard.css`, `dashboard.js` | Implemented and syntax-checked console for ingestion, views, embeddings, deduplication, risk, case queue/detail, offline validation/evidence display, analyst review controls, and audit timeline; this is not the complete P8 dashboard. |
+| M7 / P8 dashboard | `api/dashboard.py` and F0 console | Partial: implemented case/validation/review flows are exposed, but metrics remains HTTP 501 and full dashboard acceptance is pending. |
 | P9 integration | No full pipeline orchestrator or end-to-end suite | Not started; current stages require separate API calls. |
 | P10 integrations | `workers/scanner_poller.py`; config placeholders | Poller raises NotImplementedError. Slack/Jira/webhook implementations absent. |
 
@@ -33,7 +33,7 @@ Application routes use `/api/v1`; `/`, `/health`, and `/docs` are root routes.
 - Deduplication: `POST /deduplication/run`, cluster list/detail and merge/split, canonical issue list/detail.
 - Priority: `POST /canonical-issues/{canonical_issue_id}/prioritize`, `GET /priorities`,
   `GET /priorities/{canonical_issue_id}`.
-- Stubs: validation/evidence, case generation/review, and dashboard metrics.
+- Implemented APIs: validation/evidence and case generation/review. The dashboard metrics route remains a deliberate HTTP 501 stub.
 
 ## R0 changes and remaining limits
 
