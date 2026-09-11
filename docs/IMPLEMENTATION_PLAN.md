@@ -15,10 +15,10 @@ A registered route or database table is not a completed feature.
 | Order | Phase | Deliverables | Exit criteria |
 |---|---|---|---|
 | Done | R0: reliable baseline | Reproducible runtime, isolated tests, dedup invariants and lifecycle, truthful feed/model provenance | Clean install; current and regression tests pass; health/API smoke checks pass; reruns do not duplicate active issues. |
-| Done | F0: validation frontend | Basic browser console over implemented APIs | Import, workflow, detail, error and responsive browser checks pass; unavailable phases are labeled. |
+| Done | F1 demo frontend | Synthetic-corpus console over implemented APIs | Fixed fixture catalog, workflow stages, evidence details, risk and offline validation are interactive; upload/manual inputs removed. |
 | Done | P6 / M5: lab validation and evidence | Contracts, local simulator, immutable redacted artifacts, repository/API, risk integration | 55 tests pass; three scenarios round-trip; timeout/unknown inconclusive; allowlist and Docker rejected; hashes verified; no real target requests. |
 | 3 | P7 / M6: cases and review | Assembly, state transitions, required reasons, audit history, overrides | Assembly/review tests; missing IDs, invalid/repeated and concurrent decisions handled; actor/reason/history preserved. |
-| 4 | P8 / M7: dashboard | Metrics, upload/manual form, queue/detail/views/evidence, cluster inspector, reviews/audit | Browser checks of core flows and loading/empty/error states; clear mock/simulation labels. |
+| 4 | P8 / M7: case review dashboard | Case queue/detail, review controls and audit timeline | Browser checks of review flows and loading/empty/error states; clear mock/simulation labels. |
 | 5 | P9: integration/demo | Pipeline orchestration, full-corpus test, demo, setup docs/diagram | All 110 inputs accounted for; provenance preserved; no forbidden merges; human review; rerun and partial-failure recovery. |
 | Later | P10: external capabilities | Real Docker executor, live feeds, scanner polling/webhooks, Slack/Jira | Separately scoped implementations and controlled integration tests. |
 
@@ -41,9 +41,9 @@ R0 is complete: 49 tests pass, pip check passes, and actual Uvicorn HTTP smoke c
 [the R0 contract](MODULE_SPECS/R0_baseline.md) and TASK_LOG.md for results. Live clients remain deferred.
 The next phase is P7: case assembly and human review. See `AGENT_HANDOFF.md` for pickup packages.
 
-F0 was added at the user's request to validate the implemented backend before P6. It is a
-small no-build frontend, not completion of P8: case review and validation evidence depend on
-P6/P7, while the dedicated dashboard metrics endpoint remains planned.
+F1 replaces analyst ingestion controls with a no-build synthetic demonstration dashboard. It
+loads the six prepared fixtures, reports stored metrics, exercises P0-P6 and displays simulated
+validation evidence. P8 still needs case review and audit features after P7 APIs stabilize.
 
 ## P6 implementation contract
 

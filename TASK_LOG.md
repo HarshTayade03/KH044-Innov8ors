@@ -339,3 +339,15 @@ and human review. Detailed pickup boundaries are in `docs/AGENT_HANDOFF.md`.
 
 Verification: `venv/Scripts/python.exe -m pytest tests/ -q` reported **55 passed** with one
 upstream Starlette/AnyIO deprecation warning. `pip check` and `git diff --check` passed.
+
+## 2026-09-12 Synthetic Corpus Demonstration Dashboard
+
+| ID | Status | Completion evidence |
+|---|---|---|
+| F1-DEMO-01 | `[x]` | Replaced analyst JSON/file/manual inputs with a fixed six-export, 110-finding synthetic catalog. |
+| F1-DEMO-02 | `[x]` | Added safe catalog/load and real metrics APIs; unknown dataset IDs cannot access arbitrary files. |
+| F1-DEMO-03 | `[x]` | Added interactive module stages, evidence explorer, risk details and offline validation artifacts. |
+| F1-DEMO-04 | `[x]` | Added responsive warm-neutral visual system with no external assets or build step. |
+
+Verification: 56 tests passed, JavaScript syntax and `git diff --check` passed. The configured
+in-app/extension browser list was empty, so rendered browser automation was unavailable in this run.

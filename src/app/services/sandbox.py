@@ -1,6 +1,7 @@
 """Safe deterministic validation simulator; performs no network or process execution."""
 import hashlib, json, uuid
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 from src.app.config import settings
 from src.app.repositories.dedup_repo import dedup_repo
 from src.app.repositories.findings_repo import repo as findings_repo
@@ -19,7 +20,8 @@ class SandboxService:
         if request.mode == SandboxMode.DOCKER: raise ValidationRejected("Docker sandbox execution is not implemented and remains disabled.")
         finding = findings_repo.get_normalized_finding(issue.source_finding_ids[0])
         if not finding: raise LookupError(f"Source finding for canonical issue '{issue_id}' not found.")
-        host = request.target_host or finding.location.host or ""
+        raw_host = request.target_host or finding.location.host or ""
+        host = urlparse(raw_host if "://" in raw_host else f"//{raw_host}").hostname or raw_host
         if host not in settings.sandbox_allowlist_set: raise ValidationRejected(f"Target host '{host}' is not in the configured lab allowlist.")
         cwes = [finding.vulnerability.cwe_primary, *finding.vulnerability.cwe_ids]
         expected = next((SCENARIOS[cwe] for cwe in cwes if cwe in SCENARIOS), None)

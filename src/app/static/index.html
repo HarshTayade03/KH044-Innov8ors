@@ -1,57 +1,13 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Security Finding Triage Console</title>
-  <link rel="stylesheet" href="/static/dashboard.css">
-</head>
-<body>
-<main class="shell">
-  <header class="top">
-    <div class="brand"><div class="mark">ST</div><div><h1>Security Finding Triage Console</h1><p>Backend verification dashboard · KH044 Innov8ors</p></div></div>
-    <div class="health"><span id="healthDot" class="dot"></span><span id="healthText">Connecting…</span><a class="btn ghost" href="/docs">API docs</a></div>
-  </header>
-  <div class="grid">
-    <aside class="card sidebar">
-      <h2>Import findings</h2>
-      <div class="tabs" role="tablist"><button class="tab active" data-tab="json">JSON</button><button class="tab" data-tab="file">File</button><button class="tab" data-tab="manual">Manual</button></div>
-      <form id="jsonForm" class="form panel" data-panel="json">
-        <div class="field"><label for="jsonScanner">Scanner</label><select id="jsonScanner"><option>burp</option><option>nessus</option><option>zap</option><option>snyk</option><option>trivy</option><option>sarif</option></select></div>
-        <div class="field"><label for="jsonInput">Findings array</label><textarea id="jsonInput" spellcheck="false" required></textarea></div>
-        <div class="row"><button type="button" class="btn ghost" id="sampleBtn">Fill example</button><button class="btn primary" type="submit">Import JSON</button></div>
-      </form>
-      <form id="fileForm" class="form panel hidden" data-panel="file">
-        <div class="field"><label for="fileScanner">Scanner</label><select id="fileScanner"><option>burp</option><option>nessus</option><option>zap</option><option>snyk</option><option>trivy</option><option>sarif</option></select></div>
-        <div class="field"><label for="fileInput">JSON or SARIF</label><input id="fileInput" type="file" accept=".json,.sarif,application/json" required></div>
-        <button class="btn primary" type="submit">Upload file</button>
-      </form>
-      <form id="manualForm" class="form panel hidden" data-panel="manual">
-        <div class="field"><label>Title</label><input name="title" required value="SQL Injection in login"></div>
-        <div class="field"><label>Asset</label><input name="asset_name" required value="app.example.test"></div>
-        <div class="row"><div class="field grow"><label>Severity</label><select name="severity"><option>Critical</option><option selected>High</option><option>Medium</option><option>Low</option></select></div><div class="field grow"><label>CWE</label><input name="cwe" value="CWE-89"></div></div>
-        <div class="field"><label>URL</label><input name="url" value="https://app.example.test/login"></div>
-        <div class="field"><label>Parameter</label><input name="parameter" value="username"></div>
-        <button class="btn primary" type="submit">Add finding</button>
-      </form>
-      <p class="note">Imports are stored in the configured SQLite database. The example is synthetic.</p>
-    </aside>
-    <section class="main">
-      <div class="metrics"><div class="card metric"><b id="mFindings">0</b><span>Findings</span></div><div class="card metric"><b id="mIssues">0</b><span>Active issues</span></div><div class="card metric"><b id="mClusters">0</b><span>Cluster history</span></div><div class="card metric"><b id="mPriorities">0</b><span>Prioritized</span></div></div>
-      <section class="card workflow">
-        <div class="workflow-head"><div><h2>Core workflow</h2><div class="note">Views → embeddings → deduplication → mock-feed risk scoring</div></div><div class="row"><button id="refreshBtn" class="btn ghost">Refresh</button><button id="runBtn" class="btn primary">Run core workflow</button></div></div>
-        <div class="steps"><div class="step" data-step="views"><b>1 · Views</b><span>Waiting</span></div><div class="step" data-step="embeddings"><b>2 · Embeddings</b><span>Waiting</span></div><div class="step" data-step="dedup"><b>3 · Deduplicate</b><span>Waiting</span></div><div class="step" data-step="risk"><b>4 · Prioritize</b><span>Waiting</span></div></div>
-        <div id="notice" class="notice">Ready. Import findings or run the workflow on existing records.</div>
-      </section>
-      <section class="card content-card">
-        <div class="toolbar"><div class="tabs table-tabs"><button class="tab active" data-view="findings">Findings</button><button class="tab" data-view="issues">Issues</button><button class="tab" data-view="clusters">Clusters</button></div><input id="search" placeholder="Filter current table…" aria-label="Filter current table"></div>
-        <div id="tableWrap" class="table-wrap"></div>
-      </section>
-      <div class="footer">Sandbox validation and human case review are planned backend phases and are not represented as completed.</div>
-    </section>
-  </div>
-</main>
-<dialog id="detailDialog"><div class="modal-head"><h3 id="modalTitle">Details</h3><button id="closeModal" class="btn ghost">Close</button></div><div id="modalBody" class="modal-body"></div></dialog>
-<script src="/static/dashboard.js" defer></script>
-</body>
-</html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vulnerability Triage Lab</title><link rel="stylesheet" href="/static/dashboard.css"></head>
+<body><div class="grain"></div><main class="shell">
+<header><div><p class="eyebrow">KH044 / INNOV8ORS</p><h1>Vulnerability<br><em>Triage Lab</em></h1><p class="lede">A working demonstration across normalization, semantic grouping, risk intelligence and controlled validation.</p></div><div class="status"><span id="healthDot"></span><div><b id="healthText">Connecting</b><small>Local prototype environment</small></div><a href="/docs">API ↗</a></div></header>
+<section class="dataset card"><div class="section-title"><div><span>01</span><h2>Synthetic scanner corpus</h2></div><p>Prepared evidence only · 110 findings · 6 exports</p></div><div id="datasetGrid" class="dataset-grid"><div class="skeleton">Reading fixture catalog…</div></div><div class="dataset-actions"><button id="loadAll" class="primary">Load complete corpus <span>110 findings</span></button><p id="loadStatus">Select one export or load the complete benchmark.</p></div></section>
+<section class="metrics" aria-label="Pipeline metrics"><article><span>Raw findings</span><b id="mFindings">0</b></article><article><span>Active issues</span><b id="mIssues">0</b></article><article><span>Clusters</span><b id="mClusters">0</b></article><article><span>Risk scores</span><b id="mPriorities">0</b></article><article><span>Validations</span><b id="mValidations">0</b></article></section>
+<section class="pipeline card"><div class="section-title"><div><span>02</span><h2>Run the intelligence pipeline</h2></div><button id="runBtn" class="primary">Run all implemented modules</button></div><div class="stage-line">
+<div class="stage" data-step="views"><i>1</i><b>Normalize views</b><small>Description · location · reproduction · impact</small><strong>Waiting</strong></div>
+<div class="stage" data-step="embeddings"><i>2</i><b>Vectorize</b><small>Provenance-aware semantic representation</small><strong>Waiting</strong></div>
+<div class="stage" data-step="dedup"><i>3</i><b>Deduplicate</b><small>Fingerprint + guarded semantic clustering</small><strong>Waiting</strong></div>
+<div class="stage" data-step="risk"><i>4</i><b>Prioritize</b><small>CVSS · mock KEV/EPSS · asset context</small><strong>Waiting</strong></div></div><div id="notice" class="notice">System ready. Load a prepared dataset to begin.</div></section>
+<section class="explorer card"><div class="section-title explorer-head"><div><span>03</span><h2>Evidence explorer</h2></div><div class="controls"><nav><button class="view active" data-view="findings">Findings</button><button class="view" data-view="issues">Canonical issues</button><button class="view" data-view="clusters">Clusters</button></nav><input id="search" placeholder="Search evidence"></div></div><div id="tableWrap" class="table-wrap"></div></section>
+<footer><span>AI-assisted decisions remain reviewable by a human analyst.</span><span>Simulation ≠ proof of exploitability.</span></footer>
+</main><dialog id="detailDialog"><div class="modal-head"><div><p class="eyebrow">EVIDENCE RECORD</p><h3 id="modalTitle"></h3></div><button id="closeModal">Close ×</button></div><div id="modalBody"></div></dialog><script src="/static/dashboard.js" defer></script></body></html>

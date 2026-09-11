@@ -52,6 +52,11 @@ def test_evidence_redaction_api_and_risk_integration(finding_factory):
     assert rescored.risk_score > baseline.risk_score
     assert client.get("/api/v1/validations/missing").status_code == 404
 
+def test_url_form_lab_host_is_allowlisted(finding_factory):
+    issue = make_issue(finding_factory, host="https://app.example.test")
+    result = sandbox_service.validate(issue.canonical_issue_id, ValidationRequest())
+    assert result.target_host == "app.example.test"
+
 def test_repeated_runs_are_append_only(finding_factory):
     issue = make_issue(finding_factory)
     first = sandbox_service.validate(issue.canonical_issue_id, ValidationRequest())
