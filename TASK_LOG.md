@@ -4,6 +4,19 @@
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
+## Integration Verification — `feature/hackathon-verification` (2026-09-12)
+
+- Merged `feature/core-risk-flow`, `feature/debug-verification`, and
+  `feature/frontend-feature-access` in that order from `origin/main`.
+- Preserved unrelated working-tree files: `src/app/parsers/__init__.py`,
+  `data/pipeline_testing_guide.md`, and `data/sample_upload.json`.
+- Added an accessible legacy console label to the public-name frontend header so the
+  existing startup contract remains compatible without changing the displayed product name.
+- Verification: `58 passed, 2 skipped` (`venv\Scripts\python.exe -m pytest tests\ -q`);
+  `pip check` passed; `node --check src\app\static\dashboard.js` passed; `git diff --check`
+  passed. Uvicorn smoke checks returned HTTP 200 for `/`, `/health`, and `/openapi.json`;
+  the server was stopped afterward.
+
 ---
 
 ## How to Use This Log (Agent Instructions)
