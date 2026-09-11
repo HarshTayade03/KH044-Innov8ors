@@ -37,12 +37,16 @@ class CaseService:
         validation = validation_repo.latest_for_issue(issue_id)
         evidence = validation_repo.list_artifacts(validation.validation_id) if validation else []
         now = datetime.now(timezone.utc)
+        # The cases table keeps one row per canonical issue. Reuse the row identity
+        # when refreshing a stale snapshot so the returned case remains retrievable.
+        case_id = existing.case_id if existing and existing.stale else str(uuid.uuid4())
+        created_at = existing.created_at if existing and existing.stale else now
         data = {"canonical_issue": issue.model_dump(mode="json"), "source_finding_ids": membership,
                 "findings": findings, "priority": priority.model_dump(mode="json") if priority else None,
                 "latest_validation": validation.model_dump(mode="json") if validation else None,
                 "evidence_references": [a.model_dump(mode="json") for a in evidence]}
-        case = Case(case_id=str(uuid.uuid4()), canonical_issue_id=issue_id, status=CaseStatus.PENDING_REVIEW,
-                    title=issue.title, summary=None, stale=False, case_data=data, created_at=now, last_updated_at=now)
+        case = Case(case_id=case_id, canonical_issue_id=issue_id, status=CaseStatus.PENDING_REVIEW,
+                    title=issue.title, summary=None, stale=False, case_data=data, created_at=created_at, last_updated_at=now)
         case_repo.save(case)
         return case
 
