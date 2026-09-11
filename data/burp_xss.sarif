@@ -1,0 +1,605 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Burp Suite Pro",
+          "version": "2024.1.2"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /search parameter 'q'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/search"
+                },
+                "region": {
+                  "startLine": 11
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/search",
+            "parameter": "q",
+            "request": "GET /search?q=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter q.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-2001"
+            ]
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /comments parameter 'text'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/comments"
+                },
+                "region": {
+                  "startLine": 12
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/comments",
+            "parameter": "text",
+            "request": "GET /comments?text=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter text.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-2002"
+            ]
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /profile/edit parameter 'bio'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/profile/edit"
+                },
+                "region": {
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/profile/edit",
+            "parameter": "bio",
+            "request": "GET /profile/edit?bio=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter bio.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-2003"
+            ]
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /feedback parameter 'message'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/feedback"
+                },
+                "region": {
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/feedback",
+            "parameter": "message",
+            "request": "GET /feedback?message=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter message.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-2004"
+            ]
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /review/submit parameter 'comment'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/review/submit"
+                },
+                "region": {
+                  "startLine": 15
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/review/submit",
+            "parameter": "comment",
+            "request": "GET /review/submit?comment=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter comment.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-2005"
+            ]
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /contact parameter 'body'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/contact"
+                },
+                "region": {
+                  "startLine": 16
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/contact",
+            "parameter": "body",
+            "request": "GET /contact?body=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter body.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /forum/post parameter 'content'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/forum/post"
+                },
+                "region": {
+                  "startLine": 17
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/forum/post",
+            "parameter": "content",
+            "request": "GET /forum/post?content=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter content.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /chat/send parameter 'msg'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/chat/send"
+                },
+                "region": {
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/chat/send",
+            "parameter": "msg",
+            "request": "GET /chat/send?msg=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter msg.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /user/status parameter 'status_text'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/user/status"
+                },
+                "region": {
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/user/status",
+            "parameter": "status_text",
+            "request": "GET /user/status?status_text=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter status_text.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /survey/answer parameter 'ans1'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/survey/answer"
+                },
+                "region": {
+                  "startLine": 20
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/survey/answer",
+            "parameter": "ans1",
+            "request": "GET /survey/answer?ans1=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter ans1.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /blog/comment parameter 'remark'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/blog/comment"
+                },
+                "region": {
+                  "startLine": 21
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/blog/comment",
+            "parameter": "remark",
+            "request": "GET /blog/comment?remark=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter remark.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /support/ticket parameter 'description'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/support/ticket"
+                },
+                "region": {
+                  "startLine": 22
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/support/ticket",
+            "parameter": "description",
+            "request": "GET /support/ticket?description=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter description.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /mail/compose parameter 'body'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/mail/compose"
+                },
+                "region": {
+                  "startLine": 23
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/mail/compose",
+            "parameter": "body",
+            "request": "GET /mail/compose?body=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter body.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "xss",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /notes/create parameter 'title'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/notes/create"
+                },
+                "region": {
+                  "startLine": 24
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/notes/create",
+            "parameter": "title",
+            "request": "GET /notes/create?title=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter title.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "CWE-80",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /tags/add parameter 'tag_name'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/tags/add"
+                },
+                "region": {
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/tags/add",
+            "parameter": "tag_name",
+            "request": "GET /tags/add?tag_name=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter tag_name.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "CWE-80",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /items/search parameter 'query'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/items/search"
+                },
+                "region": {
+                  "startLine": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/items/search",
+            "parameter": "query",
+            "request": "GET /items/search?query=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter query.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "CWE-80",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /custom/field parameter 'val'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/custom/field"
+                },
+                "region": {
+                  "startLine": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/custom/field",
+            "parameter": "val",
+            "request": "GET /custom/field?val=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter val.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "CWE-80",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /widget/config parameter 'label'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/widget/config"
+                },
+                "region": {
+                  "startLine": 28
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/widget/config",
+            "parameter": "label",
+            "request": "GET /widget/config?label=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter label.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "CWE-80",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /theme/custom parameter 'css_code'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/theme/custom"
+                },
+                "region": {
+                  "startLine": 29
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/theme/custom",
+            "parameter": "css_code",
+            "request": "GET /theme/custom?css_code=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter css_code.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "CWE-80",
+          "message": {
+            "text": "Reflected Cross-Site Scripting (XSS) in /page/builder parameter 'html_snippet'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/page/builder"
+                },
+                "region": {
+                  "startLine": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/page/builder",
+            "parameter": "html_snippet",
+            "request": "GET /page/builder?html_snippet=%3Cscript%3Ealert(1)%3C/script%3E HTTP/1.1\r\nHost: app.example.test",
+            "response": "HTTP/1.1 200 OK\r\n\r\n<html><body><script>alert(1)</script></body></html>",
+            "evidence": "Reflected unescaped payload in response body for parameter html_snippet.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        }
+      ]
+    }
+  ]
+}

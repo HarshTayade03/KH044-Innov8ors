@@ -1,0 +1,347 @@
+[
+  {
+    "plugin_id": 19001,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/login",
+    "host": "app.example.test",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1001"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/login is vulnerable to SQL injection via parameter 'username'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/login with parameter username."
+  },
+  {
+    "plugin_id": 19002,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/user",
+    "host": "app.example.test",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1002"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/user is vulnerable to SQL injection via parameter 'id'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/user with parameter id."
+  },
+  {
+    "plugin_id": 19003,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/search",
+    "host": "app.example.test",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1003"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/search is vulnerable to SQL injection via parameter 'q'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/search with parameter q."
+  },
+  {
+    "plugin_id": 19004,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/order",
+    "host": "app.example.test",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1004"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/order is vulnerable to SQL injection via parameter 'order_id'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/order with parameter order_id."
+  },
+  {
+    "plugin_id": 19005,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/product",
+    "host": "app.example.test",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1005"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/product is vulnerable to SQL injection via parameter 'category'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/product with parameter category."
+  },
+  {
+    "plugin_id": 19006,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v6",
+    "host": "10.0.0.16",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1006"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v6 is vulnerable to SQL injection via parameter 'param_6'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v6 with parameter param_6."
+  },
+  {
+    "plugin_id": 19007,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v7",
+    "host": "10.0.0.17",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1007"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v7 is vulnerable to SQL injection via parameter 'param_7'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v7 with parameter param_7."
+  },
+  {
+    "plugin_id": 19008,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v8",
+    "host": "10.0.0.18",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1008"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v8 is vulnerable to SQL injection via parameter 'param_8'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v8 with parameter param_8."
+  },
+  {
+    "plugin_id": 19009,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v9",
+    "host": "10.0.0.19",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1009"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v9 is vulnerable to SQL injection via parameter 'param_9'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v9 with parameter param_9."
+  },
+  {
+    "plugin_id": 19010,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v10",
+    "host": "10.0.0.20",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [
+      "CVE-2024-1010"
+    ],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v10 is vulnerable to SQL injection via parameter 'param_10'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v10 with parameter param_10."
+  },
+  {
+    "plugin_id": 19011,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v11",
+    "host": "10.0.0.21",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v11 is vulnerable to SQL injection via parameter 'param_11'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v11 with parameter param_11."
+  },
+  {
+    "plugin_id": 19012,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v12",
+    "host": "10.0.0.22",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v12 is vulnerable to SQL injection via parameter 'param_12'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v12 with parameter param_12."
+  },
+  {
+    "plugin_id": 19013,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v13",
+    "host": "10.0.0.23",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v13 is vulnerable to SQL injection via parameter 'param_13'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v13 with parameter param_13."
+  },
+  {
+    "plugin_id": 19014,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v14",
+    "host": "10.0.0.24",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v14 is vulnerable to SQL injection via parameter 'param_14'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v14 with parameter param_14."
+  },
+  {
+    "plugin_id": 19015,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v15",
+    "host": "10.0.0.25",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 8.8,
+    "severity": "High",
+    "description": "The installed web application at /api/nessus_v15 is vulnerable to SQL injection via parameter 'param_15'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v15 with parameter param_15."
+  },
+  {
+    "plugin_id": 19016,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v16",
+    "host": "10.0.0.26",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 5.5,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v16 is vulnerable to SQL injection via parameter 'param_16'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v16 with parameter param_16."
+  },
+  {
+    "plugin_id": 19017,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v17",
+    "host": "10.0.0.27",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 5.5,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v17 is vulnerable to SQL injection via parameter 'param_17'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v17 with parameter param_17."
+  },
+  {
+    "plugin_id": 19018,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v18",
+    "host": "10.0.0.28",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 5.5,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v18 is vulnerable to SQL injection via parameter 'param_18'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v18 with parameter param_18."
+  },
+  {
+    "plugin_id": 19019,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v19",
+    "host": "10.0.0.29",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 5.5,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v19 is vulnerable to SQL injection via parameter 'param_19'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v19 with parameter param_19."
+  },
+  {
+    "plugin_id": 19020,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v20",
+    "host": "10.0.0.30",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 5.5,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v20 is vulnerable to SQL injection via parameter 'param_20'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v20 with parameter param_20."
+  },
+  {
+    "plugin_id": 19021,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v21",
+    "host": "10.0.0.31",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 5.5,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v21 is vulnerable to SQL injection via parameter 'param_21'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v21 with parameter param_21."
+  },
+  {
+    "plugin_id": 19022,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v22",
+    "host": "10.0.0.32",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": 5.5,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v22 is vulnerable to SQL injection via parameter 'param_22'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v22 with parameter param_22."
+  },
+  {
+    "plugin_id": 19023,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v23",
+    "host": "10.0.0.33",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": null,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v23 is vulnerable to SQL injection via parameter 'param_23'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v23 with parameter param_23."
+  },
+  {
+    "plugin_id": 19024,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v24",
+    "host": "10.0.0.34",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": null,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v24 is vulnerable to SQL injection via parameter 'param_24'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v24 with parameter param_24."
+  },
+  {
+    "plugin_id": 19025,
+    "plugin_name": "Apache HTTP / Backend SQL Injection in /api/nessus_v25",
+    "host": "10.0.0.35",
+    "port": 443,
+    "protocol": "tcp",
+    "cve": [],
+    "cvss_base_score": null,
+    "severity": "Medium",
+    "description": "The installed web application at /api/nessus_v25 is vulnerable to SQL injection via parameter 'param_25'.",
+    "solution": "Use parameterized SQL queries and input validation.",
+    "plugin_output": "Detected vulnerable query pattern at path /api/nessus_v25 with parameter param_25."
+  }
+]

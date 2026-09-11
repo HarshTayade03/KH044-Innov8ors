@@ -1,0 +1,761 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Burp Suite Pro",
+          "version": "2024.1.2"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/login via parameter 'username'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/login"
+                },
+                "region": {
+                  "startLine": 43
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/login",
+            "parameter": "username",
+            "request": "POST /api/login HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz1\r\n\r\nusername=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter username.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1001"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/user via parameter 'id'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/user"
+                },
+                "region": {
+                  "startLine": 44
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/user",
+            "parameter": "id",
+            "request": "POST /api/user HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz2\r\n\r\nid=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter id.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1002"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/search via parameter 'q'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/search"
+                },
+                "region": {
+                  "startLine": 45
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/search",
+            "parameter": "q",
+            "request": "POST /api/search HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz3\r\n\r\nq=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter q.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1003"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/order via parameter 'order_id'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/order"
+                },
+                "region": {
+                  "startLine": 46
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/order",
+            "parameter": "order_id",
+            "request": "POST /api/order HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz4\r\n\r\norder_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter order_id.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1004"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/product via parameter 'category'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/product"
+                },
+                "region": {
+                  "startLine": 47
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/product",
+            "parameter": "category",
+            "request": "POST /api/product HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz5\r\n\r\ncategory=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter category.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1005"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/profile via parameter 'user_id'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/profile"
+                },
+                "region": {
+                  "startLine": 48
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/profile",
+            "parameter": "user_id",
+            "request": "POST /api/profile HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz6\r\n\r\nuser_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter user_id.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1006"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/account via parameter 'acc_num'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/account"
+                },
+                "region": {
+                  "startLine": 49
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/account",
+            "parameter": "acc_num",
+            "request": "POST /api/account HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz7\r\n\r\nacc_num=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter acc_num.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1007"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/billing via parameter 'invoice_id'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/billing"
+                },
+                "region": {
+                  "startLine": 50
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/billing",
+            "parameter": "invoice_id",
+            "request": "POST /api/billing HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz8\r\n\r\ninvoice_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter invoice_id.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1008"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/cart via parameter 'item_id'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/cart"
+                },
+                "region": {
+                  "startLine": 51
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/cart",
+            "parameter": "item_id",
+            "request": "POST /api/cart HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz9\r\n\r\nitem_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter item_id.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1009"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/checkout via parameter 'coupon'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/checkout"
+                },
+                "region": {
+                  "startLine": 52
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/checkout",
+            "parameter": "coupon",
+            "request": "POST /api/checkout HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz10\r\n\r\ncoupon=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter coupon.",
+            "confidence": "Certain",
+            "cve_ids": [
+              "CVE-2024-1010"
+            ]
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/admin/user via parameter 'uid'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/admin/user"
+                },
+                "region": {
+                  "startLine": 53
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/admin/user",
+            "parameter": "uid",
+            "request": "POST /api/admin/user HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz11\r\n\r\nuid=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter uid.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/report via parameter 'start_date'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/report"
+                },
+                "region": {
+                  "startLine": 54
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/report",
+            "parameter": "start_date",
+            "request": "POST /api/report HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz12\r\n\r\nstart_date=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter start_date.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/analytics via parameter 'metric'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/analytics"
+                },
+                "region": {
+                  "startLine": 55
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/analytics",
+            "parameter": "metric",
+            "request": "POST /api/analytics HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz13\r\n\r\nmetric=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter metric.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/export via parameter 'format'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/export"
+                },
+                "region": {
+                  "startLine": 56
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/export",
+            "parameter": "format",
+            "request": "POST /api/export HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz14\r\n\r\nformat=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter format.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/comments via parameter 'post_id'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/comments"
+                },
+                "region": {
+                  "startLine": 57
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/comments",
+            "parameter": "post_id",
+            "request": "POST /api/comments HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz15\r\n\r\npost_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter post_id.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/feedback via parameter 'subject'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/feedback"
+                },
+                "region": {
+                  "startLine": 58
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/feedback",
+            "parameter": "subject",
+            "request": "POST /api/feedback HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz16\r\n\r\nsubject=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter subject.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/notifications via parameter 'filter'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/notifications"
+                },
+                "region": {
+                  "startLine": 59
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/notifications",
+            "parameter": "filter",
+            "request": "POST /api/notifications HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz17\r\n\r\nfilter=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter filter.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/settings via parameter 'theme'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/settings"
+                },
+                "region": {
+                  "startLine": 60
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/settings",
+            "parameter": "theme",
+            "request": "POST /api/settings HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz18\r\n\r\ntheme=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter theme.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/logs via parameter 'level'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/logs"
+                },
+                "region": {
+                  "startLine": 61
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/logs",
+            "parameter": "level",
+            "request": "POST /api/logs HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz19\r\n\r\nlevel=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter level.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/audit via parameter 'actor'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/audit"
+                },
+                "region": {
+                  "startLine": 62
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/audit",
+            "parameter": "actor",
+            "request": "POST /api/audit HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz20\r\n\r\nactor=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter actor.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/roles via parameter 'role_id'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/roles"
+                },
+                "region": {
+                  "startLine": 63
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/roles",
+            "parameter": "role_id",
+            "request": "POST /api/roles HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz21\r\n\r\nrole_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter role_id.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/permissions via parameter 'perm_id'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/permissions"
+                },
+                "region": {
+                  "startLine": 64
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/permissions",
+            "parameter": "perm_id",
+            "request": "POST /api/permissions HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz22\r\n\r\nperm_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter perm_id.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/tokens via parameter 'token_id'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/tokens"
+                },
+                "region": {
+                  "startLine": 65
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/tokens",
+            "parameter": "token_id",
+            "request": "POST /api/tokens HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz23\r\n\r\ntoken_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter token_id.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/sessions via parameter 'session_id'."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/sessions"
+                },
+                "region": {
+                  "startLine": 66
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/sessions",
+            "parameter": "session_id",
+            "request": "POST /api/sessions HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz24\r\n\r\nsession_id=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter session_id.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        },
+        {
+          "ruleId": "sqli",
+          "message": {
+            "text": "SQL Injection detected in endpoint /api/user via parameter 'name'."
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/user"
+                },
+                "region": {
+                  "startLine": 67
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/user",
+            "parameter": "name",
+            "request": "POST /api/user HTTP/1.1\r\nHost: app.example.test\r\nAuthorization: Bearer secret_token_xyz25\r\n\r\nname=' OR '1'='1",
+            "response": "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{\"status\":\"authenticated\",\"user\":\"admin\"}",
+            "evidence": "Payload changed response structure on parameter name.",
+            "confidence": "Certain",
+            "cve_ids": []
+          }
+        }
+      ]
+    }
+  ]
+}

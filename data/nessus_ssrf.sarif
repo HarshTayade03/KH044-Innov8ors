@@ -1,0 +1,285 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Nessus Professional",
+          "version": "10.6"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/fetch via 'url'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/fetch"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/fetch",
+            "parameter": "url",
+            "request": "POST /api/fetch url=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/webhook via 'target'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/webhook"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/webhook",
+            "parameter": "target",
+            "request": "POST /api/webhook target=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/proxy via 'dest'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/proxy"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/proxy",
+            "parameter": "dest",
+            "request": "POST /api/proxy dest=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/nessus_ssrf_4 via 'target_url_4'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/nessus_ssrf_4"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/nessus_ssrf_4",
+            "parameter": "target_url_4",
+            "request": "POST /api/nessus_ssrf_4 target_url_4=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/nessus_ssrf_5 via 'target_url_5'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/nessus_ssrf_5"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/nessus_ssrf_5",
+            "parameter": "target_url_5",
+            "request": "POST /api/nessus_ssrf_5 target_url_5=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/nessus_ssrf_6 via 'target_url_6'."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/nessus_ssrf_6"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/nessus_ssrf_6",
+            "parameter": "target_url_6",
+            "request": "POST /api/nessus_ssrf_6 target_url_6=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/nessus_ssrf_7 via 'target_url_7'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/nessus_ssrf_7"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/nessus_ssrf_7",
+            "parameter": "target_url_7",
+            "request": "POST /api/nessus_ssrf_7 target_url_7=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/nessus_ssrf_8 via 'target_url_8'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/nessus_ssrf_8"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/nessus_ssrf_8",
+            "parameter": "target_url_8",
+            "request": "POST /api/nessus_ssrf_8 target_url_8=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/nessus_ssrf_9 via 'target_url_9'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/nessus_ssrf_9"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/nessus_ssrf_9",
+            "parameter": "target_url_9",
+            "request": "POST /api/nessus_ssrf_9 target_url_9=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "message": {
+            "text": "Server-Side Request Forgery detected at /api/nessus_ssrf_10 via 'target_url_10'."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "https://app.example.test/api/nessus_ssrf_10"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "host": "https://app.example.test",
+            "path": "/api/nessus_ssrf_10",
+            "parameter": "target_url_10",
+            "request": "POST /api/nessus_ssrf_10 target_url_10=http://127.0.0.1:8080/admin",
+            "response": "HTTP/1.1 200 OK Admin Console",
+            "evidence": "Localhost loopback service accessible via SSRF payload.",
+            "cwe_ids": [
+              "CWE-918"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

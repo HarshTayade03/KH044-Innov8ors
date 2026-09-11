@@ -99,16 +99,16 @@
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
-| M2-01 | Define `schemas/views.py` — FindingViews, SingleView, ViewStatus | `[ ]` | — | See Module 3 spec |
-| M2-02 | Implement `services/extractor.py` — Description view | `[ ]` | — | Structured fields → clean text |
-| M2-03 | Implement `services/extractor.py` — Location view | `[ ]` | — | Canonical URL/path/param extraction |
-| M2-04 | Implement `services/extractor.py` — Reproduction view | `[ ]` | — | From evidence.request; MISSING if absent |
-| M2-05 | Implement `services/extractor.py` — Impact view | `[ ]` | — | CWE_IMPACT_MAP + keyword inference |
-| M2-06 | Implement secret redaction before embedding text | `[ ]` | — | Regex patterns for auth headers, tokens |
-| M2-07 | Add `api/findings.py` — GET views endpoint | `[ ]` | — | — |
-| M2-08 | Implement `services/embedding.py` — SentenceTransformer wrapper | `[ ]` | — | all-MiniLM-L6-v2 model |
-| M2-09 | Implement weighted cosine similarity scorer | `[ ]` | — | Used by deduplicator |
-| M2-10 | Write tests for 4-view extraction (SQLi, XSS, SSRF cases) | `[ ]` | — | — |
+| M2-01 | Define `schemas/views.py` — FindingViews, SingleView, ViewStatus | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-02 | Implement `services/extractor.py` — Description view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-03 | Implement `services/extractor.py` — Location view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-04 | Implement `services/extractor.py` — Reproduction view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-05 | Implement `services/extractor.py` — Impact view | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-06 | Implement secret redaction before embedding text | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-07 | Add `api/findings.py` — GET views endpoint | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-08 | Implement `services/embedding.py` — SentenceTransformer wrapper | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-09 | Implement weighted cosine similarity scorer | `[/]` | Agent | Started 2026-09-11 23:00 IST |
+| M2-10 | Write tests for 4-view extraction (SQLi, XSS, SSRF cases) | `[/]` | Agent | `tests/test_extractor.py` |
 
 ---
 
