@@ -468,3 +468,10 @@ Blocker: the root `AGENT_HANDOFF.md` path referenced by the task was absent; the
 | Analyst access layer | `[x]` | Reworked the static page to expose ingestion, four views, embedding provenance, dedup clusters, six-factor risk contributions/mock labels, offline validation limitations, case queue/detail, required actor/reason review actions, and per-case audit timeline. |
 | Graceful states and safety labels | `[x]` | Loading/unavailable/error and empty states remain visible; UI states that simulation is inconclusive evidence and Docker execution is disabled. Raw evidence is distinguished from escaped derived display text. |
 | Frontend/backend validation | `[x]` | `node --check src\\app\\static\\dashboard.js`, `git diff --check`, and `venv\\Scripts\\python.exe -m pytest tests\\test_validation.py tests\\test_cases.py -q` passed (9 passed, 2 existing deprecation warnings). Backend services and unrelated working-tree files were not modified. |
+## 2026-09-12 Evidence integrity hardening (feature/remaining-core-essentials)
+
+- Added repository-side SHA-256 and UTF-8 byte-size validation before saving artifacts.
+- Added retrieval verification and an API 500 integrity failure response so tampered evidence is never served.
+- Added a regression test that mutates persisted evidence and verifies direct retrieval and the HTTP evidence endpoint reject it.
+- Verification: `venv\\Scripts\\python.exe -m pytest tests\\test_validation.py -q` — 8 passed.
+- Real Docker execution, live feeds, and orchestration remain deferred; no unverified capability is marked complete.
