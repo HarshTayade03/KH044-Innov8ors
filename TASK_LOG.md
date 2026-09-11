@@ -350,6 +350,7 @@ upstream Starlette/AnyIO deprecation warning. `pip check` and `git diff --check`
 | F1-DEMO-04 | `[x]` | Added responsive warm-neutral visual system with no external assets or build step. |
 | F1-DEMO-05 | `[x]` | Aligned UI with `design.md`: editorial type, ink pills, soft cards, hairlines and pastel atmosphere. |
 | F1-DEMO-06 | `[x]` | Increased pastel depth across dataset, metric, pipeline and modal surfaces while preserving contrast and ink CTAs. |
+| F1-DEMO-07 | `[x]` | Deepened pastel visibility and bundled the open Doto display font for selected N-Dot-style headings. |
 
 Verification: 56 tests passed, JavaScript syntax and `git diff --check` passed. The configured
 in-app/extension browser list was empty, so rendered browser automation was unavailable in this run.
