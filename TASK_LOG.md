@@ -238,7 +238,7 @@ Remaining includes three deferred tasks (M4-01 live, M4-02 live, M5-03 Docker).
 | DOC-01 | Establish discoverable agent instructions | `[x]` | Added root AGENTS.md; replaced stale machine paths, nonexistent specs and single-repo claims in development guide. |
 | DOC-02 | Inventory modules and current done work | `[x]` | docs/CURRENT_STATE.md maps code, stubs, API surface and limitations; corrected 14-table count and hashing fallback description. |
 | DOC-03 | Redesign implementation plan | `[x]` | docs/IMPLEMENTATION_PLAN.md defines R0 then P6-P9 with acceptance gates and a P6 contract; live integrations/Docker deferred. |
-| DOC-04 | Align README, documentation index and task log | `[/]` | Documentation checks pending; runtime test attempt blocked by absent interpreter. |
+| DOC-04 | Align README, documentation index and task log | `[x]` | Local links, fixture counts and git diff --check passed. Runtime checks blocked by absent interpreter; no runtime changes. |
 | R0-01 | Verify runtime, isolate test DB, add API baseline checks | `[ ]` | python absent; py reports no installed interpreter. Establish runtime and verify existing pins before proceeding. |
 | R0-02 | Enforce dedup hard blocks across both stages/final clusters | `[ ]` | Reopens M3-05; regression tests for identical fingerprints and indirect semantic bridges. |
 | R0-03 | Make rerun/merge/split lifecycle consistent | `[ ]` | New UUIDs on rerun; split does not retire prior issue; define transaction and downstream invalidation rules. |
@@ -257,4 +257,4 @@ Remaining includes three deferred tasks (M4-01 live, M4-02 live, M5-03 Docker).
 - Attempted python -m pytest tests/ -q: command unavailable.
 - py --list-paths and py -m pytest tests/ -q: no installed Python found. No tests or startup smoke check passed in this session.
 - Source inspection found 21 test functions across five test files and 14 SQLite table definitions.
-- Fixture counts, documentation links, and whitespace checks: pending final documentation verification.
+- Fixture counts verified: 25 + 25 SQLi, 20 + 20 XSS, 10 + 10 SSRF = 110 findings. All local Markdown links in the seven changed documents resolved; git diff --check passed.
