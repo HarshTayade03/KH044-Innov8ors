@@ -15,6 +15,11 @@ class RiskRepository:
     def save_priority(self, result: PriorityResult) -> None:
         now_str = datetime.now(timezone.utc).isoformat()
         with get_db() as db:
+            if not db.execute("SELECT 1 FROM canonical_issues WHERE canonical_issue_id=? AND active=1", (result.canonical_issue_id,)).fetchone():
+                raise ValueError("Cannot prioritize a retired or missing canonical issue")
+            previous = db.execute("SELECT priority_id FROM priorities WHERE canonical_issue_id=?", (result.canonical_issue_id,)).fetchone()
+            if previous:
+                result.priority_id = previous["priority_id"]
             db.execute(
                 """
                 INSERT INTO priorities (
@@ -50,7 +55,7 @@ class RiskRepository:
     def get_priority_by_issue(self, canonical_issue_id: str) -> Optional[PriorityResult]:
         with get_db() as db:
             row = db.execute(
-                "SELECT * FROM priorities WHERE canonical_issue_id = ?",
+                "SELECT p.* FROM priorities p JOIN canonical_issues c USING (canonical_issue_id) WHERE c.active=1 AND p.canonical_issue_id = ?",
                 (canonical_issue_id,)
             ).fetchone()
 
@@ -72,7 +77,7 @@ class RiskRepository:
     def list_priorities(self, limit: int = 100, offset: int = 0) -> list[PriorityResult]:
         with get_db() as db:
             rows = db.execute(
-                "SELECT canonical_issue_id FROM priorities ORDER BY risk_score DESC LIMIT ? OFFSET ?",
+                "SELECT p.canonical_issue_id FROM priorities p JOIN canonical_issues c USING (canonical_issue_id) WHERE c.active=1 ORDER BY p.risk_score DESC LIMIT ? OFFSET ?",
                 (limit, offset)
             ).fetchall()
 

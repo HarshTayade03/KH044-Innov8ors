@@ -25,6 +25,7 @@ class Settings(BaseSettings):
 
     # ── Embedding Model ───────────────────────────────────────────────────────
     model_name: str = "all-MiniLM-L6-v2"
+    model_allow_download: bool = False
 
     # ── Threat Intelligence ───────────────────────────────────────────────────
     kev_live: bool = False
@@ -75,6 +76,7 @@ class Settings(BaseSettings):
         return {h.strip() for h in self.sandbox_allowlist.split(",") if h.strip()}
 
     model_config = {
+        "protected_namespaces": ("model_validate", "model_dump"),
         "env_file": ".env",
         "env_file_encoding": "utf-8",
         "case_sensitive": False,

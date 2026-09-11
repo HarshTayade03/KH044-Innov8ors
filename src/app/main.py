@@ -38,9 +38,9 @@ async def lifespan(app: FastAPI):
     # ── Startup ──────────────────────────────────────────────────────────────
     print(f"[startup] {settings.app_name} v{settings.app_version} starting...")
     init_db()
-    print(f"[startup] Sandbox mode: {'ENABLED (Docker)' if settings.sandbox_enabled else 'DISABLED (Lab Simulator)'}")
-    print(f"[startup] KEV source: {'Live CISA API' if settings.kev_live else settings.kev_data_path}")
-    print(f"[startup] EPSS source: {'Live FIRST.org API' if settings.epss_live else settings.epss_data_path}")
+    print("[startup] Validation is not implemented; no sandbox execution is available.")
+    print(f"[startup] KEV source: {'UNSUPPORTED live mode' if settings.kev_live else settings.kev_data_path}")
+    print(f"[startup] EPSS source: {'UNSUPPORTED live mode' if settings.epss_live else settings.epss_data_path}")
     print("[startup] Ready.")
     yield
     # ── Shutdown ──────────────────────────────────────────────────────────────
@@ -53,8 +53,7 @@ app = FastAPI(
     description=(
         "An AI-assisted vulnerability triage and prioritization platform. "
         "Normalizes findings from multiple scanners, deduplicates via semantic AI, "
-        "validates in a controlled sandbox, scores risk transparently, and presents "
-        "analyst-ready cases for human review and approval."
+        "scores risk using mock feeds. Sandbox validation, cases and review are planned."
     ),
     version=settings.app_version,
     lifespan=lifespan,
@@ -91,6 +90,9 @@ async def health():
         "database": settings.database_path,
         "tables_initialized": len(tables),
         "sandbox_enabled": settings.sandbox_enabled,
+        "validation_status": "not_implemented",
+        "threat_intelligence_mode": "unsupported_live" if settings.kev_live or settings.epss_live else "mock",
+        "model_download_allowed": settings.model_allow_download,
     })
 
 

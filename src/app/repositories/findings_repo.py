@@ -1,8 +1,7 @@
 """
 repositories/findings_repo.py — All database read/write operations for findings.
 
-Architecture rule: NO module talks to SQLite directly except this repository file.
-All persistence operations are centralized here.
+Persistence for scanner findings, canonical findings, extracted views and embeddings.
 """
 
 import json
@@ -228,11 +227,13 @@ class FindingsRepository:
         now_str = datetime.now(timezone.utc).isoformat()
 
         with get_db() as db:
+            # Replace the complete derived vector set; missing views must not retain stale rows.
+            db.execute("DELETE FROM finding_embeddings WHERE finding_id=?", (embeddings.finding_id,))
             # Per-view embeddings
             for view_type, vector in embeddings.embeddings.items():
                 if vector is None:
                     continue
-                input_hash = hashlib.sha256(json.dumps(vector).encode("utf-8")).hexdigest()
+                input_hash = embeddings.input_text_hashes.get(view_type, "")
                 db.execute(
                     """
                     INSERT INTO finding_embeddings (
@@ -266,7 +267,7 @@ class FindingsRepository:
 
             # Combined embedding
             if embeddings.combined_embedding:
-                input_hash = hashlib.sha256(json.dumps(embeddings.combined_embedding).encode("utf-8")).hexdigest()
+                input_hash = hashlib.sha256(json.dumps(embeddings.input_text_hashes, sort_keys=True).encode("utf-8")).hexdigest()
                 db.execute(
                     """
                     INSERT INTO finding_embeddings (
@@ -310,6 +311,7 @@ class FindingsRepository:
         if not rows:
             return None
 
+        input_hashes = {}
         embeddings_map = {}
         combined_vec = None
         model_name = "all-MiniLM-L6-v2"
@@ -319,6 +321,8 @@ class FindingsRepository:
 
         for row in rows:
             vt = row["view_type"]
+            if vt != "combined":
+                input_hashes[vt] = row["input_text_hash"]
             generated_at = datetime.fromisoformat(row["generated_at"])
             model_name = row["model_name"]
             model_version = row["model_version"]
@@ -341,6 +345,7 @@ class FindingsRepository:
             combined_embedding=combined_vec,
             generated_at=generated_at or datetime.now(timezone.utc),
             missing_views=missing_views,
+            input_text_hashes=input_hashes,
         )
 
 

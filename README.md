@@ -1,10 +1,10 @@
-﻿# KH044 Innov8ors - AI-Assisted Vulnerability Triage Platform
+# KH044 Innov8ors - AI-Assisted Vulnerability Triage Platform
 
 A prototype that normalizes security scanner findings, extracts four structured views,
 deduplicates findings, and assigns explainable risk priorities using mock threat intelligence.
 
-**Current status (2026-09-12):** backend phases 0-5 have implementation with known correctness
-and verification gaps. Sandbox validation, cases/human review, dashboard metrics, and the full
+**Current status (2026-09-12):** backend phases 0-5 have implementation; R0 adds deduplication safety,
+repeatable lifecycle operations, isolated tests and explicit provenance. Sandbox validation, cases/human review, dashboard metrics, and the full
 pipeline are not implemented. The home page is a placeholder. Live KEV/EPSS fetching is absent.
 
 ## Start here
@@ -16,7 +16,7 @@ pipeline are not implemented. The home page is a placeholder. Live KEV/EPSS fetc
 
 ## Setup
 
-From the repository root, with a Python interpreter compatible with requirements.txt:
+From the repository root, using Python 3.12:
 
 ```powershell
 python -m venv venv
@@ -26,23 +26,28 @@ python -m uvicorn src.app.main:app --reload --port 8000
 ```
 
 Consult .env.example for configuration. Defaults use local SQLite, mock feeds, and disabled
-real sandbox execution. The pinned dependency set and historical Python 3.14 setup need clean-install
-verification (R0-01); this audit machine has no installed Python interpreter.
+real sandbox execution. R0 located a bundled Python 3.12.14 runtime and created a local venv. Use
+venv/Scripts/python.exe directly if Python is not on PATH. Model downloads default to disabled
+(MODEL_ALLOW_DOWNLOAD=false); a missing cached model uses the explicitly labeled hashing fallback.
 
 Open [API docs](http://localhost:8000/docs), [health](http://localhost:8000/health), or the
 [placeholder home page](http://localhost:8000/). npm start only runs legacy JavaScript scaffolding.
 
 ## Tests
 
-Use disposable storage because the current fixture initializes the configured database:
+Each test uses temporary SQLite storage and a deterministic embedder; external sockets are blocked (local asyncio IPC is permitted).
 
 ```powershell
-$env:DATABASE_PATH = Join-Path $env:TEMP ('triage-tests-' + [guid]::NewGuid() + '.db')
-python -m pytest tests/ -q
+venv/Scripts/python.exe -m pytest tests/ -q
+venv/Scripts/python.exe -m pip check
 ```
 
-There are 21 test functions across parser, normalizer, extractor, deduplication and risk tests.
-They were not runnable in the 2026-09-12 audit; see TASK_LOG.md for the limitation.
+Tests cover parsers, views, dedup safety/lifecycle, concurrency/rollback, database migration,
+provenance, risk scoring, and API startup/ingestion. **R0: 49 tests passed; pip check and
+actual Uvicorn HTTP smoke checks passed.** See TASK_LOG.md for details.
+
+requirements-lock.txt captures the tested transitive versions for Python 3.12 on Windows x64.
+Use python -m pip install -r requirements-lock.txt to reproduce that resolved environment.
 
 ## Repository layout
 
@@ -55,12 +60,12 @@ They were not runnable in the 2026-09-12 audit; see TASK_LOG.md for the limitati
 | src/app/static/index.html | Placeholder for the future analyst dashboard |
 | data/ | 110 synthetic findings and mock KEV/EPSS feeds |
 | tests/ | Existing backend tests |
-| docs/ | Current status, roadmap, requirements and M0-M2 specs |
+| docs/ | Current status, roadmap, requirements and M0-M2/R0 specs |
 
 Adapters exist for Nessus, Burp, Snyk, Trivy, generic SARIF and ZAP. Bundled findings use
 Burp/Nessus/ZAP JSON or SARIF: 50 SQLi, 40 XSS and 20 SSRF. Manual entry is an API capability;
 the web form remains planned.
 
 Embeddings use SentenceTransformer when available and pure Python token hashing otherwise.
-Semantic clustering uses optional sklearn HDBSCAN. See the module inventory for merge safety,
-repeat-run, fallback provenance and risk-validation gaps before relying on results.
+Semantic clustering uses optional sklearn HDBSCAN. Dedup summaries expose skipped/failed clustering and the actual embedding backend.
+The next phase is lab validation and evidence; current scores explicitly label validation as not attempted.

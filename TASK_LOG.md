@@ -1,6 +1,6 @@
-﻿# VulnTriager — Master Task Log & Progress Tracker
+# VulnTriager — Master Task Log & Progress Tracker
 
-> Last Updated: 2026-09-12 IST | Audit complete; next implementation phase: R0 baseline reliability
+> Last Updated: 2026-09-12 IST | R0 COMPLETE | Next implementation phase: P6 lab validation and evidence
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
@@ -124,7 +124,7 @@
 | M3-02 | Implement Stage A: deterministic fingerprint dedup | `[x]` | Agent | Fingerprint grouping in `DeduplicationEngine` |
 | M3-03 | Build `CWE_PARENT_MAP` dict for hierarchy resolution | `[x]` | Agent | Implemented in `parsers/base.py` |
 | M3-04 | Implement Stage B: HDBSCAN semantic clustering | `[x]` | Agent | Implemented HDBSCAN density clustering on distance matrix |
-| M3-05 | Implement hard-block merge rules (no cross-param, no cross-package) | `[x]` | Agent | Implemented `_check_hard_blocks()` |
+| M3-05 | Enforce hard-block merge rules in both stages and final clusters | `[x]` | R0 | Resolved 2026-09-12 with pairwise grouping, final checks and regression tests. |
 | M3-06 | Implement canonical issue creation from cluster | `[x]` | Agent | Implemented `create_canonical_issues()` |
 | M3-07 | Implement `api/clusters.py` — GET, merge, split endpoints | `[x]` | Agent | Implemented `/deduplication/run`, `/clusters`, `/canonical-issues`, merge/split |
 | M3-08 | Write dedup tests: cross-scanner, same-endpoint-diff-param | `[x]` | Agent | `tests/test_dedup.py` passing |
@@ -217,13 +217,13 @@
 | Phase 1 — Parsers | 14 | 14 | 0 |
 | Phase 2 — Data | 8 | 8 | 0 |
 | Phase 3 — Views & Embeddings | 10 | 10 | 0 |
-| Phase 4 - Deduplication | 8 | 7 | 1 |
+| Phase 4 - Deduplication | 8 | 8 | 0 |
 | Phase 5 - Threat Intel | 8 | 6 | 2 |
 | Phase 6 — Sandbox | 7 | 0 | 7 |
 | Phase 7 — Cases | 6 | 0 | 6 |
 | Phase 8 — Frontend | 7 | 0 | 7 |
 | Phase 9 — Demo | 4 | 0 | 4 |
-| **TOTAL** | **79** | **52** | **27** |
+| **TOTAL** | **79** | **53** | **26** |
 
 ---
 
@@ -239,10 +239,10 @@ Remaining includes three deferred tasks (M4-01 live, M4-02 live, M5-03 Docker).
 | DOC-02 | Inventory modules and current done work | `[x]` | docs/CURRENT_STATE.md maps code, stubs, API surface and limitations; corrected 14-table count and hashing fallback description. |
 | DOC-03 | Redesign implementation plan | `[x]` | docs/IMPLEMENTATION_PLAN.md defines R0 then P6-P9 with acceptance gates and a P6 contract; live integrations/Docker deferred. |
 | DOC-04 | Align README, documentation index and task log | `[x]` | Local links, fixture counts and git diff --check passed. Runtime checks blocked by absent interpreter; no runtime changes. |
-| R0-01 | Verify runtime, isolate test DB, add API baseline checks | `[ ]` | python absent; py reports no installed interpreter. Establish runtime and verify existing pins before proceeding. |
-| R0-02 | Enforce dedup hard blocks across both stages/final clusters | `[ ]` | Reopens M3-05; regression tests for identical fingerprints and indirect semantic bridges. |
-| R0-03 | Make rerun/merge/split lifecycle consistent | `[ ]` | New UUIDs on rerun; split does not retire prior issue; define transaction and downstream invalidation rules. |
-| R0-04 | Correct feed/model provenance and risk explanations | `[ ]` | Live flags unused, fallback mislabeled, validation factor hardcoded; see roadmap. |
+| R0-01 | Verify runtime, isolate test DB, add API baseline checks | `[x]` | Python 3.12.14 local venv; all original direct pins installed; pip check passed; per-test DB and network isolation; 49 tests and actual Uvicorn smoke passed. |
+| R0-02 | Enforce dedup hard blocks across both stages/final clusters | `[x]` | Pairwise-safe groups and final checks; host/package/parameter and semantic-bridge regressions; Nessus location preservation; M3-05 resolved. |
+| R0-03 | Make rerun/merge/split lifecycle consistent | `[x]` | Stable membership IDs, atomic reconciliation, preserved analyst decisions/history, priority invalidation, case stale flag and audit; rerun/concurrency/rollback tests pass. |
+| R0-04 | Correct feed/model provenance and risk explanations | `[x]` | Content-addressed mock cache repository, explicit live rejection, backend/version/input hashes, six risk contributions and labeled neutral validation prior; regression tests pass. |
 
 ### Audit decisions
 
@@ -258,3 +258,48 @@ Remaining includes three deferred tasks (M4-01 live, M4-02 live, M5-03 Docker).
 - py --list-paths and py -m pytest tests/ -q: no installed Python found. No tests or startup smoke check passed in this session.
 - Source inspection found 21 test functions across five test files and 14 SQLite table definitions.
 - Fixture counts verified: 25 + 25 SQLi, 20 + 20 XSS, 10 + 10 SSRF = 110 findings. All local Markdown links in the seven changed documents resolved; git diff --check passed.
+
+
+## 2026-09-12 R0 Baseline Reliability Completion
+
+User follow-up: "continue". Branch: feature/r0-baseline-reliability. R0-01 through R0-04
+are complete. Next: P6 lab validation/evidence using the contract in IMPLEMENTATION_PLAN.md.
+The original 79-task baseline now has 53 complete and 26 remaining/deferred; four R0 tasks
+are additional and are not folded into that historical count.
+
+### Changes and rationale
+
+- Located bundled CPython 3.12.14 outside PATH/py discovery and created ignored local venv.
+  Installed all 12 original direct dependency pins without changing requirements.txt; captured
+  resolved versions in requirements-lock.txt for the verified Windows/Python environment.
+- Isolated SQLite and model state per test, blocked external connections while permitting
+  Windows asyncio loopback IPC, and added API/migration/regression coverage.
+- Enforced merge constraints in both stages and final clusters; preserved supplied Nessus
+  URL/path/parameter context. Canonical IDs derive from membership; transactions serialize runs.
+- Preserved inactive issues, evidence and human decisions. Retiring an issue invalidates its
+  priority and marks its case stale. Merge/split actions are repeatable and audited; reviewed
+  groups are protected from automatic reruns. Legacy conflicting reviewed groups return 409.
+- Moved threat cache SQL into a repository, refreshed mocks by source-content hashes, rejected
+  unsupported live mode, labeled hashing fallback and semantic status, hashed input text,
+  cleared missing-view vectors, and exposed all six score contributions with a neutral validation prior.
+
+### Verification outcomes
+
+- Clean dependency installation completed under CPython 3.12.14; direct-pin verification: 12/12 match.
+- venv/Scripts/python.exe -m pip check: no broken requirements found.
+- First regression run: 44 passed, 5 failed because the network fixture blocked Windows
+  asyncio's local socketpair. Fixed the fixture to permit literal loopback IPC.
+- Final venv/Scripts/python.exe -m pytest tests/ -q: **49 passed in 13.32s**.
+  One upstream Starlette/AnyIO deprecation warning remains; no failed or skipped tests.
+- Python compilation passed. Actual Uvicorn HTTP smoke returned 200 for /health, /, /docs,
+  /openapi.json; health reported 14 tables and mock threat mode. Windows retained the smoke
+  server child after parent termination; that child and its isolated temporary directory were cleaned up.
+- Documentation links and git diff --check: final verification recorded with this completion.
+
+### Boundaries for the next phase
+
+P6 must implement validation and evidence; the current neutral validation factor is explicitly
+not an execution result. P7 must respect cases.stale when assembling/reviewing cases. Cluster
+lists retain historical clusters; issue lists show only active issues. Holding a SQLite write
+transaction during dedup favors prototype consistency over throughput. Learned-model accuracy,
+real Docker execution, live feeds and full P6-P9 integration are not claimed by R0 tests.

@@ -58,6 +58,11 @@ class NessusParser(BaseScannerParser):
             "host": host,
             "port": port,
             "protocol": raw_record.get("protocol"),
+            # Preserve explicit web context from enriched Nessus exports. Dropping it
+            # prevents cross-scanner matches and removes parameter merge protections.
+            "url": raw_record.get("url"),
+            "path": raw_record.get("path"),
+            "parameter": raw_record.get("parameter"),
             "raw_output": raw_record.get("plugin_output") or raw_record.get("output"),
             "solution": raw_record.get("solution"),
             "source_finding_id": str(raw_record.get("plugin_id")) if raw_record.get("plugin_id") else None,

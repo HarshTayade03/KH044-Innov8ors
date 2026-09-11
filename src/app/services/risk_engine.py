@@ -1,7 +1,7 @@
 """
 services/risk_engine.py — Composite risk scoring and remediation tier assignment engine.
 
-Defined according to docs/MODULE_SPECS/M4_threat_intel_prioritization.md.
+Defined according to docs/MODULE_SPECS/R0_baseline.md.
 """
 
 import uuid
@@ -33,12 +33,18 @@ class RiskEngine:
         return 0.50
 
     def calculate_priority(self, canonical_issue_id: str) -> PriorityResult:
+        with dedup_repo.transaction():
+            return self._calculate_priority(canonical_issue_id)
+
+    def _calculate_priority(self, canonical_issue_id: str) -> PriorityResult:
         """
         Calculate composite risk score for a CanonicalIssue.
         """
         issue = dedup_repo.get_canonical_issue(canonical_issue_id)
-        if not issue:
+        if not issue or not issue.active:
             raise ValueError(f"Canonical issue '{canonical_issue_id}' not found.")
+
+        threat_intel_service.check_mode()
 
         # Aggregate finding details
         findings = []
@@ -59,7 +65,7 @@ class RiskEngine:
             all_cves.update(f.vulnerability.cve_ids)
 
         threat_enrichments: list[ThreatEnrichment] = []
-        for cve in all_cves:
+        for cve in sorted(all_cves):
             threat_enrichments.append(threat_intel_service.enrich_cve(cve))
 
         kev_flag = any(t.kev_flag for t in threat_enrichments)
@@ -113,16 +119,15 @@ class RiskEngine:
         else:
             tier = RemediationTier.STANDARD
 
-        # Explanation generation
-        explanation = []
+        normalized = dict(cvss=cvss_norm, epss=epss_norm, kev=kev_norm, asset=asset_norm,
+                          exposure=exposure_norm, validation=val_norm)
+        contributions = {key: 100.0 * weights_used[key] * value for key, value in normalized.items()}
+        explanation = [f"{key.upper()}: factor {normalized[key]:.4f} x weight {weights_used[key]:.4f} contributes {value:.2f} pts."
+                       for key, value in contributions.items()]
+        explanation.append("Validation uses a neutral 0.5 prior: no sandbox validation has run.")
+        explanation.append("Threat intelligence uses synthetic mock files, not current live feeds.")
         if kev_flag:
-            explanation.append("CRITICAL: Vulnerability is listed in CISA KEV catalog (actively exploited in the wild).")
-        explanation.append(f"CVSS Base Score ({cvss_score}/10) contributes {round(100.0 * w_cvss * cvss_norm, 1)} pts.")
-        if max_epss > 0.0:
-            explanation.append(f"EPSS Exploit Prediction Score ({round(max_epss * 100, 1)}%) contributes {round(100.0 * w_epss * epss_norm, 1)} pts.")
-        explanation.append(f"Asset Criticality '{asset_crit}' contributes {round(100.0 * w_asset * asset_norm, 1)} pts.")
-        exposure_str = "Internet-Facing" if internet_facing else "Internal / Restricted"
-        explanation.append(f"Network Exposure ({exposure_str}) contributes {round(100.0 * w_exposure * exposure_norm, 1)} pts.")
+            explanation.append("Immediate tier: CVE is present in the mock KEV fixture; this is not a live exploitation claim.")
 
         factors = {
             "cvss_score": cvss_score,
@@ -131,7 +136,12 @@ class RiskEngine:
             "asset_criticality": asset_crit,
             "internet_facing": internet_facing,
             "sandbox_validated": False,
-            "cve_ids": list(all_cves),
+            "cve_ids": sorted(all_cves),
+            "validation_status": "not_attempted",
+            "validation_factor": val_norm,
+            "contributions": contributions,
+            "threat_intelligence": [item.model_dump(mode="json") for item in threat_enrichments],
+            "threat_source": "mock",
         }
 
         now_dt = datetime.now(timezone.utc)

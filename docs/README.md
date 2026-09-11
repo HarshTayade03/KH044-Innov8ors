@@ -1,4 +1,4 @@
-﻿# Documentation index
+# Documentation index
 
 - [Agent instructions](../AGENTS.md) and [development guide](agent-instructions.md): working rules.
 - [Current modules and features](CURRENT_STATE.md): code inventory and limitations.
@@ -7,7 +7,7 @@
 - [Problem statement](project_f1.md), [product reference](vulntriager_product_reference.md), and
   [normalization reference](normal.txt): intended behavior.
 - Existing specs: [M0](MODULE_SPECS/M0_bootstrap.md), [M1](MODULE_SPECS/M1_parsers_normalizer.md),
-  [M2](MODULE_SPECS/M2_views_embeddings.md).
+  [M2](MODULE_SPECS/M2_views_embeddings.md), and [R0 baseline](MODULE_SPECS/R0_baseline.md).
 
 M3-M7 specs are not present. Write the relevant contract/spec before implementing a new module.
 agent1.md is historical planning context.

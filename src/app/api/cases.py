@@ -5,6 +5,7 @@ api/cases.py — Case generation, prioritization, and human review endpoints.
 from fastapi import APIRouter, HTTPException, Query, status
 from src.app.repositories.risk_repo import risk_repo
 from src.app.services.risk_engine import risk_engine
+from src.app.services.threat_intel import ThreatIntelUnavailable
 
 router = APIRouter(tags=["Cases & Prioritization"])
 
@@ -17,6 +18,8 @@ async def prioritize_issue(canonical_issue_id: str):
     try:
         priority = risk_engine.calculate_priority(canonical_issue_id)
         return priority.model_dump()
+    except ThreatIntelUnavailable as e:
+        raise HTTPException(status_code=503, detail=str(e)) from e
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

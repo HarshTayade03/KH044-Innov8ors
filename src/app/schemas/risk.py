@@ -1,7 +1,7 @@
 """
 schemas/risk.py — Risk scoring and threat intelligence schemas.
 
-Defined according to docs/MODULE_SPECS/M4_threat_intel_prioritization.md.
+Defined according to docs/MODULE_SPECS/R0_baseline.md.
 """
 
 from datetime import datetime
@@ -20,9 +20,11 @@ class ThreatEnrichment(BaseModel):
     cve_id: str
     kev_flag: bool = False
     kev_date_added: Optional[str] = None
-    epss_score: float = 0.0
-    epss_percentile: float = 0.0
+    epss_score: float = Field(default=0.0, ge=0.0, le=1.0)
+    epss_percentile: float = Field(default=0.0, ge=0.0, le=1.0)
     data_source: str = "mock"
+    source_fingerprint: Optional[str] = None
+    fetched_at: Optional[datetime] = None
 
 
 class RiskFactors(BaseModel):

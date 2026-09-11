@@ -69,12 +69,18 @@ def get_embedding_model():
     if _model is None:
         try:
             from sentence_transformers import SentenceTransformer
-            _model = SentenceTransformer(settings.model_name)
+            _model = SentenceTransformer(settings.model_name, local_files_only=not settings.model_allow_download)
             print(f"[embedding] Loaded SentenceTransformer model '{settings.model_name}'")
         except (ImportError, Exception) as e:
             print(f"[embedding] SentenceTransformer not available ({e}). Using FallbackEmbedder (dimension 384).")
             _model = FallbackEmbedder(dimension=384)
     return _model
+
+
+def model_identity(model):
+    if isinstance(model, FallbackEmbedder):
+        return "sha256-token-hashing", "1"
+    return settings.model_name, None
 
 
 def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
@@ -116,6 +122,11 @@ def weighted_similarity(
             "reproduction": 0.20,
             "impact": 0.10,
         }
+
+    if (embeddings_a.embedding_model, embeddings_a.model_version, embeddings_a.embedding_dimension) != (
+        embeddings_b.embedding_model, embeddings_b.model_version, embeddings_b.embedding_dimension
+    ):
+        return 0.0
 
     total_weight = 0.0
     weighted_sim_sum = 0.0
@@ -213,13 +224,15 @@ class EmbeddingService:
 
         return FindingEmbeddings(
             finding_id=views.finding_id,
-            embedding_model=settings.model_name,
-            model_version=None,
+            embedding_model=model_identity(model)[0],
+            model_version=model_identity(model)[1],
             embedding_dimension=dim,
             embeddings=embeddings_map,
             combined_embedding=combined_vector,
             generated_at=datetime.now(timezone.utc),
             missing_views=missing_views,
+            input_text_hashes={key: hashlib.sha256(value.encode("utf-8")).hexdigest()
+                               for key, value in views.embedding_text.items() if value},
         )
 
     def generate_batch_embeddings(self, views_list: list[FindingViews]) -> list[FindingEmbeddings]:
@@ -263,13 +276,15 @@ class EmbeddingService:
             results.append(
                 FindingEmbeddings(
                     finding_id=views.finding_id,
-                    embedding_model=settings.model_name,
-                    model_version=None,
+                    embedding_model=model_identity(model)[0],
+                    model_version=model_identity(model)[1],
                     embedding_dimension=dim,
                     embeddings=emb_map,
                     combined_embedding=combined_vec,
                     generated_at=now_dt,
                     missing_views=missing,
+                    input_text_hashes={key: hashlib.sha256(value.encode("utf-8")).hexdigest()
+                                       for key, value in views.embedding_text.items() if value},
                 )
             )
 

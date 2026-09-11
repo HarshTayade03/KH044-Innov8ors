@@ -6,12 +6,14 @@ import json
 import uuid
 from datetime import datetime, timezone
 from typing import Optional, Any
-from src.app.database import get_db
+from src.app.database import get_db, transaction
 from src.app.schemas.dedup import Cluster, ClusterMember, CanonicalIssue, ClusterMethod, ClusterStatus, ReviewStatus
 
 
 class DedupRepository:
     """Repository for managing clusters and canonical issues."""
+
+    transaction = staticmethod(transaction)
 
     def save_cluster(self, cluster: Cluster) -> None:
         now_str = datetime.now(timezone.utc).isoformat()
@@ -123,13 +125,18 @@ class DedupRepository:
                 INSERT INTO canonical_issues (
                     canonical_issue_id, title, cluster_id, source_finding_ids,
                     source_scanners, merge_method, merge_confidence, merge_reason,
-                    review_status, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    review_status, created_at, updated_at, active
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(canonical_issue_id) DO UPDATE SET
                     title=excluded.title,
+                    cluster_id=excluded.cluster_id,
+                    merge_method=excluded.merge_method,
+                    merge_confidence=excluded.merge_confidence,
+                    merge_reason=excluded.merge_reason,
                     source_finding_ids=excluded.source_finding_ids,
                     source_scanners=excluded.source_scanners,
                     review_status=excluded.review_status,
+                    active=excluded.active,
                     updated_at=excluded.updated_at
                 """,
                 (
@@ -144,6 +151,7 @@ class DedupRepository:
                     issue.review_status.value,
                     issue.created_at.isoformat(),
                     now_str,
+                    int(issue.active),
                 ),
             )
 
@@ -167,6 +175,7 @@ class DedupRepository:
             merge_confidence=row["merge_confidence"],
             merge_reason=json.loads(row["merge_reason"]),
             review_status=ReviewStatus(row["review_status"]),
+            active=bool(row["active"]),
             created_at=datetime.fromisoformat(row["created_at"]),
             updated_at=datetime.fromisoformat(row["updated_at"]),
         )
@@ -174,7 +183,7 @@ class DedupRepository:
     def list_canonical_issues(self, limit: int = 100, offset: int = 0) -> list[CanonicalIssue]:
         with get_db() as db:
             rows = db.execute(
-                "SELECT canonical_issue_id FROM canonical_issues ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                "SELECT canonical_issue_id FROM canonical_issues WHERE active = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?",
                 (limit, offset),
             ).fetchall()
 
@@ -184,6 +193,36 @@ class DedupRepository:
             if ci:
                 issues.append(ci)
         return issues
+
+    def reconcile(self, clusters: list[Cluster], issues: list[CanonicalIssue], actor="system"):
+        """Publish a complete active snapshot without deleting historical records."""
+        with transaction() as db:
+            active_ids = {i.canonical_issue_id for i in issues}
+            now = datetime.now(timezone.utc).isoformat()
+            for row in db.execute("SELECT canonical_issue_id FROM canonical_issues WHERE active=1").fetchall():
+                issue_id = row["canonical_issue_id"]
+                if issue_id not in active_ids:
+                    db.execute("UPDATE canonical_issues SET active=0, updated_at=? WHERE canonical_issue_id=?", (now, issue_id))
+                    db.execute("DELETE FROM priorities WHERE canonical_issue_id=?", (issue_id,))
+                    db.execute("UPDATE cases SET stale=1, updated_at=?, last_updated_at=? WHERE canonical_issue_id=?", (now, now, issue_id))
+                    self.audit("canonical_issue", issue_id, "retired", actor, {"reason": "dedup membership changed"})
+            for cluster in clusters:
+                self.save_cluster(cluster)
+            for issue in issues:
+                previous = self.get_canonical_issue(issue.canonical_issue_id)
+                if previous and previous.active and previous.model_dump(exclude={"created_at", "updated_at"}) == issue.model_dump(exclude={"created_at", "updated_at"}):
+                    continue
+                if previous:
+                    issue.created_at = previous.created_at
+                self.save_canonical_issue(issue)
+
+    def audit(self, entity_type, entity_id, action, actor, details):
+        now = datetime.now(timezone.utc).isoformat()
+        with get_db() as db:
+            db.execute(
+                "INSERT INTO audit_events (event_id,entity_type,entity_id,action,actor,details,occurred_at,created_at) VALUES (?,?,?,?,?,?,?,?)",
+                (str(uuid.uuid4()), entity_type, entity_id, action, actor, json.dumps(details), now, now),
+            )
 
 
 dedup_repo = DedupRepository()

@@ -1,8 +1,8 @@
 """
 database.py — SQLite database initialization and connection management.
 
-All 13 tables are created here with CREATE TABLE IF NOT EXISTS.
-Every table has: id (UUID TEXT PK), created_at, updated_at.
+All 14 tables are created here with CREATE TABLE IF NOT EXISTS.
+Additive migrations preserve existing data; audit events are append-only.
 
 Decision log:
 - Raw sqlite3 over SQLAlchemy/ORM to keep the prototype dependency-light and
@@ -15,7 +15,10 @@ Decision log:
 
 import sqlite3
 from contextlib import contextmanager
+from contextvars import ContextVar
 from src.app.config import settings
+
+_transaction_connection = ContextVar("transaction_connection", default=None)
 
 
 def get_connection() -> sqlite3.Connection:
@@ -41,7 +44,12 @@ def get_db():
         with get_db() as db:
             db.execute("SELECT ...")
     """
+    existing = _transaction_connection.get()
+    if existing is not None:
+        yield existing
+        return
     conn = get_connection()
+    token = _transaction_connection.set(conn)
     try:
         yield conn
         conn.commit()
@@ -49,7 +57,17 @@ def get_db():
         conn.rollback()
         raise
     finally:
+        _transaction_connection.reset(token)
         conn.close()
+
+
+@contextmanager
+def transaction():
+    """Serialize read/modify/write operations; nested repositories share one transaction."""
+    with get_db() as conn:
+        if not conn.in_transaction:
+            conn.execute("BEGIN IMMEDIATE")
+        yield conn
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -499,6 +517,15 @@ def init_db() -> None:
             stmt = statement.strip()
             if stmt:
                 conn.execute(stmt)
+        # Additive migrations preserve existing prototype databases and evidence.
+        for table, column, definition in (
+            ("canonical_issues", "active", "INTEGER NOT NULL DEFAULT 1"),
+            ("cases", "stale", "INTEGER NOT NULL DEFAULT 0"),
+            ("threat_intelligence", "source_fingerprint", "TEXT"),
+        ):
+            columns = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
+            if column not in columns:
+                conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {definition}")
     print(f"[db] Database initialized at {settings.database_path}")
 
 

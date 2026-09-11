@@ -55,4 +55,5 @@ class FindingEmbeddings(BaseModel):
     combined_embedding: Optional[list[float]] = None
     generated_at: datetime
     missing_views: list[str] = Field(default_factory=list)
+    input_text_hashes: dict[str, str] = Field(default_factory=dict)
 

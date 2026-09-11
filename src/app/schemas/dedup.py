@@ -1,7 +1,7 @@
 """
 schemas/dedup.py — Deduplication schemas for Stage A (fingerprint) and Stage B (semantic).
 
-Defined according to docs/MODULE_SPECS/M3_deduplication.md.
+Defined according to docs/MODULE_SPECS/R0_baseline.md.
 """
 
 from datetime import datetime, timezone
@@ -63,6 +63,7 @@ class CanonicalIssue(BaseModel):
     merge_confidence: float = 1.0
     merge_reason: list[str] = Field(default_factory=list)
     review_status: ReviewStatus = ReviewStatus.PENDING
+    active: bool = True
     created_at: datetime
     updated_at: datetime
 
@@ -74,3 +75,6 @@ class DedupRunSummary(BaseModel):
     semantic_clusters_created: int
     total_canonical_issues: int
     run_at: datetime
+    semantic_status: str = "not_run"
+    embedding_models: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
