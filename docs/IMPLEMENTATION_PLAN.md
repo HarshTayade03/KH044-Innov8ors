@@ -7,7 +7,7 @@ Updated: 2026-09-12. [Current state](CURRENT_STATE.md) records source evidence;
 
 The backend has bootstrap/configuration/storage, scanner normalization, synthetic data,
 four-view extraction, embeddings with a fallback, deduplication, mock-based prioritization,
-and offline lab validation with evidence. P0-P6 have implementation; live feeds and Docker remain deferred. P7-P9 remain unimplemented.
+offline lab validation with evidence, and case assembly/review. P0-P7 implementation is present; dedicated metrics, full dashboard acceptance, orchestration, live feeds and Docker remain incomplete or deferred.
 A registered route or database table is not a completed feature.
 
 ## Revised sequence and completion gates
@@ -39,7 +39,7 @@ A registered route or database table is not a completed feature.
 
 R0 is complete: 49 tests pass, pip check passes, and actual Uvicorn HTTP smoke checks pass. See
 [the R0 contract](MODULE_SPECS/R0_baseline.md) and TASK_LOG.md for results. Live clients remain deferred.
-The next phase is P7: case assembly and human review. See `AGENT_HANDOFF.md` for pickup packages.
+The next completion target is P8 dashboard acceptance, followed by P9 orchestration/demo. See `AGENT_HANDOFF.md` for the remaining pickup boundaries.
 
 F0 was added at the user's request to validate the implemented backend before P6. It is a
 small no-build frontend, not completion of P8: case review and validation evidence depend on
