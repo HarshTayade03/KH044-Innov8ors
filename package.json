@@ -1,0 +1,11 @@
+{
+  "name": "kh044-innov8ors",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Project scaffold for KH044 Innov8ors",
+  "main": "src/project-source-code/index.js",
+  "scripts": {
+    "start": "node src/project-source-code/index.js",
+    "test": "node --test"
+  }
+}
