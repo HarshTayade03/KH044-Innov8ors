@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from src.app.main import app
 from src.app.repositories.dedup_repo import dedup_repo
 from src.app.repositories.validation_repo import validation_repo
+from src.app.database import get_db
 from src.app.schemas.validation import ValidationRequest, ValidationStatus
 from src.app.services.deduplicator import deduplicator_service
 from src.app.services.risk_engine import risk_engine
@@ -59,3 +60,14 @@ def test_repeated_runs_are_append_only(finding_factory):
     assert first.validation_id != second.validation_id
     assert validation_repo.get(first.validation_id) is not None
     assert validation_repo.get(second.validation_id) is not None
+
+def test_tampered_evidence_is_never_served(finding_factory):
+    issue = make_issue(finding_factory)
+    result = sandbox_service.validate(issue.canonical_issue_id, ValidationRequest())
+    artifact = validation_repo.list_artifacts(result.validation_id)[0]
+    with get_db() as db:
+        db.execute("UPDATE artifacts SET content=? WHERE artifact_id=?", ("tampered", artifact.artifact_id))
+    with pytest.raises(ValueError, match="failed integrity verification"):
+        validation_repo.list_artifacts(result.validation_id)
+    response = TestClient(app).get(f"/api/v1/validations/{result.validation_id}/evidence")
+    assert response.status_code == 500

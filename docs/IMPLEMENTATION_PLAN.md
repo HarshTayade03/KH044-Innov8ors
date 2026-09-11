@@ -42,8 +42,8 @@ R0 is complete: 49 tests pass, pip check passes, and actual Uvicorn HTTP smoke c
 The next phase is P7: case assembly and human review. See `AGENT_HANDOFF.md` for pickup packages.
 
 F0 was added at the user's request to validate the implemented backend before P6. It is a
-small no-build frontend, not completion of P8: case review and validation evidence depend on
-P6/P7, while the dedicated dashboard metrics endpoint remains planned.
+small no-build frontend, not completion of P8: the dashboard read APIs now exist, while the
+remaining F1 panels and review controls depend on frontend integration with M6.
 
 ## P6 implementation contract
 

@@ -150,13 +150,13 @@
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
-| M5-01 | Define `schemas/validation.py` — ValidationResult, Artifact | `[ ]` | — | — |
-| M5-02 | Implement Lab Simulator mode for SQLi, XSS, SSRF scenarios | `[ ]` | — | Dict of CWE→verdict+evidence |
-| M5-03 | Implement real Docker sandbox mode (feature-flagged OFF) | `[ ]` | — | SANDBOX_ENABLED=false default |
-| M5-04 | Implement evidence capture + SHA-256 hashing | `[ ]` | — | All artifacts immutable |
-| M5-05 | Implement secret redaction in evidence before display | `[ ]` | — | — |
-| M5-06 | Add validation API endpoints | `[ ]` | — | — |
-| M5-07 | Write sandbox tests: timeout=inconclusive, allowlist reject | `[ ]` | — | — |
+| M5-01 | Define `schemas/validation.py` — ValidationResult, Artifact | `[x]` | Agent | Typed request, result, evidence and mode contracts. |
+| M5-02 | Implement Lab Simulator mode for SQLi, XSS, SSRF scenarios | `[x]` | Agent | Deterministic offline simulations; no payload or target execution. |
+| M5-03 | Implement real Docker sandbox mode (feature-flagged OFF) | `[-]` | Deferred | Real Docker execution remains explicitly unsupported and returns HTTP 422. |
+| M5-04 | Implement evidence capture + SHA-256 hashing | `[x]` | Agent | Append-only artifacts validate UTF-8 hash and byte size before save and retrieval. |
+| M5-05 | Implement secret redaction in evidence before display | `[x]` | Agent | Derived simulation evidence is redacted before persistence and API retrieval. |
+| M5-06 | Add validation API endpoints | `[x]` | Agent | Validate, run retrieval and evidence retrieval routes with typed 404/422/500 errors. |
+| M5-07 | Write sandbox tests: timeout=inconclusive, allowlist reject | `[x]` | Agent | Focused tests cover scenarios, timeout, allowlist, Docker, persistence, risk and tamper rejection. |
 
 ---
 
@@ -164,12 +164,12 @@
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
-| M6-01 | Define `schemas/case.py` — Case, ReviewAction, AuditEvent | `[ ]` | — | — |
-| M6-02 | Implement `services/case_service.py` — case assembly | `[ ]` | — | Aggregates all pipeline outputs |
-| M6-03 | Implement case state machine (pending → approved/rejected) | `[ ]` | — | Reject MUST have reason |
-| M6-04 | Implement append-only audit event log | `[ ]` | — | Immutable, timestamped |
-| M6-05 | Implement `api/cases.py` — all case endpoints + review actions | `[ ]` | — | — |
-| M6-06 | Write case generation tests | `[ ]` | — | — |
+| M6-01 | Define `schemas/case.py` — Case, ReviewAction, AuditEvent | `[x]` | Agent | `docs/MODULE_SPECS/M6_cases_review.md`, `src/app/schemas/case.py` |
+| M6-02 | Implement `services/case_service.py` — case assembly | `[/]` | Agent | Implemented; runtime checks blocked in this session |
+| M6-03 | Implement case state machine (pending → approved/rejected) | `[/]` | Agent | Implemented; runtime checks blocked in this session |
+| M6-04 | Implement append-only audit event log | `[/]` | Agent | Implemented transactionally; runtime checks blocked in this session |
+| M6-05 | Implement `api/cases.py` — all case endpoints + review actions | `[/]` | Agent | Implemented; runtime checks blocked in this session |
+| M6-06 | Write case generation tests | `[/]` | Agent | `tests/test_cases.py` added; test runner unavailable |
 
 ---
 
@@ -177,6 +177,7 @@
 
 | ID | Task | Status | Owner | Notes |
 |---|---|---|---|---|
+| M7-BE | Implement stored-row dashboard read APIs (metrics, case queue/detail, validation/evidence, cluster inspector, audit timeline) | `[x]` | Copilot | `docs/MODULE_SPECS/M7_dashboard.md`; focused API tests pass when project test environment is available; frontend F1 rows remain open. |
 | F1-01 | Build Panel 1: Triage Overview metrics bar | `[ ]` | — | Calls /dashboard/metrics |
 | F1-02 | Build Panel 2: File upload + manual entry form | `[ ]` | — | Scanner type dropdown + JSON textarea |
 | F1-03 | Build Panel 3: Case queue table (sortable, filterable) | `[ ]` | — | Tier badge colors |

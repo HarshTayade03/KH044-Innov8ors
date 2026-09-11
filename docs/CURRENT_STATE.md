@@ -18,7 +18,7 @@ are recorded in TASK_LOG.md; historical pass claims are kept separately.
 | M5 / P6 validation | `schemas/validation.py`, `services/sandbox.py`, `repositories/validation_repo.py`, `api/validation.py`; validation/evidence tables | Deterministic offline SQLi/XSS/SSRF simulation, allowlist, immutable redacted evidence with verified hashes, retrieval APIs and risk integration. Real Docker execution is explicitly rejected and deferred. |
 | M6 / P7 cases | DB tables `cases`, `reviews`, `audit_events`; `schemas/case.py`, case routes | Schema stub and seven HTTP 501 case/review routes. No case assembly, state machine, or append-only audit implementation. |
 | F0 / early frontend | `static/index.html`, `dashboard.css`, `dashboard.js` | Basic validation console for JSON/SARIF upload, direct/manual ingestion, views, embeddings, deduplication, cluster merge/split, active issues, and mock-feed risk scoring. Counts are aggregated from existing APIs. |
-| M7 / P8 dashboard | `api/dashboard.py` and F0 console | Dedicated metrics API remains HTTP 501. Case queue, validation evidence, approval/rejection controls, and audit timeline await P6/P7. |
+| M7 / P8 dashboard | `api/dashboard.py`, dashboard repository/service, and F0 console | Stored-row metrics, case queue/detail read model, validation/evidence, cluster inspection, and case audit timeline APIs are implemented. Frontend F1 panels and review controls remain open. |
 | P9 integration | No full pipeline orchestrator or end-to-end suite | Not started; current stages require separate API calls. |
 | P10 integrations | `workers/scanner_poller.py`; config placeholders | Poller raises NotImplementedError. Slack/Jira/webhook implementations absent. |
 
@@ -57,9 +57,10 @@ Application routes use `/api/v1`; `/`, `/health`, and `/docs` are root routes.
   consistency over large-scale concurrent throughput. Cluster lists include historical clusters.
 - Cached learned models may be used; R0 tests use offline hashing and real sklearn HDBSCAN.
   Learned-model accuracy is not established by these regression tests.
-- Human case review, dedicated dashboard metrics and the full orchestrated pipeline remain
-  unimplemented. F0 provides a basic browser workflow over the implemented backend and
-  uses the public product description. M5's API is implemented but not yet exposed in F0.
+- Human case review and dashboard read APIs are implemented; F1 frontend panels and the full
+  orchestrated pipeline remain unimplemented. F0 provides a basic browser workflow over the
+  implemented backend and uses the public product description. M5's API is implemented but
+  not yet exposed in F0.
 
 ## Done-work interpretation
 

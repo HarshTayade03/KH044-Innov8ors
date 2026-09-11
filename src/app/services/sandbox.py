@@ -17,6 +17,8 @@ class SandboxService:
         issue = dedup_repo.get_canonical_issue(issue_id)
         if not issue or not issue.active: raise LookupError(f"Canonical issue '{issue_id}' not found.")
         if request.mode == SandboxMode.DOCKER: raise ValidationRejected("Docker sandbox execution is not implemented and remains disabled.")
+        if not issue.source_finding_ids:
+            raise LookupError(f"Canonical issue '{issue_id}' has no source findings.")
         finding = findings_repo.get_normalized_finding(issue.source_finding_ids[0])
         if not finding: raise LookupError(f"Source finding for canonical issue '{issue_id}' not found.")
         host = request.target_host or finding.location.host or ""
