@@ -83,7 +83,15 @@ class RiskEngine:
         asset_norm = self._get_asset_criticality_factor(asset_crit)
         exposure_norm = 1.0 if internet_facing else 0.5
         validation = validation_repo.latest_for_issue(canonical_issue_id)
-        validation_factors = {"simulated_match": 0.75, "simulated_no_match": 0.25}
+        # A completed inconclusive/rejected attempt is evidence about execution,
+        # not about exploitability. Keep it neutral, but distinguish it from
+        # an issue that has never been validated in the serialized factors.
+        validation_factors = {
+            "simulated_match": 0.75,
+            "simulated_no_match": 0.25,
+            "inconclusive": 0.5,
+            "rejected": 0.5,
+        }
         val_norm = validation_factors.get(validation.status.value, 0.5) if validation else 0.5
 
         # Weights from config

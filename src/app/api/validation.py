@@ -1,6 +1,6 @@
 """Offline lab validation and evidence endpoints."""
 from fastapi import APIRouter, HTTPException
-from src.app.repositories.validation_repo import validation_repo
+from src.app.repositories.validation_repo import EvidenceIntegrityError, validation_repo
 from src.app.schemas.validation import EvidenceResponse, ValidationRequest, ValidationResult
 from src.app.services.sandbox import ValidationRejected, sandbox_service
 
@@ -24,4 +24,8 @@ async def get_validation(validation_id: str):
 @router.get("/validations/{validation_id}/evidence", response_model=EvidenceResponse)
 async def get_validation_evidence(validation_id: str):
     if not validation_repo.get(validation_id): raise HTTPException(status_code=404, detail=f"Validation '{validation_id}' not found.")
-    return EvidenceResponse(validation_id=validation_id, artifacts=validation_repo.list_artifacts(validation_id))
+    try:
+        artifacts = validation_repo.list_artifacts(validation_id)
+    except EvidenceIntegrityError as exc:
+        raise HTTPException(status_code=500, detail="Stored evidence failed integrity verification.") from exc
+    return EvidenceResponse(validation_id=validation_id, artifacts=artifacts)

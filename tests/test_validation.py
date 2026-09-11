@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from src.app.main import app
 from src.app.repositories.dedup_repo import dedup_repo
 from src.app.repositories.validation_repo import validation_repo
+from src.app.database import get_db
 from src.app.schemas.validation import ValidationRequest, ValidationStatus
 from src.app.services.deduplicator import deduplicator_service
 from src.app.services.risk_engine import risk_engine
@@ -35,6 +36,14 @@ def test_timeout_unknown_allowlist_and_docker(finding_factory):
     assert client.post(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validate", json={"target_host": "public.example.com"}).status_code == 422
     assert client.post(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validate", json={"mode": "docker"}).status_code == 422
 
+
+def test_inconclusive_validation_has_neutral_risk_factor(finding_factory):
+    issue = make_issue(finding_factory)
+    sandbox_service.validate(issue.canonical_issue_id, ValidationRequest(simulate_timeout=True))
+    priority = risk_engine.calculate_priority(issue.canonical_issue_id)
+    assert priority.factors["validation_status"] == "inconclusive"
+    assert priority.factors["validation_factor"] == 0.5
+
 def test_evidence_redaction_api_and_risk_integration(finding_factory):
     issue = make_issue(finding_factory, evidence="password=hunter2 Authorization: Bearer secret-token")
     baseline = risk_engine.calculate_priority(issue.canonical_issue_id)
@@ -59,3 +68,14 @@ def test_repeated_runs_are_append_only(finding_factory):
     assert first.validation_id != second.validation_id
     assert validation_repo.get(first.validation_id) is not None
     assert validation_repo.get(second.validation_id) is not None
+
+def test_tampered_evidence_is_never_served(finding_factory):
+    issue = make_issue(finding_factory)
+    result = sandbox_service.validate(issue.canonical_issue_id, ValidationRequest())
+    artifact = validation_repo.list_artifacts(result.validation_id)[0]
+    with get_db() as db:
+        db.execute("UPDATE artifacts SET content=? WHERE artifact_id=?", ("tampered", artifact.artifact_id))
+    with pytest.raises(ValueError, match="failed integrity verification"):
+        validation_repo.list_artifacts(result.validation_id)
+    response = TestClient(app).get(f"/api/v1/validations/{result.validation_id}/evidence")
+    assert response.status_code == 500
