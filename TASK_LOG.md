@@ -54,6 +54,19 @@
 
 ---
 
+## Backend case query/review fix â€” `feature/fix-backend-case-queries` (2026-09-12)
+
+- Reproduced two backend inspection defects: case detail returned audit events but omitted the
+  persisted review history, and `priority_override` incorrectly changed a pending case to
+  `more_evidence_requested`. Invalid case-list status strings were also accepted as empty
+  results rather than rejected by FastAPI validation.
+- Added review-history retrieval to case detail, constrained list status to `CaseStatus`, and
+  kept priority overrides in the current reviewable state while still recording the review and
+  audit event. Added regression coverage for override state and inspection history.
+- Verification: focused case tests `3 passed`; full suite `59 passed, 2 skipped`.
+
+---
+
 ## How to Use This Log (Agent Instructions)
 
 1. **Before starting any task**: Read this file. Find your assigned task. Change its status from `[ ]` to `[/]`.
@@ -473,14 +486,14 @@ Blocker: the root `AGENT_HANDOFF.md` path referenced by the task was absent; the
 - Added repository-side SHA-256 and UTF-8 byte-size validation before saving artifacts.
 - Added retrieval verification and an API 500 integrity failure response so tampered evidence is never served.
 - Added a regression test that mutates persisted evidence and verifies direct retrieval and the HTTP evidence endpoint reject it.
-- Verification: `venv\\Scripts\\python.exe -m pytest tests\\test_validation.py -q` — 8 passed.
+- Verification: `venv\\Scripts\\python.exe -m pytest tests\\test_validation.py -q`  8 passed.
 - Real Docker execution, live feeds, and orchestration remain deferred; no unverified capability is marked complete.
 
-## Final integration verification — `feature/final-15min-verification` (2026-09-12)
+## Final integration verification  `feature/final-15min-verification` (2026-09-12)
 
 - Created from `feature/hackathon-verification` without modifying `main`.
 - Integrated completed evidence integrity commit `3833d09` (`feature/remaining-core-essentials`), with case-query and frontend case-inspection work already present through the hackathon branch ancestry, and merged completed `feature/context-completion-guardrails` (`232d1ba`, `48aa360`). No real merge conflicts occurred.
 - Preserved unrelated user files in pre-existing stashes; they were not included in the integration commit.
-- Verification: `venv\Scripts\python.exe -m pytest tests\ -q` — 60 passed, 2 skipped; `venv\Scripts\python.exe -m pip check` — no broken requirements; `node --check src\app\static\dashboard.js` passed; `git diff --check` passed.
+- Verification: `venv\Scripts\python.exe -m pytest tests\ -q`  60 passed, 2 skipped; `venv\Scripts\python.exe -m pip check`  no broken requirements; `node --check src\app\static\dashboard.js` passed; `git diff --check` passed.
 - Uvicorn on `127.0.0.1:8000`: `/`, `/health`, and `/openapi.json` returned 200; `/api/v1/cases` returned 200; a nonexistent evidence resource returned expected 404. Server stopped after checks.
 - Deferred explicitly: live feeds, Docker execution, orchestration, Slack/Jira integrations, polling, and webhooks. Simulations remain labeled/mock and Docker-disabled; human analysts retain final review authority.
