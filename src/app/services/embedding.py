@@ -1,40 +1,67 @@
 """
-services/embedding.py — SentenceTransformer embedding generation & vector math utilities with scikit-learn fallback.
+services/embedding.py — SentenceTransformer embedding generation & vector math utilities with pure Python fallback.
 
 Defined according to docs/MODULE_SPECS/M2_views_embeddings.md.
 """
 
+import math
+import hashlib
 from datetime import datetime, timezone
 from typing import Optional, Any
-import numpy as np
 
 from src.app.config import settings
 from src.app.schemas.views import FindingViews, FindingEmbeddings
+
+# Try importing numpy, fallback to pure python if not present
+try:
+    import numpy as np
+    HAS_NUMPY = True
+except ImportError:
+    np = None
+    HAS_NUMPY = False
 
 # Singleton SentenceTransformer or Fallback Embedder model instance
 _model = None
 
 
 class FallbackEmbedder:
-    """Lightweight fallback embedder using sklearn HashingVectorizer when sentence_transformers is unavailable."""
+    """
+    Lightweight, zero-dependency fallback embedder.
+    Uses SHA-256 feature hashing to convert text into deterministic L2-normalized 384-dimensional float vectors.
+    Runs on any machine without C-extensions or native DLLs.
+    """
 
     def __init__(self, dimension: int = 384):
-        from sklearn.feature_extraction.text import HashingVectorizer
         self.dimension = dimension
-        self.vectorizer = HashingVectorizer(n_features=dimension, norm='l2', alternate_sign=False)
 
     def get_sentence_embedding_dimension(self) -> int:
         return self.dimension
 
-    def encode(self, sentences: list[str], normalize_embeddings: bool = True) -> np.ndarray:
+    def _hash_word(self, word: str) -> int:
+        digest = hashlib.sha256(word.encode("utf-8")).digest()
+        return int.from_bytes(digest[:4], "big") % self.dimension
+
+    def encode_single(self, text: str) -> list[float]:
+        vector = [0.0] * self.dimension
+        words = text.lower().split()
+        if not words:
+            return vector
+
+        for word in words:
+            idx = self._hash_word(word)
+            vector[idx] += 1.0
+
+        # L2 Normalize
+        sq_sum = sum(v * v for v in vector)
+        if sq_sum > 0:
+            norm = math.sqrt(sq_sum)
+            vector = [v / norm for v in vector]
+        return vector
+
+    def encode(self, sentences: list[str] | str, normalize_embeddings: bool = True) -> list[list[float]]:
         if isinstance(sentences, str):
             sentences = [sentences]
-        matrix = self.vectorizer.transform(sentences).toarray()
-        if normalize_embeddings:
-            norms = np.linalg.norm(matrix, axis=1, keepdims=True)
-            norms[norms == 0] = 1.0
-            matrix = matrix / norms
-        return matrix
+        return [self.encode_single(s) for s in sentences]
 
 
 def get_embedding_model():
@@ -45,22 +72,31 @@ def get_embedding_model():
             _model = SentenceTransformer(settings.model_name)
             print(f"[embedding] Loaded SentenceTransformer model '{settings.model_name}'")
         except (ImportError, Exception) as e:
-            print(f"[embedding] SentenceTransformer not available ({e}). Using sklearn HashingVectorizer fallback.")
+            print(f"[embedding] SentenceTransformer not available ({e}). Using FallbackEmbedder (dimension 384).")
             _model = FallbackEmbedder(dimension=384)
     return _model
 
 
 def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:
-    """Computes cosine similarity between two float vectors."""
+    """Computes cosine similarity between two float vectors (pure Python / numpy optimized)."""
     if not vec_a or not vec_b or len(vec_a) != len(vec_b):
         return 0.0
-    a = np.array(vec_a, dtype=np.float32)
-    b = np.array(vec_b, dtype=np.float32)
-    norm_a = np.linalg.norm(a)
-    norm_b = np.linalg.norm(b)
-    if norm_a == 0.0 or norm_b == 0.0:
-        return 0.0
-    return float(np.dot(a, b) / (norm_a * norm_b))
+
+    if HAS_NUMPY:
+        a = np.array(vec_a, dtype=np.float32)
+        b = np.array(vec_b, dtype=np.float32)
+        norm_a = np.linalg.norm(a)
+        norm_b = np.linalg.norm(b)
+        if norm_a == 0.0 or norm_b == 0.0:
+            return 0.0
+        return float(np.dot(a, b) / (norm_a * norm_b))
+    else:
+        dot = sum(x * y for x, y in zip(vec_a, vec_b))
+        norm_a = math.sqrt(sum(x * x for x in vec_a))
+        norm_b = math.sqrt(sum(y * y for y in vec_b))
+        if norm_a == 0.0 or norm_b == 0.0:
+            return 0.0
+        return float(dot / (norm_a * norm_b))
 
 
 def weighted_similarity(
@@ -116,28 +152,30 @@ class EmbeddingService:
     ) -> Optional[list[float]]:
         """Calculates L2-normalized weighted average vector across non-null views."""
         combined_arr = None
+        dim = 384
         total_weight = 0.0
 
         for view_type, weight in self.default_weights.items():
             vec = embeddings_map.get(view_type)
             if vec is not None:
-                arr = np.array(vec, dtype=np.float32)
+                dim = len(vec)
                 if combined_arr is None:
-                    combined_arr = arr * weight
+                    combined_arr = [v * weight for v in vec]
                 else:
-                    combined_arr += arr * weight
+                    combined_arr = [c + v * weight for c, v in zip(combined_arr, vec)]
                 total_weight += weight
 
         if combined_arr is None or total_weight == 0.0:
             return None
 
-        # Normalize by total weight and L2 normalize
-        avg_arr = combined_arr / total_weight
-        norm = np.linalg.norm(avg_arr)
-        if norm > 0:
-            avg_arr = avg_arr / norm
+        # Divide by total weight and L2-normalize
+        avg_vec = [c / total_weight for c in combined_arr]
+        sq_sum = sum(v * v for v in avg_vec)
+        if sq_sum > 0:
+            norm = math.sqrt(sq_sum)
+            avg_vec = [v / norm for v in avg_vec]
 
-        return avg_arr.tolist()
+        return avg_vec
 
     def generate_embeddings(self, views: FindingViews) -> FindingEmbeddings:
         """Generate vector embeddings for each non-missing view and a combined embedding."""
@@ -161,9 +199,10 @@ class EmbeddingService:
         }
 
         if texts_to_embed:
-            vectors = model.encode(texts_to_embed, normalize_embeddings=True)
-            for key, vec in zip(view_keys, vectors):
-                embeddings_map[key] = vec.tolist()
+            raw_vectors = model.encode(texts_to_embed, normalize_embeddings=True)
+            for key, vec in zip(view_keys, raw_vectors):
+                # Convert numpy array or list to python float list
+                embeddings_map[key] = [float(x) for x in vec]
 
         combined_vector = self._compute_combined_vector(embeddings_map)
 
@@ -212,7 +251,7 @@ class EmbeddingService:
         ]
 
         for (idx, vt), vec in zip(text_index_map, encoded_vectors):
-            finding_embeddings_maps[idx][vt] = vec.tolist()
+            finding_embeddings_maps[idx][vt] = [float(x) for x in vec]
 
         results = []
         now_dt = datetime.now(timezone.utc)

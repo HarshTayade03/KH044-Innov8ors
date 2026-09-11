@@ -8,8 +8,15 @@ import uuid
 from datetime import datetime, timezone
 from typing import Optional, Any
 
-import numpy as np
-from sklearn.cluster import HDBSCAN
+# Optional ML dependencies for Stage B semantic clustering
+try:
+    import numpy as np
+    from sklearn.cluster import HDBSCAN
+    HAS_SKLEARN = True
+except ImportError:
+    np = None
+    HDBSCAN = None
+    HAS_SKLEARN = False
 
 from src.app.schemas.canonical import NormalizedFinding
 from src.app.schemas.dedup import (
@@ -100,7 +107,7 @@ class DeduplicationEngine:
         """
         Stage B: HDBSCAN semantic clustering on remaining findings.
         """
-        if len(unclustered_findings) < 2:
+        if not HAS_SKLEARN or len(unclustered_findings) < 2:
             return []
 
         # Load or generate embeddings for each finding
