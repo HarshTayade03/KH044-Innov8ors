@@ -80,7 +80,14 @@ def get_embedding_model():
 def model_identity(model):
     if isinstance(model, FallbackEmbedder):
         return "sha256-token-hashing", "1"
-    return settings.model_name, None
+    # Keep learned-vector provenance comparable across persisted runs.  A
+    # missing version would make two incompatible backends look compatible.
+    try:
+        from importlib.metadata import version
+        backend_version = version("sentence-transformers")
+    except Exception:
+        backend_version = "unknown"
+    return settings.model_name, backend_version
 
 
 def cosine_similarity(vec_a: list[float], vec_b: list[float]) -> float:

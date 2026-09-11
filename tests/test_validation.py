@@ -35,6 +35,14 @@ def test_timeout_unknown_allowlist_and_docker(finding_factory):
     assert client.post(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validate", json={"target_host": "public.example.com"}).status_code == 422
     assert client.post(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validate", json={"mode": "docker"}).status_code == 422
 
+
+def test_inconclusive_validation_has_neutral_risk_factor(finding_factory):
+    issue = make_issue(finding_factory)
+    sandbox_service.validate(issue.canonical_issue_id, ValidationRequest(simulate_timeout=True))
+    priority = risk_engine.calculate_priority(issue.canonical_issue_id)
+    assert priority.factors["validation_status"] == "inconclusive"
+    assert priority.factors["validation_factor"] == 0.5
+
 def test_evidence_redaction_api_and_risk_integration(finding_factory):
     issue = make_issue(finding_factory, evidence="password=hunter2 Authorization: Bearer secret-token")
     baseline = risk_engine.calculate_priority(issue.canonical_issue_id)

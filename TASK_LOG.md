@@ -336,6 +336,14 @@ and human review. Detailed pickup boundaries are in `docs/AGENT_HANDOFF.md`.
 | M5-05 | `[x]` | Derived evidence is redacted before persistence and retrieval. |
 | M5-06 | `[x]` | Validate, result and evidence APIs return typed responses and correct 404/422 errors. |
 | M5-07 | `[x]` | Scenario, timeout, allowlist, Docker, redaction, integrity, persistence and risk tests. |
+
+## 2026-09-12 Core Risk Flow Hardening (feature/core-risk-flow)
+
+| Scope | Status | Verification |
+|---|---|---|
+| Six-factor risk semantics and validation status mapping | `[x]` | Verified six persisted contributions; simulated match/no-match and inconclusive statuses map to explicit factors (23 focused tests pass). |
+| Mock feed provenance and cache failure behavior | `[x]` | Malformed and out-of-range mock feeds raise explicit `ThreatIntelUnavailable`; content fingerprints remain cache keys (23 focused tests pass). |
+| Redaction/hash and embedding provenance compatibility | `[x]` | Authorization values are redacted before derived artifacts; artifact metadata records UTF-8 hash basis; learned embeddings include backend package version (23 focused tests pass). |
 | DOC-05 | `[x]` | Added handoff-ready critical path with dependencies, file boundaries and acceptance outcomes. |
 
 Verification: `venv/Scripts/python.exe -m pytest tests/ -q` reported **55 passed** with one
