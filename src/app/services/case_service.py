@@ -66,6 +66,12 @@ class CaseService:
             else: new = CaseStatus.EVIDENCE_REQUESTED
             if case.status in (CaseStatus.APPROVED, CaseStatus.REJECTED):
                 raise RuntimeError("Terminal case decisions cannot be repeated")
+            if case.status not in (CaseStatus.PENDING_REVIEW, CaseStatus.EVIDENCE_REQUESTED):
+                raise RuntimeError("Case is not reviewable in its current state")
+            # A priority override records an analyst decision but does not
+            # masquerade as an evidence request or alter review status.
+            if action == ReviewAction.PRIORITY_OVERRIDE:
+                new = case.status
             now = datetime.now(timezone.utc)
             db.execute("UPDATE cases SET status=?,last_updated_at=?,updated_at=? WHERE case_id=?",
                        (new.value, now.isoformat(), now.isoformat(), case_id))

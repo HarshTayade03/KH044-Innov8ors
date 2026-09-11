@@ -8,7 +8,7 @@ from src.app.services.risk_engine import risk_engine
 from src.app.services.threat_intel import ThreatIntelUnavailable
 from src.app.services.case_service import case_service
 from src.app.repositories.case_repo import case_repo
-from src.app.schemas.case import Case, ReviewDecision, ReviewAction
+from src.app.schemas.case import Case, CaseStatus, ReviewDecision, ReviewAction
 
 router = APIRouter(tags=["Cases & Prioritization"])
 
@@ -71,15 +71,19 @@ async def generate_case(canonical_issue_id: str):
 
 
 @router.get("/cases", response_model=list[Case])
-async def list_cases(status: str | None = None, limit: int = Query(100, ge=1, le=500), offset: int = Query(0, ge=0)):
-    return case_repo.list(status, limit, offset)
+async def list_cases(status: CaseStatus | None = None, limit: int = Query(100, ge=1, le=500), offset: int = Query(0, ge=0)):
+    return case_repo.list(status.value if status else None, limit, offset)
 
 
 @router.get("/cases/{case_id}")
 async def get_case(case_id: str):
     case = case_repo.get(case_id)
     if not case: raise HTTPException(status_code=404, detail="Case not found")
-    return {"case": case.model_dump(), "audit": [a.model_dump() for a in case_repo.audits(case_id)]}
+    return {
+        "case": case.model_dump(),
+        "reviews": [review.model_dump() for review in case_repo.reviews(case_id)],
+        "audit": [event.model_dump() for event in case_repo.audits(case_id)],
+    }
 
 
 @router.post("/cases/{case_id}/approve", response_model=Case)
