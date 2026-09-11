@@ -17,6 +17,28 @@
   passed. Uvicorn smoke checks returned HTTP 200 for `/`, `/health`, and `/openapi.json`;
   the server was stopped afterward.
 
+## Frontend case inspection fix — `feature/fix-frontend-case-inspection` (2026-09-12)
+
+- Reproduced the case queue contract mismatch: `GET /api/v1/cases?limit=500` returns a JSON
+  array, while the console only read object-wrapped collections, so the queue always rendered
+  empty. The refresh path now accepts both response shapes and reports partial-load failures.
+- Case inspection now surfaces the assembled latest offline validation, redacted evidence
+  references, stale status, and audit events; terminal cases no longer show review controls.
+- Verification: `node --check src\app\static\dashboard.js`, `git diff --check`, and local
+  Uvicorn checks for `/health` and `/api/v1/cases?limit=500` (HTTP 200, array response) passed.
+  Existing unrelated working-tree files were preserved.
+
+## Backend case query/review fix — `feature/fix-backend-case-queries` (2026-09-12)
+
+- Reproduced two backend inspection defects: case detail returned audit events but omitted the
+  persisted review history, and `priority_override` incorrectly changed a pending case to
+  `more_evidence_requested`. Invalid case-list status strings were also accepted as empty
+  results rather than rejected by FastAPI validation.
+- Added review-history retrieval to case detail, constrained list status to `CaseStatus`, and
+  kept priority overrides in the current reviewable state while still recording the review and
+  audit event. Added regression coverage for override state and inspection history.
+- Verification: focused case tests `3 passed`; full suite verification pending before commit.
+
 ---
 
 ## How to Use This Log (Agent Instructions)
