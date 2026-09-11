@@ -1,23 +1,26 @@
 /* Stronger pastel depth layered over the editorial base. */
 @font-face{font-family:"Doto";src:url("/static/fonts/Doto-SemiBold.ttf") format("truetype");font-weight:600;font-style:normal;font-display:swap}
-body{background:linear-gradient(180deg,#f4eeee 0%,#f5e8e4 32%,#e9f2ed 67%,#eeeaf4 100%)}
+:root{--mint:#ccd5ae;--peach:#faedcd;--lavender:#e9edc9;--sky:#ccd5ae;--rose:#d4a373;--canvas:#fefae0;--surface:#e9edc9;--strong:#d4a373}
+body{background:linear-gradient(180deg,#fefae0 0%,#faedcd 38%,#e9edc9 72%,#ccd5ae 118%)}
 .wordmark,h1,.section-title h2{font-family:"Doto","Courier New",monospace;font-weight:600;letter-spacing:-.045em}
 .wordmark{letter-spacing:-.025em}.section-title h2{font-size:28px}
-.card{border-color:#d7d0d1;background:#fffefaed;backdrop-filter:blur(14px)}
-.dataset-item{background:linear-gradient(145deg,#fffdfb 30%,#f1d5c8)}
-.dataset-item:nth-child(2n){background:linear-gradient(145deg,#fbfffd 30%,#cfe9dd)}
-.dataset-item:nth-child(3n){background:linear-gradient(145deg,#fefcff 30%,#ddd1ed)}
-.metrics article{background:linear-gradient(145deg,#fffafb,#e8cadb)}
-.metrics article:nth-child(2){background:linear-gradient(145deg,#fafffc,#c9e5d8)}
-.metrics article:nth-child(3){background:linear-gradient(145deg,#fcfaff,#d9cbea)}
-.metrics article:nth-child(4){background:linear-gradient(145deg,#f9fcff,#cbddec)}
-.metrics article:nth-child(5){background:linear-gradient(145deg,#fffbf8,#eed1bd)}
-.stage{background:linear-gradient(155deg,#fffaf8,#edd9cf)}
-.stage:nth-child(2){background:linear-gradient(155deg,#fafffc,#d4e9df)}
-.stage:nth-child(3){background:linear-gradient(155deg,#fcfaff,#dfd4ec)}
-.stage:nth-child(4){background:linear-gradient(155deg,#f9fcff,#d3e2ef)}
-.stage.active{background:linear-gradient(145deg,#f9fcff,#bfd8ec)}
+.card{border-color:#d4a373;background:#fefae0ed;backdrop-filter:blur(14px)}
+.dataset-item{background:linear-gradient(145deg,#fefae0 25%,#faedcd)}
+.dataset-item:nth-child(2n){background:linear-gradient(145deg,#fefae0 25%,#e9edc9)}
+.dataset-item:nth-child(3n){background:linear-gradient(145deg,#faedcd 20%,#ccd5ae)}
+.dataset-item strong,.metrics b{font-family:"Claimcheck","Doto","Courier New",monospace;font-weight:600;letter-spacing:-.04em}
+.dataset-item strong{font-size:17px}.metrics b{font-size:46px}
+.metrics article{background:linear-gradient(145deg,#fefae0,#ccd5ae)}
+.metrics article:nth-child(2){background:linear-gradient(145deg,#fefae0,#e9edc9)}
+.metrics article:nth-child(3){background:linear-gradient(145deg,#faedcd,#d4a373)}
+.metrics article:nth-child(4){background:linear-gradient(145deg,#fefae0,#ccd5ae)}
+.metrics article:nth-child(5){background:linear-gradient(145deg,#faedcd,#e9edc9)}
+.stage{background:linear-gradient(155deg,#fefae0,#faedcd)}
+.stage:nth-child(2){background:linear-gradient(155deg,#fefae0,#e9edc9)}
+.stage:nth-child(3){background:linear-gradient(155deg,#faedcd,#ccd5ae)}
+.stage:nth-child(4){background:linear-gradient(155deg,#fefae0,#e9edc9)}
+.stage.active{background:linear-gradient(145deg,#e9edc9,#ccd5ae)}
 .stage.active i{box-shadow:0 0 0 7px #a8c8e833}
-.explorer{box-shadow:0 24px 70px #a994c83d}
-dialog{background:linear-gradient(155deg,#fff 45%,#e6dced)}
+.explorer{box-shadow:0 24px 70px #7c86513d}
+dialog{background:linear-gradient(155deg,#fefae0 45%,#e9edc9)}
 @media(max-width:700px){.section-title h2{font-size:24px}}
