@@ -85,6 +85,14 @@ def test_bad_feed_never_becomes_clean_result(tmp_path, monkeypatch, contents):
         threat_intel_service.enrich_cve('CVE-2021-44228')
 
 
+def test_out_of_range_feed_is_unavailable(tmp_path, monkeypatch):
+    epss = tmp_path / 'epss.json'
+    epss.write_text(json.dumps({'data': [{'cve': 'CVE-2021-44228', 'epss': '1.5', 'percentile': '0.2'}]}))
+    monkeypatch.setattr(settings, 'epss_data_path', str(epss))
+    with pytest.raises(ThreatIntelUnavailable, match='malformed'):
+        threat_intel_service.enrich_cve('CVE-2021-44228')
+
+
 def test_risk_explains_every_contribution_and_live_mode(finding_factory, monkeypatch):
     finding_factory()
     deduplicator.deduplicator_service.run_deduplication()
