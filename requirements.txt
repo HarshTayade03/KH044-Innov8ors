@@ -1,0 +1,16 @@
+# VulnTriager — Python Dependencies
+# Pin all versions for reproducibility across machines and agents.
+# Do NOT add packages here without updating docs/agent-instructions.md and getting team approval.
+
+fastapi==0.115.5
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.5.2
+sentence-transformers==3.2.1
+scikit-learn==1.5.2
+numpy==1.26.4
+requests==2.32.3
+python-multipart==0.0.12
+python-dotenv==1.0.1
+pytest==8.3.3
+httpx==0.27.2
