@@ -19,6 +19,9 @@ fixed catalog, loads them through a safe backend route, and exposes the resultin
   recalculates risk. The UI labels simulation as supporting evidence rather than exploit proof.
 - Use local HTML/CSS/JS with no build step or external asset dependency. Responsive layouts must
   retain every control and avoid horizontal page overflow.
+- Follow root `design.md`: off-white canvas, warm ink, light serif display hierarchy, Inter-style
+  body stack, pill actions, 16px cards, hairline borders, generous spacing and decorative pastel
+  gradient orbs. Gradients remain atmospheric and never become action colors.
 
 ## Acceptance
 

@@ -348,6 +348,7 @@ upstream Starlette/AnyIO deprecation warning. `pip check` and `git diff --check`
 | F1-DEMO-02 | `[x]` | Added safe catalog/load and real metrics APIs; unknown dataset IDs cannot access arbitrary files. |
 | F1-DEMO-03 | `[x]` | Added interactive module stages, evidence explorer, risk details and offline validation artifacts. |
 | F1-DEMO-04 | `[x]` | Added responsive warm-neutral visual system with no external assets or build step. |
+| F1-DEMO-05 | `[x]` | Aligned UI with `design.md`: editorial type, ink pills, soft cards, hairlines and pastel atmosphere. |
 
 Verification: 56 tests passed, JavaScript syntax and `git diff --check` passed. The configured
 in-app/extension browser list was empty, so rendered browser automation was unavailable in this run.
