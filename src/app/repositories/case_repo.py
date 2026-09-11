@@ -66,4 +66,25 @@ class CaseRepository:
         return [AuditEvent(event_id=r["event_id"],entity_type=r["entity_type"],entity_id=r["entity_id"],action=r["action"],
                            actor=r["actor"],details=json.loads(r["details"]),occurred_at=_dt(r["occurred_at"])) for r in rows]
 
+    def reviews(self, case_id):
+        """Return the review history in decision order for case inspection."""
+        with get_db() as db:
+            rows = db.execute(
+                "SELECT * FROM reviews WHERE case_id=? ORDER BY reviewed_at, created_at",
+                (case_id,),
+            ).fetchall()
+        return [
+            Review(
+                review_id=row["review_id"],
+                case_id=row["case_id"],
+                action=ReviewAction(row["action"]),
+                actor_id=row["actor_id"],
+                reason=row["reason"] or row["comment"] or "",
+                previous_status=CaseStatus(row["previous_status"]) if row["previous_status"] else None,
+                new_status=CaseStatus(row["new_status"]) if row["new_status"] else None,
+                reviewed_at=_dt(row["reviewed_at"]),
+            )
+            for row in rows
+        ]
+
 case_repo = CaseRepository()
