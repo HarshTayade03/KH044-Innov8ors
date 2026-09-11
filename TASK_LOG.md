@@ -401,3 +401,14 @@ Tasks over 30 minutes must be split or have a shortcut agreed before implementat
   approval boundary explicit acceptance criteria.
 - No runtime code, secrets, schema contracts, or environment files were changed in this planning
   pass; implementation tasks remain `[ ]` until their checks are actually run.
+
+## 2026-09-12 Debug verification (feature/debug-verification)
+
+| Scope | Status | Evidence |
+|---|---|---|
+| Case handoff stale refresh | `[x]` | Fixed stale snapshot regeneration to reuse the existing case row identity; added `test_stale_case_refresh_preserves_retrievable_case_identity`. |
+| Contextualisation/risk/validation/case regression slice | `[x]` | `venv\\Scripts\\python.exe -m pytest tests\\test_extractor.py tests\\test_risk_engine.py tests\\test_validation.py tests\\test_cases.py -q`: 17 passed. |
+| Full regression suite | `[x]` | `venv\\Scripts\\python.exe -m pytest tests\\ -q`: 57 passed, 2 skipped; two existing Starlette/AnyIO deprecation warnings. |
+| Runtime/API smoke | `[x]` | `venv\\Scripts\\python.exe -m pip check`: no broken requirements; `compileall -q src tests`; Uvicorn `GET /health` and `GET /openapi.json`: 200/200; `git diff --check` passed. |
+
+Blocker: the root `AGENT_HANDOFF.md` path referenced by the task was absent; the available handoff at `docs/AGENT_HANDOFF.md` was read instead. Unrelated `src/app/parsers/__init__.py`, `data/pipeline_testing_guide.md`, and `data/sample_upload.json` changes were preserved and not included in this debug commit.
