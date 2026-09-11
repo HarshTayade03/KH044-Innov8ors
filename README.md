@@ -5,7 +5,7 @@ deduplicates findings, and assigns explainable risk priorities using mock threat
 
 **Current status (2026-09-12):** backend phases 0-5 have implementation; R0 adds deduplication safety,
 repeatable lifecycle operations, isolated tests and explicit provenance. Sandbox validation, cases/human review, dashboard metrics, and the full
-pipeline are not implemented. The home page is a placeholder. Live KEV/EPSS fetching is absent.
+pipeline are not implemented. A basic frontend verifies the available stages. Live KEV/EPSS fetching is absent.
 
 ## Start here
 
@@ -30,8 +30,10 @@ real sandbox execution. R0 located a bundled Python 3.12.14 runtime and created 
 venv/Scripts/python.exe directly if Python is not on PATH. Model downloads default to disabled
 (MODEL_ALLOW_DOWNLOAD=false); a missing cached model uses the explicitly labeled hashing fallback.
 
-Open [API docs](http://localhost:8000/docs), [health](http://localhost:8000/health), or the
-[placeholder home page](http://localhost:8000/). npm start only runs legacy JavaScript scaffolding.
+Open the [backend validation dashboard](http://localhost:8000/), [API docs](http://localhost:8000/docs),
+or [health endpoint](http://localhost:8000/health). The dashboard can import findings, run the
+implemented core stages, inspect extracted views and embeddings, review clusters, and calculate
+mock-feed risk scores. npm start only runs legacy JavaScript scaffolding.
 
 ## Tests
 
@@ -57,7 +59,7 @@ Use python -m pip install -r requirements-lock.txt to reproduce that resolved en
 | src/app/parsers/ and schemas/ | Scanner adapters and pipeline contracts; validation/case schemas are stubs |
 | src/app/services/ and repositories/ | Normalization, views, embeddings, deduplication and mock risk enrichment |
 | src/app/api/ | Backend routes, including explicit HTTP 501 placeholders |
-| src/app/static/index.html | Placeholder for the future analyst dashboard |
+| src/app/static/ | Basic no-build validation dashboard for implemented backend APIs |
 | data/ | 110 synthetic findings and mock KEV/EPSS feeds |
 | tests/ | Existing backend tests |
 | docs/ | Current status, roadmap, requirements and M0-M2/R0 specs |

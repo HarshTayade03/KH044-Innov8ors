@@ -15,6 +15,7 @@ A registered route or database table is not a completed feature.
 | Order | Phase | Deliverables | Exit criteria |
 |---|---|---|---|
 | Done | R0: reliable baseline | Reproducible runtime, isolated tests, dedup invariants and lifecycle, truthful feed/model provenance | Clean install; current and regression tests pass; health/API smoke checks pass; reruns do not duplicate active issues. |
+| Done | F0: validation frontend | Basic browser console over implemented APIs | Import, workflow, detail, error and responsive browser checks pass; unavailable phases are labeled. |
 | 2 | P6 / M5: lab validation and evidence | Contracts, local simulator, immutable redacted artifacts, repository/API, risk integration | Three lab scenarios round-trip through API/storage; timeout/unknown inconclusive; allowlist rejection; verified hashes; no real target requests. |
 | 3 | P7 / M6: cases and review | Assembly, state transitions, required reasons, audit history, overrides | Assembly/review tests; missing IDs, invalid/repeated and concurrent decisions handled; actor/reason/history preserved. |
 | 4 | P8 / M7: dashboard | Metrics, upload/manual form, queue/detail/views/evidence, cluster inspector, reviews/audit | Browser checks of core flows and loading/empty/error states; clear mock/simulation labels. |
@@ -39,6 +40,10 @@ A registered route or database table is not a completed feature.
 R0 is complete: 49 tests pass, pip check passes, and actual Uvicorn HTTP smoke checks pass. See
 [the R0 contract](MODULE_SPECS/R0_baseline.md) and TASK_LOG.md for results. Live clients remain deferred.
 The next phase is P6: lab validation and evidence.
+
+F0 was added at the user's request to validate the implemented backend before P6. It is a
+small no-build frontend, not completion of P8: case review and validation evidence depend on
+P6/P7, while the dedicated dashboard metrics endpoint remains planned.
 
 ## P6 implementation contract
 

@@ -72,6 +72,10 @@ app.include_router(validation_router, prefix="/api/v1")
 app.include_router(cases_router,      prefix="/api/v1")
 app.include_router(dashboard_router,  prefix="/api/v1")
 
+# Dashboard assets are local so the validation console works without a CDN.
+static_dir = os.path.join(os.path.dirname(__file__), "static")
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 
 # ─── Core Endpoints ───────────────────────────────────────────────────────────
 

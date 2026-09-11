@@ -1,6 +1,6 @@
 # VulnTriager — Master Task Log & Progress Tracker
 
-> Last Updated: 2026-09-12 IST | R0 COMPLETE | Next implementation phase: P6 lab validation and evidence
+> Last Updated: 2026-09-12 IST | F0 BASIC FRONTEND COMPLETE | Next implementation phase: P6 lab validation and evidence
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
@@ -303,3 +303,20 @@ not an execution result. P7 must respect cases.stale when assembling/reviewing c
 lists retain historical clusters; issue lists show only active issues. Holding a SQLite write
 transaction during dedup favors prototype consistency over throughput. Learned-model accuracy,
 real Docker execution, live feeds and full P6-P9 integration are not claimed by R0 tests.
+
+
+## F0 Basic Backend Validation Frontend
+
+| ID | Task | Status | Notes |
+|---|---|---|---|
+| F0-01 | Build a basic frontend for implemented backend features | `[x]` | Vanilla HTML/CSS/JS console for ingestion, views/embeddings, dedup, cluster review, risk, progress and errors. 49 backend tests plus browser workflow and responsive checks passed. |
+
+### F0 verification
+
+- FastAPI serves the page and local CSS/JavaScript without a CDN or build step.
+- Browser automation passed backend health, synthetic JSON import, view extraction, hashing
+  fallback embeddings, deduplication, mock-feed prioritization, issue details, and 390px layout.
+- `venv/Scripts/python.exe -m pytest tests/ -q`: 49 passed; one upstream Starlette/AnyIO
+  deprecation warning. `node --check src/app/static/dashboard.js` and `git diff --check` passed.
+- Sandbox validation and case review remain visibly unavailable until P6/P7; F0 does not claim
+  the dedicated metrics endpoint or full P8 dashboard as complete.
