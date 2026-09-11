@@ -1,6 +1,6 @@
-# VulnTriager — Master Task Log & Progress Tracker
+﻿# VulnTriager — Master Task Log & Progress Tracker
 
-> Last Updated: 2026-09-11 23:40 IST | Project: KH044 Innov8ors | Status: IN PROGRESS — Phase 6
+> Last Updated: 2026-09-12 IST | Audit complete; next implementation phase: R0 baseline reliability
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
@@ -35,7 +35,7 @@
 | 2026-09-11 22:06 | Risk weight validation at Settings import time | Fail fast — bad config found at startup, not mid-request |
 | 2026-09-11 22:06 | Removed redundant `load_dotenv()` from config.py | `pydantic-settings` handles .env natively via `model_config`; double-loading was redundant |
 | 2026-09-11 22:06 | Added `python-dotenv==1.0.1` to requirements | `pydantic-settings` requires it as a dependency for .env file support |
-| 2026-09-11 22:06 | All 13 DB tables created in one `init_db()` call | Simpler than migrations for prototype; `CREATE TABLE IF NOT EXISTS` is idempotent |
+| 2026-09-11 22:06 | All 14 DB tables created in one `init_db()` call | Simpler than migrations for prototype; `CREATE TABLE IF NOT EXISTS` is idempotent |
 | 2026-09-11 22:20 | Install split: core deps first, ML deps (sentence-transformers, sklearn) separate | Windows App Control policy blocked full install; separate installs isolate the failure |
 | 2026-09-11 22:27 | Binary wheel install `pydantic-2.13.5` & `pydantic-core-2.46.5` | Pydantic 2.9.2 failed metadata build on Python 3.14 on Windows; pre-built wheel `pydantic-2.13.5` installed cleanly |
 | 2026-09-11 22:52 | Primary CWE Fingerprint resolution via `CWE_PARENT_MAP` | Child CWEs (CWE-564, CWE-80) resolve to root (CWE-89, CWE-79) before SHA-256 fingerprinting |
@@ -53,10 +53,10 @@
 | ID | Task | Status | Notes |
 |---|---|---|---|
 | P0-06 | Create folder structure (`src/app/schemas/`, `parsers/`, `services/`, `repositories/`, `api/`, `static/`, `workers/`, `tests/`, `data/`) | `[x]` | All dirs created. Committed in `[P0-06]` commit (40 files). |
-| P0-01 | Create `requirements.txt` with pinned dependencies | `[x]` | `src/app/requirements.txt` — 12 packages pinned. |
+| P0-01 | Create `requirements.txt` with pinned dependencies | `[x]` | `requirements.txt` — 12 packages pinned. |
 | P0-02 | Create `.env.example` with all config keys | `[x]` | `.env.example` — all 19 keys documented with inline comments. |
 | P0-04 | Create `config.py` reading from `.env` | `[x]` | `src/app/config.py` — Pydantic Settings with risk weight sum validation. |
-| P0-03 | Create `database.py` with all 13 table definitions | `[x]` | `src/app/database.py` — 13 tables + 12 indexes. WAL mode + FK constraints enabled. |
+| P0-03 | Create `database.py` with all 14 table definitions | `[x]` | `src/app/database.py` — 14 tables + 12 indexes. WAL mode + FK constraints enabled. |
 | P0-05 | Create `main.py` FastAPI entrypoint | `[x]` | `src/app/main.py` — lifespan startup, all 6 routers registered, `/health` endpoint. |
 | P0-07 | Write updated `README.md` | `[x]` | `README.md` — full setup guide, project structure, tech stack table. |
 | — | Create all stub files | `[x]` | All stubs created with `not_implemented` responses and module references. |
@@ -209,7 +209,7 @@
 
 ---
 
-## Completion Summary
+## Original Baseline Summary (audit-adjusted; remaining includes deferred tasks)
 
 | Phase | Tasks | Done | Remaining |
 |---|---|---|---|
@@ -217,10 +217,44 @@
 | Phase 1 — Parsers | 14 | 14 | 0 |
 | Phase 2 — Data | 8 | 8 | 0 |
 | Phase 3 — Views & Embeddings | 10 | 10 | 0 |
-| Phase 4 — Deduplication | 8 | 8 | 0 |
-| Phase 5 — Threat Intel | 8 | 8 | 0 |
+| Phase 4 - Deduplication | 8 | 7 | 1 |
+| Phase 5 - Threat Intel | 8 | 6 | 2 |
 | Phase 6 — Sandbox | 7 | 0 | 7 |
 | Phase 7 — Cases | 6 | 0 | 6 |
 | Phase 8 — Frontend | 7 | 0 | 7 |
 | Phase 9 — Demo | 4 | 0 | 4 |
-| **TOTAL** | **79** | **55** | **24** |
+| **TOTAL** | **79** | **52** | **27** |
+
+---
+
+## 2026-09-12 Repository Audit and Replanned Work
+
+Historical phase headings/pass claims above describe previous sessions, not fresh verification.
+The adjusted 79-task baseline excludes the unnamed bootstrap stub row, P10, and new tasks below.
+Remaining includes three deferred tasks (M4-01 live, M4-02 live, M5-03 Docker).
+
+| ID | Task | Status | Evidence / result |
+|---|---|---|---|
+| DOC-01 | Establish discoverable agent instructions | `[x]` | Added root AGENTS.md; replaced stale machine paths, nonexistent specs and single-repo claims in development guide. |
+| DOC-02 | Inventory modules and current done work | `[x]` | docs/CURRENT_STATE.md maps code, stubs, API surface and limitations; corrected 14-table count and hashing fallback description. |
+| DOC-03 | Redesign implementation plan | `[x]` | docs/IMPLEMENTATION_PLAN.md defines R0 then P6-P9 with acceptance gates and a P6 contract; live integrations/Docker deferred. |
+| DOC-04 | Align README, documentation index and task log | `[/]` | Documentation checks pending; runtime test attempt blocked by absent interpreter. |
+| R0-01 | Verify runtime, isolate test DB, add API baseline checks | `[ ]` | python absent; py reports no installed interpreter. Establish runtime and verify existing pins before proceeding. |
+| R0-02 | Enforce dedup hard blocks across both stages/final clusters | `[ ]` | Reopens M3-05; regression tests for identical fingerprints and indirect semantic bridges. |
+| R0-03 | Make rerun/merge/split lifecycle consistent | `[ ]` | New UUIDs on rerun; split does not retire prior issue; define transaction and downstream invalidation rules. |
+| R0-04 | Correct feed/model provenance and risk explanations | `[ ]` | Live flags unused, fallback mislabeled, validation factor hardcoded; see roadmap. |
+
+### Audit decisions
+
+- Source code governs current-state claims; historical checkmarks do not prove present acceptance.
+- Existing phases 0-5 contain substantial implementation; validation, cases, dashboard and integration remain unfinished.
+- R0 reliability precedes P6 so later case/evidence workflows do not inherit known dedup and persistence gaps.
+- Do not claim real exploit confirmation from lab simulation; preserve explicit simulated provenance.
+- The user's next-phase condition was not met: instructions/status/plan needed changes, so this session performs documentation work only.
+
+### Verification
+
+- Attempted python -m pytest tests/ -q: command unavailable.
+- py --list-paths and py -m pytest tests/ -q: no installed Python found. No tests or startup smoke check passed in this session.
+- Source inspection found 21 test functions across five test files and 14 SQLite table definitions.
+- Fixture counts, documentation links, and whitespace checks: pending final documentation verification.

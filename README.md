@@ -1,117 +1,66 @@
-# KH044 Innov8ors — AI-Assisted Vulnerability Triage Platform
+﻿# KH044 Innov8ors - AI-Assisted Vulnerability Triage Platform
 
-An automated vulnerability triage system that normalizes findings from multiple security scanners, deduplicates via AI semantic clustering, validates exploitability in a controlled sandbox, and generates analyst-ready cases with transparent risk scoring.
+A prototype that normalizes security scanner findings, extracts four structured views,
+deduplicates findings, and assigns explainable risk priorities using mock threat intelligence.
 
----
+**Current status (2026-09-12):** backend phases 0-5 have implementation with known correctness
+and verification gaps. Sandbox validation, cases/human review, dashboard metrics, and the full
+pipeline are not implemented. The home page is a placeholder. Live KEV/EPSS fetching is absent.
 
-## The Problem
+## Start here
 
-Security teams receive hundreds of disorganized alerts from Burp Suite, Nessus, OWASP ZAP, and similar tools — all in different formats, with inconsistent naming, duplicated findings, and unverified severity. Analysts spend hours manually triaging instead of fixing vulnerabilities.
+- [Current modules and features](docs/CURRENT_STATE.md)
+- [Done work and revised implementation plan](docs/IMPLEMENTATION_PLAN.md)
+- [Task log and verification history](TASK_LOG.md)
+- [Agent instructions](AGENTS.md) and [development guide](docs/agent-instructions.md)
 
-## The Solution
+## Setup
 
-A 9-stage pipeline that:
-1. **Normalizes** findings from 5+ scanner formats (SARIF 2.1.0, JSON) into a single canonical schema
-2. **Extracts** 4 structured views per finding (Description, Location, Reproduction, Impact)
-3. **Deduplicates** using deterministic fingerprinting + AI semantic clustering (HDBSCAN)
-4. **Validates** exploitability in a safe lab sandbox simulation
-5. **Scores** risk transparently using CISA KEV + EPSS + CVSS + asset criticality
-6. **Generates** analyst-ready cases for human review and approval
+From the repository root, with a Python interpreter compatible with requirements.txt:
 
----
-
-## Quick Setup
-
-```bash
-# 1. Create virtual environment
+```powershell
 python -m venv venv
-venv\Scripts\activate        # Windows
-# source venv/bin/activate   # Linux / Mac
-
-# 2. Install dependencies
-pip install -r requirements.txt
-
-# 3. Configure environment
-copy .env.example .env
-# Edit .env if needed (defaults work for prototype)
-
-# 4. Run the server
+.\venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 python -m uvicorn src.app.main:app --reload --port 8000
-
-# 5. Open in browser
-# Dashboard:  http://localhost:8000/
-# API Docs:   http://localhost:8000/docs
-# Health:     http://localhost:8000/health
 ```
 
----
+Consult .env.example for configuration. Defaults use local SQLite, mock feeds, and disabled
+real sandbox execution. The pinned dependency set and historical Python 3.14 setup need clean-install
+verification (R0-01); this audit machine has no installed Python interpreter.
 
-## Running Tests
+Open [API docs](http://localhost:8000/docs), [health](http://localhost:8000/health), or the
+[placeholder home page](http://localhost:8000/). npm start only runs legacy JavaScript scaffolding.
 
-```bash
-pytest tests/ -v
+## Tests
+
+Use disposable storage because the current fixture initializes the configured database:
+
+```powershell
+$env:DATABASE_PATH = Join-Path $env:TEMP ('triage-tests-' + [guid]::NewGuid() + '.db')
+python -m pytest tests/ -q
 ```
 
----
+There are 21 test functions across parser, normalizer, extractor, deduplication and risk tests.
+They were not runnable in the 2026-09-12 audit; see TASK_LOG.md for the limitation.
 
-## Project Structure
+## Repository layout
 
-```
-innov8ors/
-├── src/app/
-│   ├── main.py              # FastAPI entrypoint
-│   ├── config.py            # Environment configuration
-│   ├── database.py          # SQLite with 13 tables
-│   ├── schemas/             # Pydantic data models
-│   ├── parsers/             # Scanner-specific adapters (Nessus, Burp, ZAP, SARIF)
-│   ├── services/            # Business logic (normalizer, extractor, deduplicator, etc.)
-│   ├── repositories/        # All database access (single repo pattern)
-│   ├── api/                 # REST API route handlers
-│   └── static/              # Analyst dashboard (single index.html)
-├── data/                    # Synthetic scanner data (110 findings: 50 SQLi, 40 XSS, 20 SSRF)
-├── tests/                   # Test suite
-├── docs/
-│   ├── agent-instructions.md    # Cross-agent development guide (read first!)
-│   ├── MODULE_SPECS/            # Detailed per-module implementation specs
-│   └── project_f1.md            # Hackathon problem statement
-├── requirements.txt
-└── .env.example
-```
-
----
-
-## Data Formats Supported
-
-| Scanner | Format | Findings in Dataset |
-|---|---|---|
-| Burp Suite | SARIF 2.1.0 | 25 SQLi + 20 XSS + 10 SSRF |
-| Nessus | JSON | 25 SQLi + 10 SSRF |
-| OWASP ZAP | JSON | 20 XSS |
-| Manual Entry | Web Form / JSON | — |
-
----
-
-## Tech Stack
-
-| Layer | Technology |
+| Path | Purpose |
 |---|---|
-| Backend | Python 3.14 + FastAPI + Pydantic v2 |
-| Database | SQLite |
-| Embeddings | `sentence-transformers` (all-MiniLM-L6-v2, 384-dim) |
-| Clustering | `scikit-learn` HDBSCAN |
-| Frontend | Single HTML file — Tailwind CSS + Alpine.js (no build step) |
+| src/app/main.py, config.py, database.py | FastAPI entrypoint, settings, SQLite with 14 table definitions |
+| src/app/parsers/ and schemas/ | Scanner adapters and pipeline contracts; validation/case schemas are stubs |
+| src/app/services/ and repositories/ | Normalization, views, embeddings, deduplication and mock risk enrichment |
+| src/app/api/ | Backend routes, including explicit HTTP 501 placeholders |
+| src/app/static/index.html | Placeholder for the future analyst dashboard |
+| data/ | 110 synthetic findings and mock KEV/EPSS feeds |
+| tests/ | Existing backend tests |
+| docs/ | Current status, roadmap, requirements and M0-M2 specs |
 
----
+Adapters exist for Nessus, Burp, Snyk, Trivy, generic SARIF and ZAP. Bundled findings use
+Burp/Nessus/ZAP JSON or SARIF: 50 SQLi, 40 XSS and 20 SSRF. Manual entry is an API capability;
+the web form remains planned.
 
-## For Developers & AI Agents
-
-Before making any changes, read [`docs/agent-instructions.md`](docs/agent-instructions.md).
-It contains the full module map, global rules, architecture decisions, and cross-system setup guide.
-
-Track task progress in the task log (see artifact directory).
-
----
-
-## Team
-
-KH044 Innov8ors | Hackathon Project
+Embeddings use SentenceTransformer when available and pure Python token hashing otherwise.
+Semantic clustering uses optional sklearn HDBSCAN. See the module inventory for merge safety,
+repeat-run, fallback provenance and risk-validation gaps before relying on results.
