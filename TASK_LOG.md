@@ -364,3 +364,109 @@ Next: increment B shared feature navigation and detail UX; cases/review remain p
 
 Verification: 56 tests passed, JavaScript syntax and `git diff --check` passed. The configured
 in-app/extension browser list was empty, so rendered browser automation was unavailable in this run.
+
+## 2026-09-12 P7 Case Assembly and Human Review
+
+| ID | Status | Completion evidence |
+|---|---|---|
+| M6-01 | `[x]` | Added typed case, review action, review record, audit event and status contracts in `src/app/schemas/case.py`; contract recorded in `docs/MODULE_SPECS/M6_cases_review.md`. |
+| M6-02 | `[x]` | `case_service.py` assembles active issues with findings, views, embedding provenance, priority, validation and artifacts; repeat pending generation reuses the case. |
+| M6-03 | `[x]` | Review transitions require nonblank actor/reason, reject stale and repeated terminal decisions, and return conflict responses. |
+| M6-04 | `[x]` | `case_repo.py` writes review and audit rows in the same SQLite transaction; detail responses expose chronological history. |
+| M6-05 | `[x]` | Case generation, queue/detail and four review routes are registered in `api/cases.py`. |
+| M6-06 | `[x]` | Added `tests/test_cases.py` for idempotent assembly, provenance, required reasons, terminal conflicts, stale rebuilds, queue/detail contracts, priority overrides and audit history. |
+
+### P7 verification notes
+
+- Python editor diagnostics and `py_compile` pass for all new backend modules.
+- The ordinary pytest process hit the documented Windows WMI/native NumPy crash; a rerun also encountered
+  permission denied while pytest created the default Windows temp root. The focused suite could not be
+  truthfully recorded as passed in this environment.
+- `node` is unavailable, so `node --check` could not run. JavaScript editor diagnostics report no errors.
+- The focused pytest rerun was terminated before producing output; no pytest pass is claimed. Python compilation and editor diagnostics remain clean.
+- P8 browser acceptance, full regression verification and P9 orchestration remain next; no real Docker,
+  live feeds or external integrations were added.
+
+## 2026-09-12 Validation History API
+
+| ID | Status | Completion evidence |
+|---|---|---|
+| M5-HISTORY-01 | `[x]` | Added typed `GET /api/v1/canonical-issues/{id}/validations` pagination with total count and append-only ordering. |
+| M5-HISTORY-02 | `[x]` | Added repository list/count methods, API contract documentation and focused history acceptance coverage. |
+
+Verification: editor diagnostics and Python compilation passed. The focused pytest process again produced
+no output in the current Windows environment, so no new pytest pass is claimed.
+
+## 2026-09-12 Cluster Comparison API
+
+| ID | Status | Completion evidence |
+|---|---|---|
+| M3-COMPARE-01 | `[x]` | Added `GET /api/v1/clusters/{cluster_id}/comparison` with cluster metadata, member finding summaries, locations, four-view data and embedding provenance. |
+| M3-COMPARE-02 | `[x]` | Added focused missing-cluster and deterministic-member API coverage in `tests/test_dedup.py`. |
+
+Verification: editor diagnostics and absolute-path Python compilation passed. The focused pytest process
+again terminated without output; no new runtime test pass is claimed. No Codex-owned frontend files were changed.
+
+## 2026-09-12 Sandbox Explainability Trace
+
+| ID | Status | Completion evidence |
+|---|---|---|
+| M5-TRACE-01 | `[x]` | Validation results now retain ordered safety, scenario, fixture, redaction, integrity and persistence trace steps. |
+| M5-TRACE-02 | `[x]` | Added immutable `sandbox_trace` evidence with exact UTF-8 hash/size and `live_execution: false`. |
+| M5-TRACE-03 | `[x]` | Added typed trace retrieval and SSE streaming endpoints for progressive simulator feedback. |
+| M5-TRACE-04 | `[x]` | Added acceptance coverage for ordered trace round-trip and stream event boundaries. |
+
+Verification: editor diagnostics and Python compilation passed. The focused pytest process remains silent in
+this Windows environment, so no new pytest pass is claimed. Real target requests and process execution remain disabled.
+
+
+## 2026-09-12 Shared workspace and Copilot P7 integration
+
+- [x] UX-B-01: Added selected-palette feature navigation, per-module filters, priority,
+  validation and service views, provenance details and modal focus restoration.
+- [x] UX-B-02: Paginated collections beyond 500 records; retained earlier data on partial
+  refresh failure; added readable structured errors and per-stage pipeline failure counts.
+- [x] UX-B-03: Display all validation artifacts and verify served UTF-8 content hash/size
+  in supporting browsers. Latest referenced runs are explicitly distinguished from full history.
+- [x] UX-B-04: Integrated Copilot's case queue with shared refresh, implemented missing
+  generateAllCases handler and added a two-script startup regression check.
+- [x] UX-B-05: 5 Node behavior tests and both script syntax checks pass. Full Python suite:
+  64 passed, one upstream deprecation warning, 71.87 seconds. Uses test-process-only
+  platform.machine AMD64 workaround and a distinct --basetemp for Windows environment issues.
+- [x] UX-B-06: Current application started on http://127.0.0.1:8002; health (14 tables),
+  GET cases and workspace asset return 200. Port 8001 remains the earlier process with case stubs.
+- [/] UX-B-07: Browser acceptance pending: configured browser connection list is empty.
+  DOM-stub tests verify startup behavior, not rendering, contrast or keyboard usability.
+
+Copilot retains ownership of P7 backend files. No main-branch push or shared-process restart.
+Local docs/design.md edits preserved. Changes remain in the shared feature-branch worktree.
+Remaining: cluster comparison/review controls, complete validation history, inline case decision
+forms and audit timeline, concurrent/stale P7 acceptance coverage, desktop/mobile browser QA.
+Frontend diff check passes; repository-wide diff check also reports an existing extra EOF blank
+line in the concurrent P7 schema file, which was left to its owner.
+
+
+## 2026-09-12 Cluster, history and case review frontend integration
+
+- [x] UX-C-01: Added member comparison with source links and explicit guarded merge/split
+  controls. Inline conflicts retain the comparison; busy state blocks repeat submissions.
+- [x] UX-C-02: Connected Copilot's per-issue validation history endpoint. All pages load
+  independently of priority references; a supplied retained issue ID supports retired history.
+  Failed reloads retain earlier runs. Every run links to integrity-checked artifact details.
+- [x] UX-D-01: Replaced prompt-based review interactions with labeled identity/reason/comment
+  forms, priority override selection, requested-evidence recovery, stale-case regeneration,
+  review history and audit timeline. Failed submissions preserve entered form contents.
+- [x] UX-CD-02: All four scripts initialize together; 11 frontend behavior tests and JS syntax
+  checks pass. Backend suite passed 68 tests in 70.77s with one upstream warning and the
+  documented test-process AMD64/isolated-basetemp workaround. Copilot continues backend edits;
+  this records that tested snapshot rather than certifying subsequent changes.
+- [x] UX-CD-03: Restarted only Codex's port-8002 runtime to load the shared backend changes.
+  Health, per-issue history and case-review assets return 200. Existing data and port 8001 preserved.
+- [/] UX-CD-04: Rendered desktop/mobile/keyboard acceptance remains pending; browser list is
+  still empty. DOM-stub behavior tests do not establish visual acceptance.
+
+Frontend changes are in module-review.js and case-review.js, composed after workspace.js.
+Copilot's P7/history/comparison/validation-trace backend edits were preserved. No changes were
+pushed to main; the combined changes remain uncommitted in the shared feature-branch worktree.
+Next: visual acceptance, fresh-corpus end-to-end demonstration, and review the combined diff
+with Copilot before a coherent feature-branch commit. Real Docker/live feeds stay deferred.

@@ -18,12 +18,12 @@ imports are preserved. See `FEATURE_UX_PLAN.md` for the 60-test verification and
 | M1 / P1 ingestion | `schemas/canonical.py`, `parsers/`, `services/normalizer.py`, `api/ingestion.py`, `repositories/findings_repo.py` | Upload, direct JSON, manual API; CVE/CWE/severity normalization, fingerprinting, quality and provenance. Parser names: nessus, burp, snyk, trivy, sarif, zap. Native export variants need broader tests. |
 | D1 / P2 data | Six scanner fixtures, two mock feed files in `data/`; `scratch/generate_datasets.py` | Intended corpus: 110 findings (50 SQLi, 40 XSS, 20 SSRF); count verification recorded in task log. |
 | M2 / P3 views and embeddings | `schemas/views.py`, `services/extractor.py`, `services/embedding.py`, `api/findings.py` | Four views, redaction, single/batch operations, weighted similarity. Lazy SentenceTransformer; fallback is pure Python SHA-256 token hashing, not HashingVectorizer. Backend/version and input text hashes are persisted accurately; downloads are opt-in. |
-| M3 / P4 deduplication | `schemas/dedup.py`, `services/deduplicator.py`, `repositories/dedup_repo.py`, `api/clusters.py` | Fingerprint groups, optional HDBSCAN, canonical issues, merge/split handlers. Pairwise hard blocks in both stages; stable IDs, atomic active snapshots and repeatable analyst merge/split actions. |
+| M3 / P4 deduplication | `schemas/dedup.py`, `services/deduplicator.py`, `repositories/dedup_repo.py`, `api/clusters.py` | Fingerprint groups, optional HDBSCAN, canonical issues, merge/split handlers and a structured cluster comparison endpoint. Pairwise hard blocks in both stages; stable IDs, atomic active snapshots and repeatable analyst merge/split actions. |
 | M4 / P5 prioritization | `schemas/risk.py`, `services/risk_engine.py`, `services/threat_intel.py`, `repositories/risk_repo.py`, priority routes in `api/cases.py` | Mock KEV/EPSS and SQLite cache; weighted score, three tiers, explanations. Unsupported live flags return 503; content hashes refresh mock cache; all contributions and neutral validation prior are explicit. |
-| M5 / P6 validation | `schemas/validation.py`, `services/sandbox.py`, `repositories/validation_repo.py`, `api/validation.py`; validation/evidence tables | Deterministic offline SQLi/XSS/SSRF simulation, allowlist, immutable redacted evidence with verified hashes, retrieval APIs and risk integration. Real Docker execution is explicitly rejected and deferred. |
-| M6 / P7 cases | DB tables `cases`, `reviews`, `audit_events`; `schemas/case.py`, case routes | Schema stub and seven HTTP 501 case/review routes. No case assembly, state machine, or append-only audit implementation. |
+| M5 / P6 validation | `schemas/validation.py`, `services/sandbox.py`, `repositories/validation_repo.py`, `api/validation.py`; validation/evidence tables | Deterministic offline SQLi/XSS/SSRF simulation, ordered explainability traces, safe SSE progress, allowlist, immutable redacted evidence with verified hashes, single-run/history APIs, and risk integration. Real Docker execution is explicitly rejected and deferred. |
+| M6 / P7 cases | `schemas/case.py`, `services/case_service.py`, `repositories/case_repo.py`, case routes | Implemented case assembly, provenance snapshots, stale rebuilds, required-reason review transitions and append-only audit history. Concurrent/repeated review behavior is guarded with 409 responses. |
 | F1 / demo frontend | `static/index.html`, `dashboard.css`, `dashboard.js`; demo catalog and metrics routes | Synthetic-corpus dashboard loads six repository fixtures, runs views/embeddings/dedup/risk, inspects evidence and executes offline validation. Analyst upload/manual entry is intentionally absent. |
-| M7 / P8 dashboard | `api/dashboard.py` and F0 console | Dedicated metrics API remains HTTP 501. Case queue, validation evidence, approval/rejection controls, and audit timeline await P6/P7. |
+| M7 / P8 dashboard | `api/dashboard.py`, `static/index.html`, `static/dashboard.js`, `static/cases.css` | Case queue, case detail, review history and analyst actions are wired to M6 APIs. Browser acceptance across loading/error/mobile states remains outstanding. |
 | P9 integration | No full pipeline orchestrator or end-to-end suite | Not started; current stages require separate API calls. |
 | P10 integrations | `workers/scanner_poller.py`; config placeholders | Poller raises NotImplementedError. Slack/Jira/webhook implementations absent. |
 
@@ -35,10 +35,11 @@ Application routes use `/api/v1`; `/`, `/health`, and `/docs` are root routes.
 
 - Ingestion: `POST /findings/upload`, `/findings`, `/findings/manual`.
 - Findings: list/detail GET, single/batch view extraction and embedding routes in `api/findings.py`.
-- Deduplication: `POST /deduplication/run`, cluster list/detail and merge/split, canonical issue list/detail.
+- Deduplication: `POST /deduplication/run`, cluster list/detail/comparison and merge/split, canonical issue list/detail.
 - Priority: `POST /canonical-issues/{canonical_issue_id}/prioritize`, `GET /priorities`,
   `GET /priorities/{canonical_issue_id}`.
-- Stubs: validation/evidence, case generation/review, and dashboard metrics.
+- Cases: case generation, queue/detail, approval/rejection, evidence requests and priority override routes.
+- Validation/evidence, paginated validation history, trace replay/SSE progress and dashboard metrics are implemented; dedicated end-to-end browser acceptance remains outstanding.
 
 ## R0 changes and remaining limits
 
@@ -62,12 +63,33 @@ Application routes use `/api/v1`; `/`, `/health`, and `/docs` are root routes.
   consistency over large-scale concurrent throughput. Cluster lists include historical clusters.
 - Cached learned models may be used; R0 tests use offline hashing and real sklearn HDBSCAN.
   Learned-model accuracy is not established by these regression tests.
-- Human case review, dedicated dashboard metrics and the full orchestrated pipeline remain
-  unimplemented. F0 provides a basic browser workflow over the implemented backend and
-  uses the public product description. M5 validation and evidence are exposed through issue actions.
+- The case backend and initial review queue are implemented, but browser acceptance across all
+  loading/empty/error states and the full orchestrated pipeline remain outstanding. F0/P8 uses the
+  public product description. M5 validation and evidence are exposed through issue actions.
 
 ## Done-work interpretation
 
 The initial audit reopened M3-05 and two live-feed tasks. R0 completes M3-05 and four
 additional reliability tasks, with 49 passing tests and recorded acceptance results. Live fetching and Docker
 remain deferred. Preserve the original baseline separately from newly added R0 work in TASK_LOG.md.
+
+
+## Latest shared frontend verification (2026-09-12)
+
+The workspace extension adds navigation, scoped filters, complete collection pagination,
+priority explanations, finding provenance, validation artifact checks and service status.
+Copilot's initial case queue is integrated; its bulk-generation startup blocker is fixed.
+64 backend tests and 5 frontend behavior tests pass using the documented Windows test workaround.
+Current source is served on port 8002 with working cases GET; port 8001 is an older process.
+Browser rendering remains unverified. Full validation history, cluster review UX and inline
+case decision/audit/override UX remain incomplete; P7 concurrency coverage remains a handoff item.
+
+
+### C/D frontend checkpoint (2026-09-12)
+
+Cluster comparison and guarded merge/split controls, complete selected-issue validation history,
+and inline case decisions/overrides/regeneration/review/audit views are implemented. Source files:
+module-review.js and case-review.js. Copilot owns the evolving backend. Eleven frontend behavior
+checks pass; the combined backend snapshot passed 68 tests with the Windows test workaround.
+The runtime on port 8002 serves the current history contract. Full desktop/mobile/keyboard and
+fresh-corpus interactive acceptance remain next. Preserve concurrent edits and never push main.

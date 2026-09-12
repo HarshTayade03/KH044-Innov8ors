@@ -4,6 +4,7 @@ api/clusters.py — Deduplication cluster and canonical issue endpoints.
 
 from fastapi import APIRouter, HTTPException, Query, status
 from src.app.repositories.dedup_repo import dedup_repo
+from src.app.repositories.findings_repo import repo as findings_repo
 from src.app.services.deduplicator import deduplicator_service, DedupConflict
 
 router = APIRouter(tags=["Deduplication"])
@@ -49,6 +50,46 @@ async def get_cluster(cluster_id: str):
             detail=f"Cluster with ID '{cluster_id}' not found.",
         )
     return cluster.model_dump()
+
+
+@router.get("/clusters/{cluster_id}/comparison", response_model=dict)
+async def compare_cluster_members(cluster_id: str):
+    """Return persisted member evidence for side-by-side analyst comparison."""
+    cluster = dedup_repo.get_cluster(cluster_id)
+    if not cluster:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Cluster with ID '{cluster_id}' not found.",
+        )
+
+    members = []
+    for member in cluster.members:
+        finding = findings_repo.get_normalized_finding(member.finding_id)
+        if not finding:
+            continue
+        views = findings_repo.get_finding_views(member.finding_id)
+        embeddings = findings_repo.get_finding_embeddings(member.finding_id)
+        members.append({
+            "finding_id": finding.finding_id,
+            "role": member.role,
+            "source_scanner": finding.source_scanner,
+            "title": finding.vulnerability.title,
+            "severity": finding.vulnerability.severity,
+            "cwe_ids": finding.vulnerability.cwe_ids,
+            "location": finding.location.model_dump(mode="json"),
+            "views": views.model_dump(mode="json") if views else None,
+            "embedding_provenance": {
+                "backend": embeddings.embedding_model,
+                "version": embeddings.model_version,
+                "dimension": embeddings.embedding_dimension,
+                "missing_views": embeddings.missing_views,
+            } if embeddings else None,
+        })
+    return {
+        "cluster": cluster.model_dump(mode="json"),
+        "member_count": len(members),
+        "members": members,
+    }
 
 
 def review_cluster(cluster_id: str, merge: bool):

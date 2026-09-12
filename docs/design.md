@@ -2,7 +2,7 @@
 
 Version: 1.0  
 Updated: 2026-09-12  
-Source reference: [`../design.md`](../design.md)
+
 
 ## Purpose
 

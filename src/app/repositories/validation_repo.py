@@ -2,12 +2,12 @@
 import json
 from datetime import datetime
 from src.app.database import get_db
-from src.app.schemas.validation import Artifact, SandboxMode, ValidationResult, ValidationStatus
+from src.app.schemas.validation import Artifact, SandboxMode, ValidationResult, ValidationStatus, ValidationTraceStep
 
 class ValidationRepository:
     def save(self, result: ValidationResult, artifacts: list[Artifact]) -> None:
         with get_db() as db:
-            db.execute("""INSERT INTO validation_runs (validation_id, canonical_issue_id, finding_id, status, confidence, sandbox_mode, execution_summary, executed_at, timeout_seconds, created_at, updated_at, scenario, target_host, limitations) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (result.validation_id, result.canonical_issue_id, result.finding_id, result.status.value, result.confidence, result.sandbox_mode.value, result.execution_summary, result.executed_at.isoformat(), result.timeout_seconds, result.created_at.isoformat(), result.created_at.isoformat(), result.scenario, result.target_host, json.dumps(result.limitations)))
+            db.execute("""INSERT INTO validation_runs (validation_id, canonical_issue_id, finding_id, status, confidence, sandbox_mode, execution_summary, executed_at, timeout_seconds, created_at, updated_at, scenario, target_host, limitations, trace) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (result.validation_id, result.canonical_issue_id, result.finding_id, result.status.value, result.confidence, result.sandbox_mode.value, result.execution_summary, result.executed_at.isoformat(), result.timeout_seconds, result.created_at.isoformat(), result.created_at.isoformat(), result.scenario, result.target_host, json.dumps(result.limitations), json.dumps([step.model_dump(mode="json") for step in result.trace])))
             for a in artifacts:
                 db.execute("""INSERT INTO artifacts (artifact_id, entity_type, entity_id, artifact_type, content, content_hash, content_size, redacted, metadata, created_at, updated_at) VALUES (?, 'validation', ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (a.artifact_id, result.validation_id, a.artifact_type, a.content, a.content_hash, a.content_size, int(a.redacted), json.dumps(a.metadata), a.created_at.isoformat(), a.created_at.isoformat()))
 
@@ -16,7 +16,8 @@ class ValidationRepository:
             r = db.execute("SELECT * FROM validation_runs WHERE validation_id=?", (validation_id,)).fetchone()
             if not r: return None
             ids = [x["artifact_id"] for x in db.execute("SELECT artifact_id FROM artifacts WHERE entity_type='validation' AND entity_id=? ORDER BY created_at", (validation_id,)).fetchall()]
-        return ValidationResult(validation_id=r["validation_id"], canonical_issue_id=r["canonical_issue_id"], finding_id=r["finding_id"], status=ValidationStatus(r["status"]), confidence=r["confidence"], sandbox_mode=SandboxMode(r["sandbox_mode"]), scenario=r["scenario"], target_host=r["target_host"], execution_summary=r["execution_summary"], limitations=json.loads(r["limitations"]), executed_at=datetime.fromisoformat(r["executed_at"]), timeout_seconds=r["timeout_seconds"], artifact_ids=ids, created_at=datetime.fromisoformat(r["created_at"]))
+        trace = [ValidationTraceStep.model_validate(item) for item in json.loads(r["trace"] or "[]")]
+        return ValidationResult(validation_id=r["validation_id"], canonical_issue_id=r["canonical_issue_id"], finding_id=r["finding_id"], status=ValidationStatus(r["status"]), confidence=r["confidence"], sandbox_mode=SandboxMode(r["sandbox_mode"]), scenario=r["scenario"], target_host=r["target_host"], execution_summary=r["execution_summary"], limitations=json.loads(r["limitations"]), executed_at=datetime.fromisoformat(r["executed_at"]), timeout_seconds=r["timeout_seconds"], artifact_ids=ids, trace=trace, created_at=datetime.fromisoformat(r["created_at"]))
 
     def list_artifacts(self, validation_id: str) -> list[Artifact]:
         with get_db() as db:
@@ -27,5 +28,22 @@ class ValidationRepository:
         with get_db() as db:
             r = db.execute("SELECT validation_id FROM validation_runs WHERE canonical_issue_id=? ORDER BY created_at DESC LIMIT 1", (issue_id,)).fetchone()
         return self.get(r["validation_id"]) if r else None
+
+    def list_for_issue(self, issue_id: str, limit: int = 100, offset: int = 0) -> list[ValidationResult]:
+        with get_db() as db:
+            rows = db.execute(
+                "SELECT validation_id FROM validation_runs WHERE canonical_issue_id=? "
+                "ORDER BY created_at DESC LIMIT ? OFFSET ?",
+                (issue_id, limit, offset),
+            ).fetchall()
+        return [result for row in rows if (result := self.get(row["validation_id"]))]
+
+    def count_for_issue(self, issue_id: str) -> int:
+        with get_db() as db:
+            row = db.execute(
+                "SELECT COUNT(*) AS total FROM validation_runs WHERE canonical_issue_id=?",
+                (issue_id,),
+            ).fetchone()
+        return int(row["total"]) if row else 0
 
 validation_repo = ValidationRepository()

@@ -1,0 +1,20 @@
+.feature-nav{display:flex;gap:8px;flex-wrap:wrap;padding:16px 0;margin-bottom:24px;border-top:1px solid var(--strong);border-bottom:1px solid var(--strong)}
+.feature-nav button,.workspace-action{border:1px solid var(--strong);border-radius:999px;min-height:44px;padding:10px 16px;background:var(--canvas);color:var(--ink);font:inherit;cursor:pointer}
+.feature-nav button[aria-pressed=true]{background:var(--ink);color:white}
+.explorer-head{flex-direction:column}.explorer-head .controls{width:100%;flex-wrap:wrap}.controls nav{flex-wrap:wrap;border-radius:16px}
+.workspace-filter{min-height:44px;max-width:100%;border:1px solid var(--strong);border-radius:8px;padding:10px;background:var(--canvas);color:var(--ink)}
+.workspace-summary{padding:12px 24px;color:var(--body);border-bottom:1px solid var(--line);font-size:13px}.workspace-detail{padding:20px}.workspace-detail h4{margin-bottom:8px}
+.source-links{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.workspace-warning{padding:12px 16px;border-radius:12px;background:var(--surface);color:var(--body)}
+.system-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;padding:24px}.system-grid section{padding:20px;border:1px solid var(--strong);border-radius:16px;background:var(--canvas)}
+.system-grid h3{margin-top:0}.risk-bar{height:8px;background:var(--surface);border-radius:8px;margin-top:8px;overflow:hidden}.risk-bar span{display:block;height:100%;background:#687445}
+.kv dd,.evidence,.mono{overflow-wrap:anywhere}.evidence{margin:12px 0}.view{min-width:0}.view details{margin:10px 0}.view summary{cursor:pointer}.view pre{white-space:pre-wrap;overflow-wrap:anywhere}
+button:focus-visible,a:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #687445;outline-offset:3px}
+.workspace-hidden{display:none!important}
+@media(max-width:700px){.system-grid{grid-template-columns:1fr}.feature-nav{gap:6px}.feature-nav button{flex:1 1 auto}.controls input{flex-basis:100%}.kv{grid-template-columns:1fr}.status{display:flex}.top-nav .outline{font-size:12px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+
+#historyIssue{flex:1;min-width:180px;padding:10px 14px;border:1px solid var(--strong);border-radius:12px;background:var(--canvas);color:var(--body);font:inherit}#clusterError{color:#842f23;overflow-wrap:anywhere}.workspace-detail .table-wrap{overflow-x:auto}
+
+.case-decision-form{display:grid;gap:10px;margin-top:20px}.case-decision-form input,.case-decision-form textarea,.case-decision-form select{box-sizing:border-box;width:100%;padding:12px;border:1px solid var(--strong);border-radius:12px;background:var(--canvas);color:var(--body);font:inherit}.case-decision-form button{justify-self:start}#caseReviewError{color:#842f23;overflow-wrap:anywhere}#modalBody pre{white-space:pre-wrap;overflow-wrap:anywhere}
+
+input:focus-visible,textarea:focus-visible{outline:3px solid #687445;outline-offset:3px}

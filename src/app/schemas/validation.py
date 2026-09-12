@@ -20,6 +20,15 @@ class ValidationRequest(BaseModel):
     target_host: str | None = None
     simulate_timeout: bool = False
 
+
+class ValidationTraceStep(BaseModel):
+    sequence: int = Field(ge=1)
+    stage: str
+    action: str
+    outcome: str
+    details: dict[str, Any] = Field(default_factory=dict)
+    occurred_at: datetime
+
 class Artifact(BaseModel):
     artifact_id: str
     validation_id: str
@@ -45,8 +54,23 @@ class ValidationResult(BaseModel):
     executed_at: datetime
     timeout_seconds: int
     artifact_ids: list[str] = Field(default_factory=list)
+    trace: list[ValidationTraceStep] = Field(default_factory=list)
     created_at: datetime
 
 class EvidenceResponse(BaseModel):
     validation_id: str
     artifacts: list[Artifact]
+
+
+class ValidationTraceResponse(BaseModel):
+    validation_id: str
+    live_execution: bool = False
+    trace: list[ValidationTraceStep] = Field(default_factory=list)
+
+
+class ValidationHistoryResponse(BaseModel):
+    canonical_issue_id: str
+    total: int
+    limit: int
+    offset: int
+    validations: list[ValidationResult] = Field(default_factory=list)

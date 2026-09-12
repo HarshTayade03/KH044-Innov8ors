@@ -16,6 +16,12 @@ is enabled. Target hosts must match `SANDBOX_ALLOWLIST`; validation performs no 
   optional lab target host, and a test-only timeout switch. Missing issues return 404; disallowed
   targets or Docker mode return 422.
 - `GET /api/v1/validations/{id}` returns one immutable run; `/evidence` returns its artifacts.
+- `GET /api/v1/validations/{id}/trace` returns ordered simulator activity steps and explicitly labels
+  `live_execution: false`; the trace is an explainability record, not a target execution log.
+- `POST /api/v1/canonical-issues/{id}/validate/stream` emits server-sent events for
+  `validation_started`, each `trace_step`, and `validation_complete` (or `validation_error`).
+  The stream is an offline simulator progress channel; it never exposes target network or process output.
+- `GET /api/v1/canonical-issues/{id}/validations?limit=&offset=` returns append-only run history with total count.
 - Runs record issue/finding, scenario, target, mode, timestamps, timeout, verdict, confidence,
   summary, limitations and artifact IDs. Repeated calls create new IDs.
 - Evidence is derived, redacted UTF-8 text. SHA-256 and size cover the exact stored/served bytes.

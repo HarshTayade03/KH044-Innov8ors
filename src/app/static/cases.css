@@ -1,0 +1,11 @@
+.case-grid{display:grid;gap:1px;background:var(--line)}
+.case-item{display:flex;justify-content:space-between;gap:24px;padding:24px 32px;background:var(--card)}
+.case-item h3{font:400 22px/1.2 var(--serif);margin:12px 0 6px}
+.case-item p{margin:0 0 10px;color:var(--body)}
+.case-item .actions{align-self:center;justify-content:flex-end}
+.pending_review{background:var(--cream);color:#704d20}
+.approved{background:#e4f3eb;color:#256348}
+.rejected{background:#fce8e8;color:#9f2929}
+.more_evidence_requested{background:var(--light-sage);color:#43542f}
+.case-item .tag+.tag{margin-left:6px}
+@media(max-width:700px){.case-item{flex-direction:column;padding:22px}.case-item .actions{justify-content:flex-start}}

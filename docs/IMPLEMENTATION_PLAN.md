@@ -7,7 +7,7 @@ Updated: 2026-09-12. [Current state](CURRENT_STATE.md) records source evidence;
 
 The backend has bootstrap/configuration/storage, scanner normalization, synthetic data,
 four-view extraction, embeddings with a fallback, deduplication, mock-based prioritization,
-and offline lab validation with evidence. P0-P6 have implementation; live feeds and Docker remain deferred. P7-P9 remain unimplemented.
+and offline lab validation with evidence. P0-P7 have implementation; live feeds and Docker remain deferred. P8-P9 remain incomplete.
 A registered route or database table is not a completed feature.
 
 ## Revised sequence and completion gates
@@ -23,8 +23,8 @@ the feature plan). Next is B: shared navigation and feature views.
 | Done | R0: reliable baseline | Reproducible runtime, isolated tests, dedup invariants and lifecycle, truthful feed/model provenance | Clean install; current and regression tests pass; health/API smoke checks pass; reruns do not duplicate active issues. |
 | Done | F1 demo frontend | Synthetic-corpus console over implemented APIs | Fixed fixture catalog, workflow stages, evidence details, risk and offline validation are interactive; upload/manual inputs removed. |
 | Done | P6 / M5: lab validation and evidence | Contracts, local simulator, immutable redacted artifacts, repository/API, risk integration | 55 tests pass; three scenarios round-trip; timeout/unknown inconclusive; allowlist and Docker rejected; hashes verified; no real target requests. |
-| 3 | P7 / M6: cases and review | Assembly, state transitions, required reasons, audit history, overrides | Assembly/review tests; missing IDs, invalid/repeated and concurrent decisions handled; actor/reason/history preserved. |
-| 4 | P8 / M7: case review dashboard | Case queue/detail, review controls and audit timeline | Browser checks of review flows and loading/empty/error states; clear mock/simulation labels. |
+| Done | P7 / M6: cases and review | Assembly, state transitions, required reasons, audit history, overrides | Case contracts, assembly snapshots, stale rebuilds, review routes and audit history implemented; focused acceptance tests added. |
+| 4 | P8 / M7: case review dashboard | Case queue/detail, review controls and audit timeline | Initial queue/detail/actions are wired; browser checks of review flows and loading/empty/error states remain. |
 | 5 | P9: integration/demo | Pipeline orchestration, full-corpus test, demo, setup docs/diagram | All 110 inputs accounted for; provenance preserved; no forbidden merges; human review; rerun and partial-failure recovery. |
 | Later | P10: external capabilities | Real Docker executor, live feeds, scanner polling/webhooks, Slack/Jira | Separately scoped implementations and controlled integration tests. |
 
@@ -86,3 +86,23 @@ partial failures safely, and demonstrates accepted duplicates and protected nonm
 The first request required documentation repair, so that turn produced the audit and roadmap.
 The follow-up "continue" authorized R0 implementation. This phase establishes a tested baseline;
 R0 acceptance passed; P6 is the next application phase.
+
+
+## Shared execution checkpoint (2026-09-12)
+
+A is verified. B feature shell/details is implemented with five frontend behavior checks;
+rendered acceptance remains pending. Copilot owns P7, whose four current focused tests pass;
+the combined Python suite has 64 passing tests (Windows architecture workaround).
+Continue C with cluster comparison/review and validation history, then complete D inline case
+review/audit UX against Copilot's contract. Finish E with desktop/mobile and full-flow acceptance.
+Current combined runtime: http://127.0.0.1:8002. All delivery remains off main.
+
+
+### C/D frontend checkpoint (2026-09-12)
+
+Cluster comparison and guarded merge/split controls, complete selected-issue validation history,
+and inline case decisions/overrides/regeneration/review/audit views are implemented. Source files:
+module-review.js and case-review.js. Copilot owns the evolving backend. Eleven frontend behavior
+checks pass; the combined backend snapshot passed 68 tests with the Windows test workaround.
+The runtime on port 8002 serves the current history contract. Full desktop/mobile/keyboard and
+fresh-corpus interactive acceptance remain next. Preserve concurrent edits and never push main.

@@ -32,3 +32,13 @@ cases/reviews, dedicated metrics, orchestration and external integrations are ab
 
 Do not assign real Docker, live feeds, Slack/Jira, polling or webhooks during the five-hour critical
 path. They do not unlock the local end-to-end demonstration.
+
+
+### C/D frontend checkpoint (2026-09-12)
+
+Cluster comparison and guarded merge/split controls, complete selected-issue validation history,
+and inline case decisions/overrides/regeneration/review/audit views are implemented. Source files:
+module-review.js and case-review.js. Copilot owns the evolving backend. Eleven frontend behavior
+checks pass; the combined backend snapshot passed 68 tests with the Windows test workaround.
+The runtime on port 8002 serves the current history contract. Full desktop/mobile/keyboard and
+fresh-corpus interactive acceptance remain next. Preserve concurrent edits and never push main.

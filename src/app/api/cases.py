@@ -6,6 +6,8 @@ from fastapi import APIRouter, HTTPException, Query, status
 from src.app.repositories.risk_repo import risk_repo
 from src.app.services.risk_engine import risk_engine
 from src.app.services.threat_intel import ThreatIntelUnavailable
+from src.app.schemas.case import CaseStatus, ReviewAction, ReviewActionType
+from src.app.services.case_service import CaseConflict, case_service
 
 router = APIRouter(tags=["Cases & Prioritization"])
 
@@ -58,38 +60,58 @@ async def get_priority(canonical_issue_id: str):
     return priority.model_dump()
 
 
-# ── Case & Review endpoints (Module 6 stubs) ──────────────────────────────────
+def _case_error(exc):
+    if isinstance(exc, LookupError):
+        return HTTPException(status_code=404, detail=str(exc))
+    if isinstance(exc, CaseConflict):
+        return HTTPException(status_code=409, detail=str(exc))
+    return HTTPException(status_code=422, detail=str(exc))
 
-@router.post("/canonical-issues/{canonical_issue_id}/generate-case", status_code=501)
+
+@router.post("/canonical-issues/{canonical_issue_id}/generate-case", response_model=dict, status_code=201)
 async def generate_case(canonical_issue_id: str):
-    return {"status": "not_implemented", "module": "M6-05"}
+    try:
+        return case_service.generate(canonical_issue_id).model_dump(mode="json")
+    except (LookupError, CaseConflict, ValueError) as exc:
+        raise _case_error(exc) from exc
 
 
-@router.get("/cases", status_code=501)
-async def list_cases():
-    return {"status": "not_implemented", "module": "M6-05"}
+@router.get("/cases", response_model=dict)
+async def list_cases(limit: int = Query(default=100, ge=1, le=500), offset: int = Query(default=0, ge=0), status_filter: CaseStatus | None = Query(default=None, alias="status")):
+    cases = case_service.list_cases(limit, offset, status_filter)
+    return {"total": len(cases), "limit": limit, "offset": offset, "cases": [item.model_dump(mode="json") for item in cases]}
 
 
-@router.get("/cases/{case_id}", status_code=501)
+@router.get("/cases/{case_id}", response_model=dict)
 async def get_case(case_id: str):
-    return {"status": "not_implemented", "module": "M6-05"}
+    try:
+        return case_service.detail(case_id).model_dump(mode="json")
+    except LookupError as exc:
+        raise _case_error(exc) from exc
 
 
-@router.post("/cases/{case_id}/approve", status_code=501)
-async def approve_case(case_id: str):
-    return {"status": "not_implemented", "module": "M6-05"}
+@router.post("/cases/{case_id}/approve", response_model=dict)
+async def approve_case(case_id: str, action: ReviewAction):
+    return _review(case_id, ReviewActionType.APPROVED, action)
 
 
-@router.post("/cases/{case_id}/reject", status_code=501)
-async def reject_case(case_id: str):
-    return {"status": "not_implemented", "module": "M6-05"}
+@router.post("/cases/{case_id}/reject", response_model=dict)
+async def reject_case(case_id: str, action: ReviewAction):
+    return _review(case_id, ReviewActionType.REJECTED, action)
 
 
-@router.post("/cases/{case_id}/request-evidence", status_code=501)
-async def request_evidence(case_id: str):
-    return {"status": "not_implemented", "module": "M6-05"}
+@router.post("/cases/{case_id}/request-evidence", response_model=dict)
+async def request_evidence(case_id: str, action: ReviewAction):
+    return _review(case_id, ReviewActionType.REQUESTED_EVIDENCE, action)
 
 
-@router.post("/cases/{case_id}/override-priority", status_code=501)
-async def override_priority(case_id: str):
-    return {"status": "not_implemented", "module": "M6-05"}
+@router.post("/cases/{case_id}/override-priority", response_model=dict)
+async def override_priority(case_id: str, action: ReviewAction):
+    return _review(case_id, ReviewActionType.PRIORITY_OVERRIDE, action)
+
+
+def _review(case_id: str, action_type: ReviewActionType, action: ReviewAction):
+    try:
+        return case_service.review(case_id, action_type, action).model_dump(mode="json")
+    except (LookupError, CaseConflict, ValueError) as exc:
+        raise _case_error(exc) from exc

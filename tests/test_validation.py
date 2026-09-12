@@ -26,6 +26,15 @@ def test_three_scenarios_round_trip_and_hash_integrity(finding_factory, cwe, sce
     assert artifact.content_hash == hashlib.sha256(artifact.content.encode()).hexdigest()
     assert artifact.content_size == len(artifact.content.encode())
     assert artifact.metadata["simulation"] is True
+    assert [step.sequence for step in stored.trace] == list(range(1, len(stored.trace) + 1))
+    assert any(step.stage == "safety" and step.details.get("network_access") is False for step in stored.trace)
+    trace = next(item for item in validation_repo.list_artifacts(result.validation_id) if item.artifact_type == "sandbox_trace")
+    assert trace.metadata["live_execution"] is False
+    assert trace.content_hash == hashlib.sha256(trace.content.encode()).hexdigest()
+    trace_response = TestClient(app).get(f"/api/v1/validations/{result.validation_id}/trace")
+    assert trace_response.status_code == 200
+    assert trace_response.json()["live_execution"] is False
+    assert trace_response.json()["trace"][-1]["stage"] == "persistence"
 
 def test_timeout_unknown_allowlist_and_docker(finding_factory):
     issue = make_issue(finding_factory)
@@ -64,3 +73,28 @@ def test_repeated_runs_are_append_only(finding_factory):
     assert first.validation_id != second.validation_id
     assert validation_repo.get(first.validation_id) is not None
     assert validation_repo.get(second.validation_id) is not None
+
+
+def test_validation_history_is_paginated(finding_factory):
+    issue = make_issue(finding_factory)
+    first = sandbox_service.validate(issue.canonical_issue_id, ValidationRequest())
+    second = sandbox_service.validate(issue.canonical_issue_id, ValidationRequest(simulate_timeout=True))
+    client = TestClient(app)
+    page = client.get(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validations", params={"limit": 1})
+    assert page.status_code == 200
+    assert page.json()["total"] == 2
+    assert len(page.json()["validations"]) == 1
+    assert page.json()["validations"][0]["validation_id"] == second.validation_id
+    assert client.get("/api/v1/canonical-issues/missing/validations").status_code == 404
+
+
+def test_validation_stream_exposes_ordered_trace(finding_factory):
+    issue = make_issue(finding_factory, cwe_ids=["CWE-918"], path="/ssrf")
+    response = TestClient(app).post(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validate/stream", json={})
+    assert response.status_code == 200
+    assert response.headers["content-type"].startswith("text/event-stream")
+    assert "event: validation_started" in response.text
+    assert "event: trace_step" in response.text
+    assert '"stage": "safety"' in response.text
+    assert "event: validation_complete" in response.text
+    assert '"live_execution": false' in response.text

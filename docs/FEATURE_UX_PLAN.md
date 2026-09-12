@@ -103,3 +103,28 @@ All delivery stays on frontend feature branches. `main` is not a publication tar
 Planning-turn checks: 57 tests passed (one upstream deprecation warning), `pip check` found no
 dependency conflicts, JavaScript syntax passed and `git diff --check` passed. These checks verify
 the existing baseline; they do not mark increments A–E complete.
+
+
+### Increment B / concurrent P7 handoff (2026-09-12)
+
+Shared navigation, scoped filters, pagination, failure retention, detailed provenance, risk
+explanations and artifact verification are implemented. The Cases navigation opens Copilot's
+review queue; shared refresh includes cases and bulk assembly now has a defined handler.
+Five frontend behavior checks and 64 Python tests pass with the documented Windows workaround.
+Current combined application runs on port 8002; port 8001 has the older case stubs.
+Visual and keyboard acceptance remain pending because no browser connection is available.
+
+Next implementation slice: cluster member comparison and review actions; full validation run
+history; replace case prompt dialogs with actor/reason forms and expose audit history/overrides.
+Copilot owns P7 backend correctness and should add explicit stale/concurrent acceptance tests.
+Preserve shared edits and review the combined diff before committing/pushing a feature branch.
+
+
+### C/D frontend checkpoint (2026-09-12)
+
+Cluster comparison and guarded merge/split controls, complete selected-issue validation history,
+and inline case decisions/overrides/regeneration/review/audit views are implemented. Source files:
+module-review.js and case-review.js. Copilot owns the evolving backend. Eleven frontend behavior
+checks pass; the combined backend snapshot passed 68 tests with the Windows test workaround.
+The runtime on port 8002 serves the current history contract. Full desktop/mobile/keyboard and
+fresh-corpus interactive acceptance remain next. Preserve concurrent edits and never push main.

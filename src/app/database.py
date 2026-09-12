@@ -525,6 +525,7 @@ def init_db() -> None:
             ("validation_runs", "scenario", "TEXT NOT NULL DEFAULT 'unknown'"),
             ("validation_runs", "target_host", "TEXT NOT NULL DEFAULT ''"),
             ("validation_runs", "limitations", "TEXT NOT NULL DEFAULT '[]'"),
+            ("validation_runs", "trace", "TEXT NOT NULL DEFAULT '[]'"),
         ):
             columns = {row["name"] for row in conn.execute(f"PRAGMA table_info({table})")}
             if column not in columns:
