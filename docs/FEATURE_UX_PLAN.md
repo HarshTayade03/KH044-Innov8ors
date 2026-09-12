@@ -71,6 +71,21 @@ storage. Avoid simultaneous edits to the global stylesheet, schema migrations an
 
 ## Current verification and known gaps
 
+### Increment A completion
+
+Implemented explicit parser registration at application startup, separate SARIF parser selection
+from scanner identity, the missing Burp long-form SSRF classification, and atomic content-addressed
+demo batches. Repeated and concurrent loads reuse IDs; failed loads roll back. UI reports new and
+already-loaded counts. The fresh corpus test verifies all 110 titles, CWE families, severities,
+host locations and unchanged source records. Existing malformed historical imports remain untouched.
+
+60 tests passed using a test-process-only `platform.machine = lambda: 'AMD64'` workaround for
+Windows WMI native initialization errors; the normal invocation was interrupted by native errors.
+No application runtime detection was patched. JavaScript syntax and diff checks pass. Backend
+restarted on port 8001 and health reports 14 tables. Increment B is next; B–E remain incomplete.
+
+The observations below describe the pre-fix audit; repeat loading and SARIF dispatch are now fixed.
+
 - Local API on `http://127.0.0.1:8001`: health, catalog, metrics, findings, issues, clusters and
   priorities return HTTP 200. Health reports 14 tables, mock feeds and offline simulator mode.
 - Current database contains 105 findings, 22 active issues, 22 priorities and zero validations at

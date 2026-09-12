@@ -10,6 +10,9 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any, Optional
 
+# Register built-in parsers during application import, not as a side effect of test imports.
+from src.app.parsers import burp, nessus, sarif, snyk, trivy  # noqa: F401
+
 from src.app.parsers.base import (
     get_parser,
     normalize_cve,
@@ -52,6 +55,7 @@ class NormalizerService:
         source_scanner: str,
         ingestion_batch_id: str,
         source_file: Optional[str] = None,
+        parser_key: Optional[str] = None,
     ) -> NormalizedFinding:
         """
         Normalize a single raw scanner record into a canonical NormalizedFinding.
@@ -63,7 +67,7 @@ class NormalizerService:
         warnings: list[str] = []
         errors: list[str] = []
 
-        parser = get_parser(source_scanner)
+        parser = get_parser(parser_key or source_scanner)
         parser_name = parser.__class__.__name__ if parser else "GenericParser"
 
         if parser:

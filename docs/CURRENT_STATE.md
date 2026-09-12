@@ -7,6 +7,11 @@ are recorded in TASK_LOG.md; historical pass claims are kept separately.
 
 ## Module inventory
 
+Latest data baseline: the synthetic demo loader explicitly registers parsers, selects the SARIF
+parser independently of scanner identity, and imports content-addressed batches atomically.
+Fresh imports account for all 110 fixtures; retries do not duplicate them. Historical malformed
+imports are preserved. See `FEATURE_UX_PLAN.md` for the 60-test verification and Windows limitation.
+
 | Module / phase | Existing implementation | Status and limitations |
 |---|---|---|
 | M0 / P0 bootstrap | `src/app/main.py`, `config.py`, `database.py`; six routers, health route, SQLite initialization | Implemented; 14 table definitions, not 13. Additive active-issue/case-stale/cache-source migrations preserve existing databases. |

@@ -35,6 +35,8 @@ class BurpParser(BaseScannerParser):
         cwes = raw_record.get("cwe_ids") or []
         if not cwes:
             title_lower = title.lower()
+            if 'server-side request forgery' in title_lower:
+                cwes.append('CWE-918')
             for rule_key, cwe in BURP_RULE_TO_CWE.items():
                 if rule_key in title_lower or rule_key.replace("-", " ") in title_lower:
                     cwes.append(cwe)

@@ -15,6 +15,8 @@ A registered route or database table is not a completed feature.
 For the selected design's feature-by-feature UX, current service verification, time estimates and
 small implementation increments, follow [Feature UI/UX plan](FEATURE_UX_PLAN.md). Its first gate
 repairs synthetic SARIF loading and repeat imports before expanding the dashboard and case flows.
+Increment A is implemented and verified with 60 tests (Windows WMI test workaround documented in
+the feature plan). Next is B: shared navigation and feature views.
 
 | Order | Phase | Deliverables | Exit criteria |
 |---|---|---|---|

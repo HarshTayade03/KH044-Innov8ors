@@ -354,6 +354,13 @@ upstream Starlette/AnyIO deprecation warning. `pip check` and `git diff --check`
 | F1-DEMO-08 | `[x]` | Applied the requested sage/ivory/cream/tan palette and Claimcheck-first number styling with local Doto fallback. |
 | DOC-06 | `[x]` | Added `docs/design.md`, translating the visual reference into complete project screens, states, trust language and accessibility rules. |
 | UX-PLAN-01 | `[x]` | Added `docs/FEATURE_UX_PLAN.md`: per-feature layouts/actions/API gates, minimal-effort sequence, change handling and service audit. Live read endpoints on port 8001 returned 200; case/review remain stubs. Preserved the user's local edit to docs/design.md. |
+| UX-A-01 | `[x]` | Fixed startup parser registration, SARIF demo dispatch and Burp SSRF mapping; atomic content-addressed imports preserve scanner identity and raw sources. UI distinguishes new/already-loaded findings. All 110 fixtures, repeat/concurrent load and rollback/retry tested. |
+
+UX-A verification: 60 tests passed in 70.43s with a test-process-only AMD64 architecture stub to
+avoid Windows WMI native errors; normal test invocations were interrupted by native errors and
+are not recorded as passes. One upstream Starlette warning remains. JS syntax/diff checks passed.
+Restarted backend on port 8001 with 14 tables healthy. User's local docs/design.md edit preserved.
+Next: increment B shared feature navigation and detail UX; cases/review remain planned.
 
 Verification: 56 tests passed, JavaScript syntax and `git diff --check` passed. The configured
 in-app/extension browser list was empty, so rendered browser automation was unavailable in this run.
