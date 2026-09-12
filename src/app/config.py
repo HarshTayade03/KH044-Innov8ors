@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     jira_url: str = ""
     jira_api_token: str = ""
 
+    # ── LLM Prioritization ────────────────────────────────────────────────────
+    llm_enabled: bool = False
+    llm_provider: str = "groq"
+    llm_model: str = "llama-3.3-70b-versatile"
+    llm_api_key: str = ""
+
     # ── Application Metadata ──────────────────────────────────────────────────
     app_version: str = "0.1.0"
     app_name: str = "AI-Assisted Vulnerability Triage Platform"

@@ -55,4 +55,24 @@ class ValidationRepository:
             r = db.execute("SELECT validation_id FROM validation_runs WHERE canonical_issue_id=? ORDER BY created_at DESC LIMIT 1", (issue_id,)).fetchone()
         return self.get(r["validation_id"]) if r else None
 
+    def list_for_issue(self, issue_id: str) -> list[ValidationResult]:
+        with get_db() as db:
+            rows = db.execute("SELECT validation_id FROM validation_runs WHERE canonical_issue_id=? ORDER BY created_at DESC", (issue_id,)).fetchall()
+        results = []
+        for r in rows:
+            v = self.get(r["validation_id"])
+            if v:
+                results.append(v)
+        return results
+
+    def list_all(self, limit: int = 100) -> list[ValidationResult]:
+        with get_db() as db:
+            rows = db.execute("SELECT validation_id FROM validation_runs ORDER BY created_at DESC LIMIT ?", (limit,)).fetchall()
+        results = []
+        for r in rows:
+            v = self.get(r["validation_id"])
+            if v:
+                results.append(v)
+        return results
+
 validation_repo = ValidationRepository()

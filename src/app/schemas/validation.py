@@ -47,6 +47,17 @@ class ValidationResult(BaseModel):
     artifact_ids: list[str] = Field(default_factory=list)
     created_at: datetime
 
+
+class ValidationBatchFailure(BaseModel):
+    canonical_issue_id: str
+    error: str
+
+
+class ValidationBatchResponse(BaseModel):
+    results: list[ValidationResult] = Field(default_factory=list)
+    failures: list[ValidationBatchFailure] = Field(default_factory=list)
+
+
 class EvidenceResponse(BaseModel):
     validation_id: str
     artifacts: list[Artifact]

@@ -15,10 +15,10 @@ are recorded in TASK_LOG.md; historical pass claims are kept separately.
 | M2 / P3 views and embeddings | `schemas/views.py`, `services/extractor.py`, `services/embedding.py`, `api/findings.py` | Four views, redaction, single/batch operations, weighted similarity. Lazy SentenceTransformer; fallback is pure Python SHA-256 token hashing, not HashingVectorizer. Backend/version and input text hashes are persisted accurately; downloads are opt-in. |
 | M3 / P4 deduplication | `schemas/dedup.py`, `services/deduplicator.py`, `repositories/dedup_repo.py`, `api/clusters.py` | Fingerprint groups, optional HDBSCAN, canonical issues, merge/split handlers. Pairwise hard blocks in both stages; stable IDs, atomic active snapshots and repeatable analyst merge/split actions. |
 | M4 / P5 prioritization | `schemas/risk.py`, `services/risk_engine.py`, `services/threat_intel.py`, `repositories/risk_repo.py`, priority routes in `api/cases.py` | Mock KEV/EPSS and SQLite cache; weighted score, three tiers, explanations. Unsupported live flags return 503; content hashes refresh mock cache; all contributions and neutral validation prior are explicit. |
-| M5 / P6 validation | `schemas/validation.py`, `services/sandbox.py`, `repositories/validation_repo.py`, `api/validation.py`; validation/evidence tables | Deterministic offline SQLi/XSS/SSRF simulation, allowlist, immutable redacted evidence with verified hashes, retrieval APIs and risk integration. Save and retrieval paths reject hash/size mismatches so tampered evidence is never served. Real Docker execution is explicitly rejected and deferred. |
+| M5 / P6 validation | `schemas/validation.py`, `services/sandbox.py`, `repositories/validation_repo.py`, `api/validation.py`; validation/evidence tables | Deterministic offline SQLi/XSS/SSRF simulation, allowlist, immutable redacted evidence with verified hashes, retrieval APIs and risk integration. Batch runs return successful results plus per-issue safety rejections, so one blocked target does not abort the workflow. Save and retrieval paths reject hash/size mismatches so tampered evidence is never served. Real Docker execution is explicitly rejected and deferred. |
 | M6 / P7 cases | DB tables `cases`, `reviews`, `audit_events`; `schemas/case.py`, `repositories/case_repo.py`, `services/case_service.py`, case routes | Case assembly, active/retired and stale guards, transactional human review, review history and append-only audit inspection are implemented. Priority override preserves review state; broader dashboard integration remains pending. |
 | F0 / analyst console | `static/index.html`, `dashboard.css`, `dashboard.js` | Implemented and syntax-checked console for ingestion, views, embeddings, deduplication, risk, case queue/detail, offline validation/evidence display, analyst review controls, and audit timeline; this is not the complete P8 dashboard. |
-| M7 / P8 dashboard | `api/dashboard.py` and F0 console | Partial: implemented case/validation/review flows are exposed, but metrics remains HTTP 501 and full dashboard acceptance is pending. |
+| M7 / P8 dashboard | `api/dashboard.py`, `repositories/dashboard_repo.py`, and F0 console | Partial: truthful aggregate metrics and provenance labels are implemented; full dashboard acceptance, pagination, and richer analyst analytics remain pending. |
 | P9 integration | No full pipeline orchestrator or end-to-end suite | Not started; current stages require separate API calls. |
 | P10 integrations | `workers/scanner_poller.py`; config placeholders | Poller raises NotImplementedError. Slack/Jira/webhook implementations absent. |
 
@@ -58,8 +58,11 @@ Application routes use `/api/v1`; `/`, `/health`, and `/docs` are root routes.
 - Cached learned models may be used; R0 tests use offline hashing and real sklearn HDBSCAN.
   Learned-model accuracy is not established by these regression tests.
 - Human case review, dedicated dashboard metrics and the full orchestrated pipeline remain
-  unimplemented. F0 provides a basic browser workflow over the implemented backend and
+  partially implemented. F0 provides a basic browser workflow over the implemented backend and
   uses the public product description. M5's API is implemented but not yet exposed in F0.
+  - LLM synthesis is optional and schema-bounded: confidence is constrained to 0–1 and every
+    result includes evidence basis and uncertainty. It remains contextual guidance only and
+    never changes the deterministic numeric risk score.
 
 ## Done-work interpretation
 

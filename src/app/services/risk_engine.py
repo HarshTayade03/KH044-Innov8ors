@@ -14,8 +14,9 @@ from src.app.schemas.risk import PriorityResult, RemediationTier, ThreatEnrichme
 from src.app.repositories.findings_repo import repo as findings_repo
 from src.app.repositories.dedup_repo import dedup_repo
 from src.app.repositories.risk_repo import risk_repo
-from src.app.repositories.validation_repo import validation_repo
+from src.app.repositories.validation_repo import EvidenceIntegrityError, validation_repo
 from src.app.services.threat_intel import threat_intel_service
+from src.app.services.llm_prioritizer import llm_prioritizer_service
 
 
 class RiskEngine:
@@ -83,16 +84,19 @@ class RiskEngine:
         asset_norm = self._get_asset_criticality_factor(asset_crit)
         exposure_norm = 1.0 if internet_facing else 0.5
         validation = validation_repo.latest_for_issue(canonical_issue_id)
-        # A completed inconclusive/rejected attempt is evidence about execution,
-        # not about exploitability. Keep it neutral, but distinguish it from
-        # an issue that has never been validated in the serialized factors.
-        validation_factors = {
-            "simulated_match": 0.75,
-            "simulated_no_match": 0.25,
-            "inconclusive": 0.5,
-            "rejected": 0.5,
-        }
-        val_norm = validation_factors.get(validation.status.value, 0.5) if validation else 0.5
+
+        # Direct consumption of sandbox validation results
+        if validation:
+            v_status = validation.status.value
+            if v_status == "simulated_match":
+                conf = validation.confidence or 0.75
+                val_norm = min(0.90, max(0.75, conf))
+            elif v_status == "simulated_no_match":
+                val_norm = 0.20
+            else:
+                val_norm = 0.50
+        else:
+            val_norm = 0.50
 
         # Weights from config
         w_cvss = settings.risk_weight_cvss
@@ -136,12 +140,38 @@ class RiskEngine:
         explanation = [f"{key.upper()}: factor {normalized[key]:.4f} x weight {weights_used[key]:.4f} contributes {value:.2f} pts."
                        for key, value in contributions.items()]
         if validation:
-            explanation.append(f"Validation factor uses latest {validation.status.value} offline simulation; simulation does not prove exploitability.")
+            explanation.append(f"Validation factor ({val_norm:.2f}) uses latest {validation.status.value} offline simulation; simulation does not prove exploitability.")
         else:
             explanation.append("Validation uses a neutral 0.5 prior: no sandbox validation has run.")
         explanation.append("Threat intelligence uses synthetic mock files, not current live feeds.")
         if kev_flag:
             explanation.append("Immediate tier: CVE is present in the mock KEV fixture; this is not a live exploitation claim.")
+
+        # Invoke LLM contextual synthesis
+        sandbox_artifacts = []
+        if validation:
+            try:
+                arts = validation_repo.list_artifacts(validation.validation_id)
+                sandbox_artifacts = [{"type": a.artifact_type, "content": a.content[:300]} for a in arts]
+            except EvidenceIntegrityError as exc:
+                explanation.append(
+                    "LLM context omitted because stored validation evidence failed integrity verification."
+                )
+                raise ValueError("Stored validation evidence failed integrity verification.") from exc
+
+        llm_synthesis = llm_prioritizer_service.synthesize_context(
+            issue_title=issue.title,
+            cwe_primary=primary.vulnerability.cwe_primary or "CWE-Unknown",
+            views_dict={"description": primary.vulnerability.description or ""},
+            sandbox_verdict=validation.status.value if validation else "not_attempted",
+            sandbox_evidence=sandbox_artifacts,
+            asset_criticality=asset_crit,
+            internet_facing=internet_facing,
+            threat_cves=sorted(all_cves),
+        )
+
+        if llm_synthesis and "exploitability_assessment" in llm_synthesis:
+            explanation.append(f"LLM Contextual Synthesis: {llm_synthesis['exploitability_assessment']}")
 
         factors = {
             "cvss_score": cvss_score,
@@ -157,6 +187,7 @@ class RiskEngine:
             "contributions": contributions,
             "threat_intelligence": [item.model_dump(mode="json") for item in threat_enrichments],
             "threat_source": "mock",
+            "llm_context": llm_synthesis,
         }
 
         now_dt = datetime.now(timezone.utc)

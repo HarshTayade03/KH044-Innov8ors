@@ -46,3 +46,16 @@ class PriorityResult(BaseModel):
     explanation: list[str] = Field(default_factory=list)
     calculation_version: str = "risk-model-1.0"
     calculated_at: datetime
+
+
+class LLMContext(BaseModel):
+    """Bounded, display-safe contextual synthesis from an optional provider."""
+
+    exploitability_assessment: str = Field(min_length=1, max_length=1200)
+    business_impact_analysis: str = Field(min_length=1, max_length=1200)
+    remediation_guidance: str = Field(min_length=1, max_length=1600)
+    evidence_basis: list[str] = Field(default_factory=list, max_length=8)
+    uncertainty: list[str] = Field(default_factory=list, max_length=8)
+    confidence_score: float = Field(ge=0.0, le=1.0)
+    provider_used: str = Field(min_length=1, max_length=80)
+    model_used: str = Field(min_length=1, max_length=120)

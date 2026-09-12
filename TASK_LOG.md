@@ -4,6 +4,36 @@
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
+## Feature benchmark hardening (2026-09-12)
+
+- Replaced the dashboard metrics HTTP 501 stub with read-only aggregate queries and an
+  explicit provenance contract for offline simulation/mock threat intelligence.
+- Bounded LLM contextual synthesis with a Pydantic response contract, evidence basis, and
+  uncertainty fields; malformed provider output is rejected and falls back to the existing
+  deterministic rules path.
+- Batch validation now surfaces per-issue failures instead of silently discarding them.
+- Verification: full suite `63 passed, 2 skipped`; `node --check src\\app\\static\\dashboard.js`,
+  `git diff --check`, `pip check`, and live HTTP smoke checks for `/health` and
+  `/api/v1/dashboard/metrics` all passed.
+
+## Workflow partial-validation fix (2026-09-12)
+
+- Batch sandbox validation now returns successful results and per-issue rejection details
+  together. A blocked/non-allowlisted issue no longer aborts the entire workflow or hides
+  validations that completed safely.
+- The analyst console reports these as warnings and keeps the sandbox step complete, while
+  retaining the failure details in the API response and validation state.
+- Added a regression test for mixed allowlisted and rejected issues.
+
+## Contextual Sandbox Validation & LLM Prioritization — `feature/sandbox-llm-prioritization` (2026-09-12)
+
+- Implemented pipeline reordering: Deduplication → Sandbox Validation → Contextual Prioritization.
+- Multi-Artifact Evidence: Each sandbox run now produces 4 immutable, redacted artifacts (`http_request`, `http_response`, `execution_log`, `validation_summary`) with verified SHA-256 digests.
+- Hierarchy & Allowlist Normalization: Integrated `resolve_cwe_root()` to map child CWE variants (e.g. `CWE-564` → `CWE-89`) and host allowlist checking.
+- LLM Synthesis Engine (`llm_prioritizer.py`): Supports Groq (free fast inference for demos), Gemini, OpenAI, and Mock providers with pre-call secret redaction and structured JSON output.
+- Frontend Console Enhancements: Reordered 5-step workflow track in `index.html` and `dashboard.js`, added Validations table tab and header metric, added 4-artifact inspector modal and LLM synthesis cards in issue inspection.
+- Verification: `62 passed, 2 skipped` (`venv\Scripts\python.exe -m pytest tests/ -v`); `node --check src\app\static\dashboard.js` passed.
+
 ## Integration Verification — `feature/hackathon-verification` (2026-09-12)
 
 - Merged `feature/core-risk-flow`, `feature/debug-verification`, and
