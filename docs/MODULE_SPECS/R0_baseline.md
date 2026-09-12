@@ -31,3 +31,12 @@ This extends M0/M2 and supplies the missing dedup/lifecycle contract for R0.
 Acceptance: existing tests plus API startup/ingestion, both-stage hard-block regressions,
 semantic bridge, reruns, split/merge, downstream invalidation, rollback/concurrency, additive
 migration, mock-file refresh/live rejection, fallback provenance and risk sum tests pass.
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    Tests[Regression Tests] --> Contract[Data Contracts]
+    Contract --> System[Core System Stability]
+    System --> Snapshot[Atomic Snapshots]
+```
