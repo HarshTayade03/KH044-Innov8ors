@@ -52,7 +52,7 @@ Every key listed here must appear in `.env.example` with a comment explaining wh
 
 | Key | Default | Description |
 |---|---|---|
-| `DATABASE_PATH` | `./vulntriager.db` | SQLite file location |
+| `DATABASE_PATH` | `./ai-assisted-triage.db` | SQLite file location |
 | `SANDBOX_ENABLED` | `false` | If true, runs real Docker PoC. If false, uses lab simulator |
 | `SANDBOX_ALLOWLIST` | `app.example.test,target.lab` | Comma-separated allowed PoC target hosts |
 | `SANDBOX_TIMEOUT_SECONDS` | `30` | Max seconds for any PoC execution |
@@ -189,4 +189,4 @@ Expected results:
 - `GET http://localhost:8000/health` returns `{"status": "ok", "version": "0.1.0"}`
 - `GET http://localhost:8000/` returns the placeholder dashboard HTML page
 - `GET http://localhost:8000/docs` shows the FastAPI OpenAPI UI with all routes listed (even if they return 501)
-- The SQLite file at `DATABASE_PATH` is created on disk with all 13 tables (verify with `sqlite3 vulntriager.db .tables`)
+- The SQLite file at `DATABASE_PATH` is created on disk with all 13 tables (verify with `sqlite3 ai-assisted-triage.db .tables`)

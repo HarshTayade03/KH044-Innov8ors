@@ -6,13 +6,13 @@ Updated: 2026-09-12. Applies with the root [AGENTS.md](../AGENTS.md).
 
 Read [TASK_LOG.md](../TASK_LOG.md), [CURRENT_STATE.md](CURRENT_STATE.md), and
 [IMPLEMENTATION_PLAN.md](IMPLEMENTATION_PLAN.md). Read relevant existing MODULE_SPECS files;
-M0, M1, M2 and R0_baseline currently exist. R0_baseline defines the current dedup/lifecycle contract. project_f1.md, vulntriager_product_reference.md, and normal.txt
+M0, M1, M2 and R0_baseline currently exist. R0_baseline defines the current dedup/lifecycle contract. project_f1.md, ai-assisted-triage_product_reference.md, and normal.txt
 are read-only requirements/reference material. agent1.md is historical planning context.
 Use repository-relative paths, not a previous developer's machine location.
 
 ## Architecture
 
-Public name: **AI-Assisted Vulnerability Triage Platform**. Internal name: VulnTriager.
+Public name: **AI-Assisted Vulnerability Triage Platform**. Internal name: AI-Assisted Triage.
 Python/FastAPI and Pydantic v2 provide the backend; SQLite stores pipeline state.
 The intended frontend is single-file HTML/CSS/JS without a build step; currently it is a placeholder.
 package.json and src/project-source-code/index.js are legacy scaffolding, not the backend launcher.

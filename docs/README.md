@@ -4,7 +4,7 @@
 - [Current modules and features](CURRENT_STATE.md): code inventory and limitations.
 - [Implementation plan](IMPLEMENTATION_PLAN.md): done work, revised phases, and acceptance criteria.
 - [Task log](../TASK_LOG.md): statuses, corrections, and verification history.
-- [Problem statement](project_f1.md), [product reference](vulntriager_product_reference.md), and
+- [Problem statement](project_f1.md), [product reference](ai-assisted-triage_product_reference.md), and
   [normalization reference](normal.txt): intended behavior.
 - Existing specs: [M0](MODULE_SPECS/M0_bootstrap.md), [M1](MODULE_SPECS/M1_parsers_normalizer.md),
   [M2](MODULE_SPECS/M2_views_embeddings.md), and [R0 baseline](MODULE_SPECS/R0_baseline.md).

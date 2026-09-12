@@ -77,16 +77,16 @@ class SandboxService:
         path = finding.location.path or "/vulnerable/endpoint"
 
         if scenario == "sqli":
-            req_text = f"GET {path}?id=1'%20OR%20'1'='1 HTTP/1.1\r\nHost: {host}\r\nUser-Agent: VulnTriager-LabSimulator/1.0\r\nAccept: */*\r\n\r\n"
+            req_text = f"GET {path}?id=1'%20OR%20'1'='1 HTTP/1.1\r\nHost: {host}\r\nUser-Agent: AI-Assisted Triage-LabSimulator/1.0\r\nAccept: */*\r\n\r\n"
             resp_text = "HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Database Error</h1><p>SQLSTATE[42000]: Syntax error or access violation near '\\' OR \\'1\\'=\\'1\\''</p></body></html>"
         elif scenario == "xss":
-            req_text = f"GET {path}?q=%3Cscript%3Ealert%28%22VT_TEST%22%29%3C%2Fscript%3E HTTP/1.1\r\nHost: {host}\r\nUser-Agent: VulnTriager-LabSimulator/1.0\r\nAccept: text/html\r\n\r\n"
+            req_text = f"GET {path}?q=%3Cscript%3Ealert%28%22VT_TEST%22%29%3C%2Fscript%3E HTTP/1.1\r\nHost: {host}\r\nUser-Agent: AI-Assisted Triage-LabSimulator/1.0\r\nAccept: text/html\r\n\r\n"
             resp_text = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body>Search results for: <script>alert(\"VT_TEST\")</script></body></html>"
         elif scenario == "ssrf":
             req_text = f"POST {path} HTTP/1.1\r\nHost: {host}\r\nContent-Type: application/json\r\n\r\n{{\"url\": \"http://169.254.169.254/latest/meta-data/\"}}"
             resp_text = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{{\"ami-id\": \"ami-0123456789abcdef0\", \"instance-id\": \"i-0lab123456789\"}}"
         else:
-            req_text = f"GET {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: VulnTriager-LabSimulator/1.0\r\n\r\n"
+            req_text = f"GET {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: AI-Assisted Triage-LabSimulator/1.0\r\n\r\n"
             resp_text = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nGeneric lab response"
 
         log_text = (

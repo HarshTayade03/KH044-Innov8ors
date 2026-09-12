@@ -1,4 +1,4 @@
-# VulnTriager — Master Task Log & Progress Tracker
+# AI-Assisted Triage — Master Task Log & Progress Tracker
 
 > Last Updated: 2026-09-12 IST | P6 LAB VALIDATION COMPLETE | Next 12-hour critical path: P7 reviewable cases and integrated analyst flow
 > This log is the source of truth for task state across all agents and computer systems.

@@ -103,7 +103,7 @@ ANALYST_APPROVED / ANALYST_REJECTED
 ## 5.2 Suggested repository structure
 
 ```text
-vulntriager/
+ai-assisted-triage/
 ├── src/
 │   └── app/
 │       ├── main.py
@@ -916,7 +916,7 @@ At minimum:
   "status": "confirmed_exploitable",
   "confidence": 0.94,
   "executed_at": "2026-09-11T12:00:00Z",
-  "sandbox_image": "vulntriager/poc-runner:1.0",
+  "sandbox_image": "ai-assisted-triage/poc-runner:1.0",
   "execution_summary": "The controlled request produced the expected vulnerable behavior.",
   "evidence_ids": ["ev-001", "ev-002", "ev-003"],
   "warnings": []
@@ -1542,7 +1542,7 @@ The product prototype is complete when:
 # 23. Consolidated AI Coding Prompt
 
 ```text
-You are building VulnTriager, an AI-assisted vulnerability triage platform.
+You are building AI-Assisted Triage, an AI-assisted vulnerability triage platform.
 
 Build a modular Python FastAPI application using Pydantic and SQLite for the prototype. The application must implement this pipeline:
 
@@ -1623,4 +1623,4 @@ Required architecture:
 
 # 24. Final Product Principle
 
-VulnTriager should automate repetitive analysis while preserving evidence, uncertainty, traceability, and human authority. Its most important behavior is not merely finding similar alerts; it is producing a trustworthy, explainable case that an analyst can verify and act upon.
+AI-Assisted Triage should automate repetitive analysis while preserving evidence, uncertainty, traceability, and human authority. Its most important behavior is not merely finding similar alerts; it is producing a trustworthy, explainable case that an analyst can verify and act upon.

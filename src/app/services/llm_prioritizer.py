@@ -129,7 +129,7 @@ class LLMPrioritizerService:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "User-Agent": "VulnTriager/1.0",
+                "User-Agent": "AI-Assisted Triage/1.0",
             },
             method="POST",
         )
@@ -162,7 +162,7 @@ class LLMPrioritizerService:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
-                "User-Agent": "VulnTriager/1.0",
+                "User-Agent": "AI-Assisted Triage/1.0",
             },
             method="POST",
         )
