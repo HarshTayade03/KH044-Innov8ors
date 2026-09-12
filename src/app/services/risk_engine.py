@@ -16,7 +16,7 @@ from src.app.repositories.dedup_repo import dedup_repo
 from src.app.repositories.risk_repo import risk_repo
 from src.app.repositories.validation_repo import EvidenceIntegrityError, validation_repo
 from src.app.services.threat_intel import threat_intel_service
-from src.app.services.llm_prioritizer import llm_prioritizer_service
+from src.app.services.llm_prioritizer import llm_prioritizer_service, llm_prioritizer
 
 
 class RiskEngine:
@@ -147,7 +147,7 @@ class RiskEngine:
         if kev_flag:
             explanation.append("Immediate tier: CVE is present in the mock KEV fixture; this is not a live exploitation claim.")
 
-        # Invoke LLM contextual synthesis
+        # Invoke LLM contextual synthesis / analysis
         sandbox_artifacts = []
         if validation:
             try:
@@ -158,6 +158,10 @@ class RiskEngine:
                     "LLM context omitted because stored validation evidence failed integrity verification."
                 )
                 raise ValueError("Stored validation evidence failed integrity verification.") from exc
+
+        llm_analysis = llm_prioritizer.analyze(issue, primary, validation, threat_enrichments)
+        if llm_analysis:
+            explanation.append(f"AI CONTEXT ({llm_analysis.model_used}): {llm_analysis.contextual_summary}")
 
         llm_synthesis = llm_prioritizer_service.synthesize_context(
             issue_title=issue.title,
@@ -187,7 +191,7 @@ class RiskEngine:
             "contributions": contributions,
             "threat_intelligence": [item.model_dump(mode="json") for item in threat_enrichments],
             "threat_source": "mock",
-            "llm_context": llm_synthesis,
+            "llm_context": llm_analysis.model_dump(mode="json") if llm_analysis else llm_synthesis,
         }
 
         now_dt = datetime.now(timezone.utc)

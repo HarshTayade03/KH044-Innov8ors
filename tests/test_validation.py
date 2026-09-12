@@ -34,13 +34,13 @@ def test_three_scenarios_round_trip_and_hash_integrity(finding_factory, cwe, sce
 
 def test_child_cwe_hierarchy_resolution(finding_factory):
     # CWE-564 (Hibernate SQLi) -> CWE-89 (sqli)
-    issue_sqli = make_issue(finding_factory, name="Hibernate SQLi", cwe_ids=["CWE-564"])
+    issue_sqli = make_issue(finding_factory, name="Hibernate SQLi", cwe_ids=["CWE-564"], path="/sqli_path", parameter="sqli_param")
     res_sqli = sandbox_service.validate(issue_sqli.canonical_issue_id, ValidationRequest())
     assert res_sqli.scenario == "sqli"
     assert res_sqli.status == ValidationStatus.SIMULATED_MATCH
 
     # CWE-80 (Basic XSS variant) -> CWE-79 (xss)
-    issue_xss = make_issue(finding_factory, name="XSS variant", cwe_ids=["CWE-80"])
+    issue_xss = make_issue(finding_factory, name="XSS variant", cwe_ids=["CWE-80"], path="/xss_path", parameter="xss_param")
     res_xss = sandbox_service.validate(issue_xss.canonical_issue_id, ValidationRequest())
     assert res_xss.scenario == "xss"
     assert res_xss.status == ValidationStatus.SIMULATED_MATCH
@@ -85,8 +85,8 @@ def test_evidence_redaction_api_and_risk_integration(finding_factory):
     assert client.get("/api/v1/validations/missing").status_code == 404
 
 def test_batch_validation_and_history_endpoints(finding_factory):
-    issue1 = make_issue(finding_factory, name="Issue 1")
-    issue2 = make_issue(finding_factory, name="Issue 2", path="/login2")
+    issue1 = make_issue(finding_factory, name="Issue 1", parameter="param1")
+    issue2 = make_issue(finding_factory, name="Issue 2", parameter="param2")
     client = TestClient(app)
     batch_resp = client.post("/api/v1/validations/batch", json={})
     assert batch_resp.status_code == 200
@@ -104,8 +104,8 @@ def test_batch_validation_and_history_endpoints(finding_factory):
 
 
 def test_batch_validation_reports_rejections_without_aborting_successes(finding_factory):
-    allowed = make_issue(finding_factory, name="Allowed issue")
-    make_issue(finding_factory, name="Blocked issue", host="unapproved.example.com", path="/blocked")
+    allowed = make_issue(finding_factory, name="Allowed issue", param="p_allowed")
+    make_issue(finding_factory, name="Blocked issue", host="unapproved.example.com", path="/blocked", param="p_blocked")
     client = TestClient(app)
 
     response = client.post("/api/v1/validations/batch", json={})

@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     risk_weight_exposure: float = 0.15
     risk_weight_validation: float = 0.10
 
+    # ── LLM Contextual Analysis (Optional) ───────────────────────────────────
+    llm_enabled: bool = False
+    llm_provider: str = "mock"  # mock | gemini | openai
+    llm_api_key: str = ""
+    llm_model: str = "gemini-1.5-flash"
+
     # ── Future Scope Stubs ────────────────────────────────────────────────────
     slack_webhook_url: str = ""
     jira_url: str = ""

@@ -582,3 +582,53 @@ Blocker: the root `AGENT_HANDOFF.md` path referenced by the task was absent; the
 - Verification: `venv\Scripts\python.exe -m pytest tests\ -q`  60 passed, 2 skipped; `venv\Scripts\python.exe -m pip check`  no broken requirements; `node --check src\app\static\dashboard.js` passed; `git diff --check` passed.
 - Uvicorn on `127.0.0.1:8000`: `/`, `/health`, and `/openapi.json` returned 200; `/api/v1/cases` returned 200; a nonexistent evidence resource returned expected 404. Server stopped after checks.
 - Deferred explicitly: live feeds, Docker execution, orchestration, Slack/Jira integrations, polling, and webhooks. Simulations remain labeled/mock and Docker-disabled; human analysts retain final review authority.
+| F1-DEMO-01 | `[x]` | Replaced analyst JSON/file/manual inputs with a fixed six-export, 110-finding synthetic catalog. |
+| F1-DEMO-02 | `[x]` | Added safe catalog/load and real metrics APIs; unknown dataset IDs cannot access arbitrary files. |
+| F1-DEMO-03 | `[x]` | Added interactive module stages, evidence explorer, risk details and offline validation artifacts. |
+| F1-DEMO-04 | `[x]` | Added responsive warm-neutral visual system with no external assets or build step. |
+| F1-DEMO-05 | `[x]` | Aligned UI with `design.md`: editorial type, ink pills, soft cards, hairlines and pastel atmosphere. |
+| F1-DEMO-06 | `[x]` | Increased pastel depth across dataset, metric, pipeline and modal surfaces while preserving contrast and ink CTAs. |
+| F1-DEMO-07 | `[x]` | Deepened pastel visibility and bundled the open Doto display font for selected N-Dot-style headings. |
+| F1-DEMO-08 | `[x]` | Applied the requested sage/ivory/cream/tan palette and Claimcheck-first number styling with local Doto fallback. |
+| DOC-06 | `[x]` | Added `docs/design.md`, translating the visual reference into complete project screens, states, trust language and accessibility rules. |
+| UX-PLAN-01 | `[x]` | Added `docs/FEATURE_UX_PLAN.md`: per-feature layouts/actions/API gates, minimal-effort sequence, change handling and service audit. Live read endpoints on port 8001 returned 200; case/review remain stubs. Preserved the user's local edit to docs/design.md. |
+| UX-A-01 | `[x]` | Fixed startup parser registration, SARIF demo dispatch and Burp SSRF mapping; atomic content-addressed imports preserve scanner identity and raw sources. UI distinguishes new/already-loaded findings. All 110 fixtures, repeat/concurrent load and rollback/retry tested. |
+
+UX-A verification: 60 tests passed in 70.43s with a test-process-only AMD64 architecture stub to
+avoid Windows WMI native errors; normal test invocations were interrupted by native errors and
+are not recorded as passes. One upstream Starlette warning remains. JS syntax/diff checks passed.
+Restarted backend on port 8001 with 14 tables healthy. User's local docs/design.md edit preserved.
+Next: increment B shared feature navigation and detail UX; cases/review remain planned.
+
+Verification: 56 tests passed, JavaScript syntax and `git diff --check` passed. The configured
+in-app/extension browser list was empty, so rendered browser automation was unavailable in this run.
+
+## 2026-09-12 D1 Data Corpus Expansion (Snyk + Trivy + Threat Intel)
+
+Branch: feature/D1-expand-data-corpus.
+
+Added two new scanner fixture files and expanded both threat-intel mock feeds so the data folder
+covers all four supported scanner types (Nessus, Burp, Snyk, Trivy) referenced in the product
+requirements and parsers already implemented in M1.
+
+| ID | Task | Status | Evidence / result |
+|---|---|---|---|
+| D1-09 | Add `data/snyk_sca.json` — 15 Snyk SCA findings | `[x]` | 15 realistic SCA findings covering Log4Shell, Spring4Shell, Text4Shell, OpenSSL, Django SQLi, and more across maven/npm/pip/rubygems package managers. All fields match SnykParser field expectations. |
+| D1-10 | Add `data/trivy_container.json` — 15 Trivy container scan findings | `[x]` | 15 findings across 5 container image targets (auth-service, api-gateway, web-frontend, payment-service, ml-pipeline, etc.) with both `library` and `os` type entries. All fields match TrivyParser field expectations. |
+| D1-11 | Expand `data/cisa_kev_mock.json` from 5 to 12 entries | `[x]` | Added Log4j2 (CVE-2021-45046), Spring4Shell, Text4Shell, OpenSSL, HTTP/2 Rapid Reset, Apache mod_proxy smuggling, SnakeYaml, and Django SQL Injection entries. Updated count and catalogVersion. |
+| D1-12 | Expand `data/epss_mock.json` from 7 to 30 entries | `[x]` | Added EPSS scores for all CVEs referenced across the full corpus (SQLi CVE-2024-10xx, XSS CVE-2024-20xx, Snyk SCA CVEs, and Trivy container CVEs) with realistic EPSS scores and percentiles. |
+| D1-13 | Update `data/README.md` with full corpus inventory | `[x]` | Corpus table, dedup test design notes, and scanner data notes for all 8 fixture files and 2 threat-intel feeds. |
+| D1-14 | Fix `scratch/generate_datasets.py` DATA_DIR to use repo-relative path | `[x]` | Replaced hardcoded Windows path `c:\Users\harsh\...` with `os.path.join(os.path.dirname(__file__), "..", "data")`. Added Snyk SCA and Trivy container sections. |
+
+### D1 expansion totals
+
+- Scanner fixture files: 8 total (was 6)
+- Total scanner findings: 140 (was 110; +15 Snyk SCA, +15 Trivy container)
+- CISA KEV entries: 12 (was 5; +7 real-world exploited CVEs)
+- EPSS entries: 30 (was 7; covers every CVE in the full corpus)
+- Data README: updated with corpus table and dedup test-design documentation
+
+Cross-scanner dedup test coverage in new files:
+- Log4j CVE-2021-44228 appears in both snyk_sca.json and trivy_container.json on **different** container
+  targets — these must remain separate (different asset identities).
+- No new cross-scanner merge pairs were introduced; existing SQLi/XSS/SSRF overlaps unchanged.

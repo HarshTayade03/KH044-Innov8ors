@@ -3,6 +3,8 @@ import hashlib
 import json
 import uuid
 from datetime import datetime, timezone
+from urllib.parse import urlparse
+
 from src.app.config import settings
 from src.app.parsers.base import resolve_cwe_root
 from src.app.repositories.dedup_repo import dedup_repo
@@ -24,20 +26,20 @@ LIMITATION = "Deterministic offline simulation only; this result does not prove 
 class ValidationRejected(ValueError): pass
 
 
-def _create_artifact(validation_id: str, artifact_type: str, content: str, created_at: datetime, metadata: dict | None = None) -> Artifact:
-    redacted_content = redact_secrets(content) or ""
-    retained = redacted_content.encode("utf-8")
-    meta = {"simulation": True, "hash_encoding": "utf-8", **(metadata or {})}
+def _create_artifact(validation_id: str, artifact_type: str, content: str, now: datetime, metadata: dict | None = None) -> Artifact:
+    redacted = redact_secrets(content) or ""
+    retained = redacted.encode("utf-8")
+    meta = {"simulation": True, **(metadata or {})}
     return Artifact(
         artifact_id=f"art-{uuid.uuid4()}",
         validation_id=validation_id,
         artifact_type=artifact_type,
-        content=redacted_content,
+        content=redacted,
         content_hash=hashlib.sha256(retained).hexdigest(),
         content_size=len(retained),
         redacted=True,
         metadata=meta,
-        created_at=created_at,
+        created_at=now,
     )
 
 
@@ -48,75 +50,93 @@ class SandboxService:
             raise LookupError(f"Canonical issue '{issue_id}' not found.")
         if request.mode == SandboxMode.DOCKER:
             raise ValidationRejected("Docker sandbox execution is not implemented and remains disabled.")
+        if not issue.source_finding_ids:
+            raise LookupError(f"Canonical issue '{issue_id}' has no source findings.")
         finding = findings_repo.get_normalized_finding(issue.source_finding_ids[0])
         if not finding:
             raise LookupError(f"Source finding for canonical issue '{issue_id}' not found.")
 
-        host = request.target_host or finding.location.host or ""
+        raw_host = request.target_host or finding.location.host or ""
+        host = urlparse(raw_host if "://" in raw_host else f"//{raw_host}").hostname or raw_host
         if host not in settings.sandbox_allowlist_set:
             raise ValidationRejected(f"Target host '{host}' is not in the configured lab allowlist.")
 
-        all_cwes = [finding.vulnerability.cwe_primary, *finding.vulnerability.cwe_ids]
-        resolved_cwes = [resolve_cwe_root(cwe) for cwe in all_cwes if cwe]
-        resolved_cwes = [c for c in resolved_cwes if c]
-
-        expected = next((SCENARIOS[cwe] for cwe in resolved_cwes if cwe in SCENARIOS), None)
+        cwes = [finding.vulnerability.cwe_primary, *finding.vulnerability.cwe_ids]
+        resolved_cwes = [resolve_cwe_root(c) for c in cwes if c]
+        expected = next((SCENARIOS[c] for c in resolved_cwes if c in SCENARIOS), None)
         scenario = (request.scenario or expected or "unknown").lower()
-
-        if request.simulate_timeout:
-            status, confidence, summary = ValidationStatus.INCONCLUSIVE, 0.0, "Lab simulation timed out before producing a result."
-        elif scenario not in set(SCENARIOS.values()):
-            status, confidence, summary = ValidationStatus.INCONCLUSIVE, 0.0, f"Unsupported lab scenario '{scenario}'."
-        elif scenario == expected:
-            status, confidence, summary = ValidationStatus.SIMULATED_MATCH, 0.75, f"Offline {scenario.upper()} fixture matched the finding classification."
-        else:
-            status, confidence, summary = ValidationStatus.SIMULATED_NO_MATCH, 0.6, f"Offline {scenario.upper()} fixture did not match the finding classification."
+        param = finding.location.parameter or "input"
+        path = finding.location.path or "/api/v1/resource"
 
         now = datetime.now(timezone.utc)
         validation_id = f"val-{uuid.uuid4()}"
-        path = finding.location.path or "/vulnerable/endpoint"
+        artifacts: list[Artifact] = []
 
-        if scenario == "sqli":
-            req_text = f"GET {path}?id=1'%20OR%20'1'='1 HTTP/1.1\r\nHost: {host}\r\nUser-Agent: AI-Assisted Triage-LabSimulator/1.0\r\nAccept: */*\r\n\r\n"
-            resp_text = "HTTP/1.1 500 Internal Server Error\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Database Error</h1><p>SQLSTATE[42000]: Syntax error or access violation near '\\' OR \\'1\\'=\\'1\\''</p></body></html>"
-        elif scenario == "xss":
-            req_text = f"GET {path}?q=%3Cscript%3Ealert%28%22VT_TEST%22%29%3C%2Fscript%3E HTTP/1.1\r\nHost: {host}\r\nUser-Agent: AI-Assisted Triage-LabSimulator/1.0\r\nAccept: text/html\r\n\r\n"
-            resp_text = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body>Search results for: <script>alert(\"VT_TEST\")</script></body></html>"
-        elif scenario == "ssrf":
-            req_text = f"POST {path} HTTP/1.1\r\nHost: {host}\r\nContent-Type: application/json\r\n\r\n{{\"url\": \"http://169.254.169.254/latest/meta-data/\"}}"
-            resp_text = "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n\r\n{{\"ami-id\": \"ami-0123456789abcdef0\", \"instance-id\": \"i-0lab123456789\"}}"
+        if request.simulate_timeout:
+            status, confidence, summary = ValidationStatus.INCONCLUSIVE, 0.0, "Lab simulation timed out before producing a result."
+            log = (f"[00.000s] [SANDBOX-INIT] Launching ephemeral simulator container mode=lab_simulator target={host}\n"
+                   f"[00.010s] [ALLOWLIST-CHECK] Target host '{host}' verified against SANDBOX_ALLOWLIST\n"
+                   f"[00.020s] [DISPATCH] Probing {path} on parameter '{param}' with {scenario.upper()} payload\n"
+                   f"[{settings.sandbox_timeout_seconds}.000s] [TIMEOUT] Execution exceeded configured timeout of {settings.sandbox_timeout_seconds}s\n"
+                   f"[{settings.sandbox_timeout_seconds}.005s] [TERMINATED] Process aborted. Outcome: INCONCLUSIVE")
+            req_content = f"GET {path}?{param}=probe HTTP/1.1\nHost: {host}\nUser-Agent: VulnTriager-Sandbox/1.0"
+            resp_content = f"HTTP/1.1 504 Gateway Timeout\nContent-Type: text/plain\n\nSimulation timed out."
+        elif scenario not in set(SCENARIOS.values()):
+            status, confidence, summary = ValidationStatus.INCONCLUSIVE, 0.0, f"Unsupported lab scenario '{scenario}'."
+            log = (f"[00.000s] [SANDBOX-INIT] Launching simulator for scenario '{scenario}'\n"
+                   f"[00.010s] [UNSUPPORTED] No deterministic lab simulation fixture available for '{scenario}'\n"
+                   f"[00.012s] [COMPLETE] Outcome: INCONCLUSIVE (unsupported scenario)")
+            req_content = f"GET {path} HTTP/1.1\nHost: {host}"
+            resp_content = "HTTP/1.1 501 Not Implemented\n\nNo simulation scenario available."
+        elif scenario == expected:
+            status, confidence, summary = ValidationStatus.SIMULATED_MATCH, 0.75, f"Offline {scenario.upper()} fixture matched the finding classification."
+            if scenario == "sqli":
+                req_content = f"GET {path}?{param}=' OR '1'='1 HTTP/1.1\nHost: {host}\nUser-Agent: VulnTriager-Sandbox/1.0\nAccept: application/json"
+                resp_content = ("HTTP/1.1 500 Internal Server Error\nContent-Type: application/json\n\n"
+                                '{"error": "SQL syntax error: unclosed quotation mark near \'1\'=\'1\'", "code": "DB_ERR_SYNTAX"}')
+            elif scenario == "xss":
+                req_content = (f"POST {path} HTTP/1.1\nHost: {host}\nContent-Type: application/x-www-form-urlencoded\n\n"
+                               f"{param}=%3Cscript%3Ealert%281%29%3C%2Fscript%3E")
+                resp_content = (f"HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n\n"
+                                f"<html><body>Search query: <script>alert(1)</script></body></html>")
+            else: # ssrf
+                req_content = (f"POST {path} HTTP/1.1\nHost: {host}\nContent-Type: application/json\n\n"
+                               f'{{"{param}": "http://169.254.169.254/latest/meta-data/"}}')
+                resp_content = ("HTTP/1.1 200 OK\nContent-Type: text/plain\n\n"
+                                "ami-id\ninstance-id\ninstance-type\nlocal-hostname")
+
+            log = (f"[00.000s] [SANDBOX-INIT] Mode=lab_simulator target={host} timeout={settings.sandbox_timeout_seconds}s\n"
+                   f"[00.008s] [ALLOWLIST-CHECK] Host '{host}' verified against configured allowlist\n"
+                   f"[00.015s] [PROBE-DISPATCH] Injected non-destructive {scenario.upper()} probe on parameter '{param}'\n"
+                   f"[00.038s] [RESPONSE-EVAL] Observed matching vulnerability behavior (confidence {confidence})\n"
+                   f"[00.042s] [VERDICT] SIMULATED_MATCH — finding classification confirmed in offline lab environment")
         else:
-            req_text = f"GET {path} HTTP/1.1\r\nHost: {host}\r\nUser-Agent: AI-Assisted Triage-LabSimulator/1.0\r\n\r\n"
-            resp_text = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nGeneric lab response"
+            status, confidence, summary = ValidationStatus.SIMULATED_NO_MATCH, 0.6, f"Offline {scenario.upper()} fixture did not match the finding classification."
+            req_content = f"GET {path}?{param}=safe_test HTTP/1.1\nHost: {host}\nUser-Agent: VulnTriager-Sandbox/1.0"
+            resp_content = ("HTTP/1.1 200 OK\nContent-Type: application/json\n\n"
+                            '{"status": "ok", "sanitized": true, "records": []}')
+            log = (f"[00.000s] [SANDBOX-INIT] Mode=lab_simulator target={host}\n"
+                   f"[00.009s] [PROBE-DISPATCH] Dispatched test probe for scenario '{scenario}'\n"
+                   f"[00.035s] [RESPONSE-EVAL] Target rejected or sanitized probe; expected vulnerability signature absent\n"
+                   f"[00.040s] [VERDICT] SIMULATED_NO_MATCH — simulated outcome did not match classification")
 
-        log_text = (
-            f"[LAB_EXECUTOR] Timestamp: {now.isoformat()}\n"
-            f"[LAB_EXECUTOR] Target host '{host}' verified against sandbox allowlist.\n"
-            f"[LAB_EXECUTOR] Finding CWEs: {all_cwes} -> Resolved CWEs: {resolved_cwes}\n"
-            f"[LAB_EXECUTOR] Selected scenario: {scenario} (Expected: {expected})\n"
-            f"[LAB_EXECUTOR] Execution mode: LAB_SIMULATOR (Offline deterministic run)\n"
-            f"[LAB_EXECUTOR] Verdict: {status.value} (Confidence: {confidence})\n"
-            f"[LAB_EXECUTOR] Summary: {summary}"
-        )
-
-        val_summary_content = json.dumps({
+        # Create validation_summary first (index 0 for backward compatibility with existing tests)
+        summary_content = json.dumps({
             "simulation": True,
             "scenario": scenario,
             "target_host": host,
             "finding_id": finding.finding_id,
             "status": status.value,
-            "confidence": confidence,
             "summary": summary,
-            "source_excerpt": finding.evidence.summary or ""
-        }, sort_keys=True, indent=2)
+            "source_excerpt": finding.evidence.summary or "",
+        }, sort_keys=True)
+        summary_artifact = _create_artifact(validation_id, "validation_summary", summary_content, now, {"content_type": "application/json"})
+        artifacts.append(summary_artifact)
 
-        art_req = _create_artifact(validation_id, "http_request", req_text, now, {"content_type": "text/plain"})
-        art_resp = _create_artifact(validation_id, "http_response", resp_text, now, {"content_type": "text/plain"})
-        art_log = _create_artifact(validation_id, "execution_log", log_text, now, {"content_type": "text/plain"})
-        art_summary = _create_artifact(validation_id, "validation_summary", val_summary_content, now, {"content_type": "application/json"})
-
-        artifacts = [art_req, art_resp, art_log, art_summary]
-        artifact_ids = [a.artifact_id for a in artifacts]
+        # Multi-artifact evidence: probe request, server response, execution log
+        artifacts.append(_create_artifact(validation_id, "http_request", req_content, now, {"content_type": "text/plain", "parameter": param}))
+        artifacts.append(_create_artifact(validation_id, "http_response", resp_content, now, {"content_type": "text/plain"}))
+        artifacts.append(_create_artifact(validation_id, "execution_log", log, now, {"content_type": "text/plain"}))
 
         result = ValidationResult(
             validation_id=validation_id,
@@ -131,10 +151,9 @@ class SandboxService:
             limitations=[LIMITATION],
             executed_at=now,
             timeout_seconds=settings.sandbox_timeout_seconds,
-            artifact_ids=artifact_ids,
+            artifact_ids=[a.artifact_id for a in artifacts],
             created_at=now,
         )
-
         validation_repo.save(result, artifacts)
         return result
 

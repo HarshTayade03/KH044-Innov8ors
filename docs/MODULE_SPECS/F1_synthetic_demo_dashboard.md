@@ -24,6 +24,8 @@ exposes the resulting evidence.
 - Follow root `design.md`: off-white canvas, warm ink, light serif display hierarchy, Inter-style
   body stack, pill actions, 16px cards, hairline borders, generous spacing and decorative pastel
   gradient orbs. Gradients remain atmospheric and never become action colors.
+- The presentation palette uses `#CCD5AE`, `#E9EDC9`, `#FEFAE0`, `#FAEDCD` and `#D4A373`.
+  Corpus and metric numbers prefer Claimcheck when licensed/installed and fall back to bundled Doto.
 
 ## Acceptance
 
