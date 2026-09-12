@@ -353,6 +353,7 @@ upstream Starlette/AnyIO deprecation warning. `pip check` and `git diff --check`
 | F1-DEMO-07 | `[x]` | Deepened pastel visibility and bundled the open Doto display font for selected N-Dot-style headings. |
 | F1-DEMO-08 | `[x]` | Applied the requested sage/ivory/cream/tan palette and Claimcheck-first number styling with local Doto fallback. |
 | DOC-06 | `[x]` | Added `docs/design.md`, translating the visual reference into complete project screens, states, trust language and accessibility rules. |
+| UX-PLAN-01 | `[x]` | Added `docs/FEATURE_UX_PLAN.md`: per-feature layouts/actions/API gates, minimal-effort sequence, change handling and service audit. Live read endpoints on port 8001 returned 200; case/review remain stubs. Preserved the user's local edit to docs/design.md. |
 
 Verification: 56 tests passed, JavaScript syntax and `git diff --check` passed. The configured
 in-app/extension browser list was empty, so rendered browser automation was unavailable in this run.

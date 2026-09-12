@@ -12,6 +12,10 @@ A registered route or database table is not a completed feature.
 
 ## Revised sequence and completion gates
 
+For the selected design's feature-by-feature UX, current service verification, time estimates and
+small implementation increments, follow [Feature UI/UX plan](FEATURE_UX_PLAN.md). Its first gate
+repairs synthetic SARIF loading and repeat imports before expanding the dashboard and case flows.
+
 | Order | Phase | Deliverables | Exit criteria |
 |---|---|---|---|
 | Done | R0: reliable baseline | Reproducible runtime, isolated tests, dedup invariants and lifecycle, truthful feed/model provenance | Clean install; current and regression tests pass; health/API smoke checks pass; reruns do not duplicate active issues. |
