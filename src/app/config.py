@@ -33,6 +33,9 @@ class Settings(BaseSettings):
     epss_live: bool = False
     epss_data_path: str = "./data/epss_mock.json"
     epss_api_url: str = "https://api.first.org/data/v1/epss"
+    nvd_api_url: str = "https://services.nvd.nist.gov/rest/json/cves/2.0"
+    cisa_kev_url: str = "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json"
+    threat_feed_refresh_enabled: bool = False
 
     # ── Risk Score Weights ────────────────────────────────────────────────────
     risk_weight_cvss: float = 0.25

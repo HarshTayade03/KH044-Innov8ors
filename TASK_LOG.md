@@ -25,6 +25,16 @@
   retaining the failure details in the API response and validation state.
 - Added a regression test for mixed allowlisted and rejected issues.
 
+## Benchmark catalog and government-feed provenance (2026-09-12)
+
+- Added `GET /api/v1/benchmarks`, a read-only catalog for the six authorized
+  benchmark sources with purpose, expected artifacts, authorization requirements,
+  and explicit isolated-lab safety policy.
+- Added official NIST NVD, CISA KEV, and FIRST EPSS endpoint configuration while
+  retaining local mock feeds and disabled live refresh as the deterministic default.
+- Verification complete (65 passed, 2 skipped across test suite); live feed polling remains intentionally
+  deferred until rate limits, response hashing, and refresh persistence are specified.
+
 ## Contextual Sandbox Validation & LLM Prioritization — `feature/sandbox-llm-prioritization` (2026-09-12)
 
 - Implemented pipeline reordering: Deduplication → Sandbox Validation → Contextual Prioritization.

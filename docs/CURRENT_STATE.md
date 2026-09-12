@@ -20,7 +20,8 @@ are recorded in TASK_LOG.md; historical pass claims are kept separately.
 | F0 / analyst console | `static/index.html`, `dashboard.css`, `dashboard.js` | Implemented and syntax-checked console for ingestion, views, embeddings, deduplication, risk, case queue/detail, offline validation/evidence display, analyst review controls, and audit timeline; this is not the complete P8 dashboard. |
 | M7 / P8 dashboard | `api/dashboard.py`, `repositories/dashboard_repo.py`, and F0 console | Partial: truthful aggregate metrics and provenance labels are implemented; full dashboard acceptance, pagination, and richer analyst analytics remain pending. |
 | P9 integration | No full pipeline orchestrator or end-to-end suite | Not started; current stages require separate API calls. |
-| P10 integrations | `workers/scanner_poller.py`; config placeholders | Poller raises NotImplementedError. Slack/Jira/webhook implementations absent. |
+| Benchmark catalog | `api/benchmarks.py`, `services/benchmark_catalog.py`, `schemas/benchmarks.py` | Read-only catalog for six authorized benchmark/data sources; execution and cloning are intentionally outside the API. |
+| P10 integrations | `workers/scanner_poller.py`; config placeholders | Poller raises NotImplementedError. Slack/Jira/webhook implementations absent. NIST/CISA/EPSS live refresh endpoints are configured but not implemented; mock feeds remain the default. |
 
 Paths in the table are relative to `src/app/` unless already qualified otherwise.
 

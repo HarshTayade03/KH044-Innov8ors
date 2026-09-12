@@ -30,6 +30,7 @@ from src.app.api.clusters import router as clusters_router
 from src.app.api.validation import router as validation_router
 from src.app.api.cases import router as cases_router
 from src.app.api.dashboard import router as dashboard_router
+from src.app.api.benchmarks import router as benchmarks_router
 
 
 @asynccontextmanager
@@ -71,6 +72,7 @@ app.include_router(clusters_router,   prefix="/api/v1")
 app.include_router(validation_router, prefix="/api/v1")
 app.include_router(cases_router,      prefix="/api/v1")
 app.include_router(dashboard_router,  prefix="/api/v1")
+app.include_router(benchmarks_router, prefix="/api/v1")
 
 # Dashboard assets are local so the validation console works without a CDN.
 static_dir = os.path.join(os.path.dirname(__file__), "static")
