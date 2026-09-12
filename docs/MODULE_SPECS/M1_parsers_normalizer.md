@@ -561,3 +561,13 @@ An agent implementing tests for this module must write tests covering these exac
 4. Retrieve a single finding: `GET /api/v1/findings/{finding_id}` returns the full canonical JSON.
 5. Check that findings with no CVE have `cve_ids = []` (not null, not missing key).
 6. Check that the raw record is preserved in `scanner_findings.raw_data`.
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    Raw[Raw Scanner Data] --> API[Ingestion API]
+    API --> Parsers[Parsers: Nessus, Snyk, Burp, etc.]
+    Parsers --> Normalizer[Data Normalizer]
+    Normalizer --> DB[(Findings Table)]
+```
