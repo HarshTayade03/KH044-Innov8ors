@@ -29,3 +29,12 @@ exposes the resulting evidence.
 
 Catalog count and fixed-path loading are tested; existing regression tests pass; JavaScript syntax
 passes; rendered interaction is checked when the configured browser surface is available.
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    API[Metrics API] --> Dashboard[Demo Dashboard UI]
+    Dashboard --> Aggregation[Metrics Aggregation]
+    Dashboard --> Provenance[Provenance Tracking]
+```
