@@ -15,7 +15,9 @@ from src.app.repositories.findings_repo import repo as findings_repo
 from src.app.repositories.dedup_repo import dedup_repo
 from src.app.repositories.risk_repo import risk_repo
 from src.app.repositories.validation_repo import validation_repo
+from src.app.services.llm_prioritizer import llm_prioritizer
 from src.app.services.threat_intel import threat_intel_service
+
 
 
 class RiskEngine:
@@ -135,6 +137,11 @@ class RiskEngine:
         if kev_flag:
             explanation.append("Immediate tier: CVE is present in the mock KEV fixture; this is not a live exploitation claim.")
 
+        # Optional LLM contextual analysis integrating sandbox evidence
+        llm_analysis = llm_prioritizer.analyze(issue, primary, validation, threat_enrichments)
+        if llm_analysis:
+            explanation.append(f"AI CONTEXT ({llm_analysis.model_used}): {llm_analysis.contextual_summary}")
+
         factors = {
             "cvss_score": cvss_score,
             "epss_score": max_epss,
@@ -149,6 +156,7 @@ class RiskEngine:
             "contributions": contributions,
             "threat_intelligence": [item.model_dump(mode="json") for item in threat_enrichments],
             "threat_source": "mock",
+            "llm_context": llm_analysis.model_dump(mode="json") if llm_analysis else None,
         }
 
         now_dt = datetime.now(timezone.utc)

@@ -50,3 +50,21 @@ class ValidationResult(BaseModel):
 class EvidenceResponse(BaseModel):
     validation_id: str
     artifacts: list[Artifact]
+
+class BatchValidationRequest(BaseModel):
+    canonical_issue_ids: list[str] | None = None
+    mode: SandboxMode = SandboxMode.LAB_SIMULATOR
+    simulate_timeout: bool = False
+
+class BatchValidationResponse(BaseModel):
+    total_issues: int
+    validated_count: int
+    matched_count: int
+    no_match_count: int
+    inconclusive_count: int
+    results: list[ValidationResult]
+
+class ValidationListResponse(BaseModel):
+    total: int
+    validations: list[ValidationResult]
+
