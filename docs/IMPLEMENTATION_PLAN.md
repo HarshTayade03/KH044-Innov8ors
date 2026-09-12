@@ -18,8 +18,8 @@ A registered route or database table is not a completed feature.
 | Done | F1 demo frontend | Synthetic-corpus console over implemented APIs | Fixed fixture catalog, workflow stages, evidence details, risk and offline validation are interactive; upload/manual inputs removed. |
 | Done | P6 / M5: lab validation and evidence | Contracts, local simulator, immutable redacted artifacts, repository/API, risk integration | 55 tests pass; three scenarios round-trip; timeout/unknown inconclusive; allowlist and Docker rejected; hashes verified; no real target requests. |
 | 3 | P7 / M6: cases and review | Assembly, state transitions, required reasons, audit history, overrides | Assembly/review tests; missing IDs, invalid/repeated and concurrent decisions handled; actor/reason/history preserved. |
-| 4 | P8 / M7: case review dashboard | Case queue/detail, review controls and audit timeline | Browser checks of review flows and loading/empty/error states; clear mock/simulation labels. |
-| 5 | P9: integration/demo | Pipeline orchestration, full-corpus test, demo, setup docs/diagram | All 110 inputs accounted for; provenance preserved; no forbidden merges; human review; rerun and partial-failure recovery. |
+| 4 | P8 / M7: case review dashboard | Case queue/detail, review controls, global audit log, and audit timeline | Browser checks of review flows and loading/empty/error states; clear mock/simulation labels; audit filters and pagination. |
+| 5 | P9: integration/demo | Pipeline orchestration, full-corpus test, demo, setup docs/diagram, feed and resolution acceptance | All 110 inputs accounted for; provenance preserved; no forbidden merges; human review; resolved issues retire safely; feed modes remain explicit. |
 | Later | P10: external capabilities | Real Docker executor, live feeds, scanner polling/webhooks, Slack/Jira | Separately scoped implementations and controlled integration tests. |
 
 ## R0 implementation and acceptance

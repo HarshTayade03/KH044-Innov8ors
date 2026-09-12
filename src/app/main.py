@@ -31,6 +31,8 @@ from src.app.api.validation import router as validation_router
 from src.app.api.cases import router as cases_router
 from src.app.api.dashboard import router as dashboard_router
 from src.app.api.benchmarks import router as benchmarks_router
+from src.app.api.audit import router as audit_router
+from src.app.api.threat_intel import router as threat_intel_router
 
 
 @asynccontextmanager
@@ -54,7 +56,8 @@ app = FastAPI(
     description=(
         "An AI-assisted vulnerability triage and prioritization platform. "
         "Normalizes findings from multiple scanners, deduplicates via semantic AI, "
-        "scores risk using mock feeds and provides offline simulated validation. Cases and review are planned."
+        "scores risk using labeled local feeds and provides controlled offline validation. "
+        "Analyst review and audit history remain the final decision layer."
     ),
     version=settings.app_version,
     lifespan=lifespan,
@@ -73,6 +76,8 @@ app.include_router(validation_router, prefix="/api/v1")
 app.include_router(cases_router,      prefix="/api/v1")
 app.include_router(dashboard_router,  prefix="/api/v1")
 app.include_router(benchmarks_router, prefix="/api/v1")
+app.include_router(audit_router, prefix="/api/v1")
+app.include_router(threat_intel_router, prefix="/api/v1")
 
 # Dashboard assets are local so the validation console works without a CDN.
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -103,10 +108,21 @@ async def health():
 
 
 @app.get("/", include_in_schema=False)
-async def serve_dashboard():
-    """Serve the analyst dashboard single-page app."""
-    dashboard_path = os.path.join(os.path.dirname(__file__), "static", "index.html")
-    return FileResponse(dashboard_path)
+async def serve_landing():
+    """Serve the public product landing page."""
+    return FileResponse(os.path.join(static_dir, "landing.html"))
+
+
+@app.get("/console", include_in_schema=False)
+async def serve_console():
+    """Serve the authenticated-style local analyst workspace."""
+    return FileResponse(os.path.join(static_dir, "index.html"))
+
+
+@app.get("/documentation", include_in_schema=False)
+async def serve_documentation():
+    """Serve the product documentation page."""
+    return FileResponse(os.path.join(static_dir, "documentation.html"))
 
 
 # ─── Entry Point ──────────────────────────────────────────────────────────────

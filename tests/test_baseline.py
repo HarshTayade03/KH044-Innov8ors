@@ -17,10 +17,14 @@ def test_startup_and_ingestion_persist_across_clients():
         assert response.json()['rejected'] == 0
         assert client.get('/docs').status_code == 200
         page = client.get('/').text
-        assert 'Vulnerability Triage Lab' in page
-        assert 'Synthetic scanner corpus' in page
-        assert '/static/dashboard.js' in page
-        assert '/static/pastel.css' in page
+        assert 'AI-Assisted Vulnerability Triage Platform' in page
+        assert 'Open analyst console' in page
+        console = client.get('/console').text
+        assert 'Bring in findings' in console
+        assert '/static/dashboard.js' in console
+        assert '/static/pastel.css' in console
+        assert client.get('/documentation').status_code == 200
+        assert 'Detection workflow' in client.get('/documentation').text
         assert client.get('/static/dashboard.css').status_code == 200
         assert client.get('/static/pastel.css').status_code == 200
         assert client.get('/static/fonts/Doto-SemiBold.ttf').status_code == 200

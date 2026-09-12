@@ -20,7 +20,9 @@ class Settings(BaseSettings):
 
     # ── Sandbox ───────────────────────────────────────────────────────────────
     sandbox_enabled: bool = False
-    sandbox_allowlist: str = "app.example.test,target.lab"
+    sandbox_allowlist: str = (
+        "app.example.test,target.lab," + ",".join(f"10.0.0.{host}" for host in range(11, 36))
+    )
     sandbox_timeout_seconds: int = 30
 
     # ── Embedding Model ───────────────────────────────────────────────────────

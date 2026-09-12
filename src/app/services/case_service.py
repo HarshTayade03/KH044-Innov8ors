@@ -63,8 +63,9 @@ class CaseService:
                 raise ValueError("Case is stale or canonical issue is retired")
             if action == ReviewAction.APPROVE: new = CaseStatus.APPROVED
             elif action == ReviewAction.REJECT: new = CaseStatus.REJECTED
+            elif action == ReviewAction.RESOLVE: new = CaseStatus.RESOLVED
             else: new = CaseStatus.EVIDENCE_REQUESTED
-            if case.status in (CaseStatus.APPROVED, CaseStatus.REJECTED):
+            if case.status in (CaseStatus.APPROVED, CaseStatus.REJECTED, CaseStatus.RESOLVED):
                 raise RuntimeError("Terminal case decisions cannot be repeated")
             if case.status not in (CaseStatus.PENDING_REVIEW, CaseStatus.EVIDENCE_REQUESTED):
                 raise RuntimeError("Case is not reviewable in its current state")
@@ -75,6 +76,11 @@ class CaseService:
             now = datetime.now(timezone.utc)
             db.execute("UPDATE cases SET status=?,last_updated_at=?,updated_at=? WHERE case_id=?",
                        (new.value, now.isoformat(), now.isoformat(), case_id))
+            if action == ReviewAction.RESOLVE:
+                db.execute(
+                    "UPDATE canonical_issues SET active=0, review_status='resolved', updated_at=? WHERE canonical_issue_id=?",
+                    (now.isoformat(), case.canonical_issue_id),
+                )
             review = Review(review_id=str(uuid.uuid4()),case_id=case_id,action=action,actor_id=actor,reason=reason,
                             previous_status=case.status,new_status=new,reviewed_at=now)
             case_repo.add_review(review, db)

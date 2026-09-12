@@ -29,6 +29,7 @@ class ReviewStatus(str, Enum):
     MERGED = "merged"
     KEPT_SEPARATE = "kept_separate"
     REJECTED_MERGE = "rejected_merge"
+    RESOLVED = "resolved"
 
 
 class ClusterMember(BaseModel):

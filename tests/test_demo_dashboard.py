@@ -6,8 +6,9 @@ def test_fixed_dataset_catalog_and_load():
     client = TestClient(app)
     catalog = client.get('/api/v1/demo/datasets')
     assert catalog.status_code == 200
-    assert catalog.json()['total_findings'] == 110
-    assert len(catalog.json()['datasets']) == 6
+    assert catalog.json()['total_findings'] == 116
+    assert len(catalog.json()['datasets']) == 7
+    assert catalog.json()['datasets'][-1]['origin'] == 'included workflow resource'
     loaded = client.post('/api/v1/demo/datasets/burp-ssrf/load')
     assert loaded.status_code == 200
     assert loaded.json()['total_received'] == 10

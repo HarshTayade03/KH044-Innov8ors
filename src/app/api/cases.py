@@ -101,6 +101,18 @@ async def request_evidence(case_id: str, decision: ReviewDecision):
     return _review(case_id, ReviewAction.REQUEST_EVIDENCE, decision)
 
 
+@router.post("/canonical-issues/{canonical_issue_id}/resolve", response_model=Case)
+async def resolve_issue(canonical_issue_id: str, decision: ReviewDecision):
+    """Resolve an issue, retire it from active queues, and preserve its evidence."""
+    try:
+        case = case_repo.get_for_issue(canonical_issue_id) or case_service.assemble(canonical_issue_id)
+        return case_service.review(case.case_id, ReviewAction.RESOLVE, decision)
+    except LookupError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except (RuntimeError, ValueError) as e:
+        raise HTTPException(status_code=409, detail=str(e))
+
+
 @router.post("/cases/{case_id}/override-priority", response_model=Case)
 async def override_priority(case_id: str, decision: ReviewDecision):
     return _review(case_id, ReviewAction.PRIORITY_OVERRIDE, decision)

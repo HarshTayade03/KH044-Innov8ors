@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AI-Assisted Vulnerability Triage Platform</title>
+  <link rel="stylesheet" href="/static/dashboard.css"><link rel="stylesheet" href="/static/pastel.css"><link rel="stylesheet" href="/static/product.css">
+</head>
+<body>
+  <div class="grain"></div><main class="shell">
+    <nav class="top-nav"><a class="wordmark" href="/">AI-Assisted Triage</a>
+      <div class="nav-links"><a href="#capabilities">Capabilities</a><a href="#method">How it works</a><a href="/documentation">Documentation</a></div>
+      <a class="outline" href="/console">Open console →</a>
+    </nav>
+    <header class="landing-hero">
+      <div class="orb orb-mint"></div><div class="orb orb-lavender"></div>
+      <div class="hero-copy"><p class="eyebrow">AI-ASSISTED VULNERABILITY TRIAGE PLATFORM</p>
+        <h1>Make every finding<br><em>accountable.</em></h1>
+        <p class="lede">Turn scanner output into evidence-backed issues, explainable risk decisions, and reviewable remediation work. Built for security officers who need a defensible trail, not another scorecard.</p>
+        <div class="landing-actions"><a class="primary hero-action" href="/console">Open analyst console →</a><a class="text-link" href="/documentation">Read the product documentation</a></div>
+      </div>
+      <div class="landing-status"><span class="status-mark">●</span><div><b>Local-first by design</b><small>Original evidence stays in your workspace</small></div></div>
+    </header>
+    <section id="capabilities" class="feature-grid">
+      <article><span class="feature-number">01</span><h2>Normalize the noise</h2><p>Bring Burp, Nessus, ZAP, SARIF, Snyk, Trivy, or manual findings into one traceable contract without losing source context.</p></article>
+      <article><span class="feature-number">02</span><h2>Detect what is actionable</h2><p>Extract analyst-readable views, guard duplicate grouping with asset and parameter constraints, and preserve the reason behind every merge.</p></article>
+      <article><span class="feature-number">03</span><h2>Defend the decision</h2><p>Combine labeled risk contributions, controlled validation evidence, human review, and append-only audit history in one case record.</p></article>
+    </section>
+    <section class="capability-detail">
+      <div class="section-title"><div><span>PLATFORM CAPABILITIES</span><h2>One workspace for the work between detection and remediation.</h2></div><p>Designed around the decisions officers actually have to defend.</p></div>
+      <div class="capability-rows">
+        <article><div class="capability-icon">IN</div><div><h3>Scanner intake and provenance</h3><p>Accept JSON and SARIF exports from Burp Suite, Nessus, OWASP ZAP, Snyk, Trivy, or a manual analyst record. Each normalized finding retains scanner, batch, source file, quality, and evidence context.</p><span>Upload · normalize · retain source</span></div></article>
+        <article><div class="capability-icon">AI</div><div><h3>Readable vulnerability intelligence</h3><p>Transform raw records into description, location, reproduction, and impact views. Redaction runs before derived content is displayed or embedded, making the output useful for investigation and controlled sharing.</p><span>Four views · redaction · embeddings</span></div></article>
+        <article><div class="capability-icon">01</div><div><h3>Conservative duplicate detection</h3><p>Fingerprint groups and optional semantic clustering reduce repeat work while hard compatibility gates protect findings that differ by host, asset, package, or parameter. Every cluster exposes its merge basis.</p><span>Fingerprint · guarded similarity · split/merge history</span></div></article>
+        <article><div class="capability-icon">R</div><div><h3>Explainable risk prioritization</h3><p>Scores combine severity, exploit probability, exposure, asset context, and validation state. Analysts can inspect each contribution instead of receiving an opaque number with no operational meaning.</p><span>Contributions · tiers · remediation context</span></div></article>
+        <article><div class="capability-icon">EV</div><div><h3>Controlled validation evidence</h3><p>Request a clearly labeled offline SQL injection, XSS, or SSRF lab scenario. Redacted artifacts are hash-checked on retrieval, and the interface makes clear that simulation is not proof of exploitability.</p><span>Allowlist · artifacts · integrity checks</span></div></article>
+        <article><div class="capability-icon">AU</div><div><h3>Cases, review, and accountability</h3><p>Assemble canonical issues into cases, request more evidence, approve or reject with a reason, override priority, and inspect the cross-entity audit stream. Human approval remains the control point.</p><span>Case queue · review history · immutable audit log</span></div></article>
+      </div>
+    </section>
+    <section id="method" class="method card"><div class="section-title"><div><span>WORKFLOW</span><h2>Detection is a chain of decisions.</h2></div><p>Not an automatic exploit claim.</p></div>
+      <div class="method-grid"><div><b>Import</b><span>Keep raw scanner evidence immutable.</span></div><div><b>Understand</b><span>Build description, location, reproduction, and impact views.</span></div><div><b>Group</b><span>Protect non-duplicates with deterministic compatibility gates.</span></div><div><b>Prioritize</b><span>Show the contribution of every risk factor.</span></div><div><b>Validate</b><span>Use offline lab scenarios only when explicitly requested.</span></div><div><b>Review</b><span>Leave approval with a human analyst and record why.</span></div></div>
+    </section>
+    <section class="trust-grid">
+      <article><p class="eyebrow">FOR SECURITY OFFICERS</p><h2>Know what happened.</h2><p>See who imported a report, which findings were grouped, what evidence was generated, how risk was calculated, and why a case changed state.</p><a href="/documentation#review">Read governance details →</a></article>
+      <article><p class="eyebrow">FOR ANALYSTS</p><h2>Know what to do next.</h2><p>Move from a noisy scanner export to a prioritized issue with source evidence, derived context, validation limitations, and a reviewable remediation decision.</p><a href="/console">Open the working console →</a></article>
+      <article><p class="eyebrow">FOR ENGINEERS</p><h2>Know the contract.</h2><p>Use the documented API routes and Pydantic schemas to integrate ingestion, findings, deduplication, risk, validation, cases, and audit events.</p><a href="/docs">Explore the API →</a></article>
+    </section>
+    <section class="boundaries card"><div class="section-title"><div><span>HONEST BOUNDARIES</span><h2>Built to be trusted, not to overclaim.</h2></div></div><div class="boundary-grid"><div><b>Local-first</b><span>Your original evidence stays in the configured SQLite workspace.</span></div><div><b>Simulation labeled</b><span>Offline validation and mock intelligence are visibly identified as such.</span></div><div><b>Human controlled</b><span>Automation recommends; analysts approve, reject, or request evidence.</span></div><div><b>Safe defaults</b><span>Real target execution and live feed refresh remain disabled by default.</span></div></div></section>
+    <section class="landing-cta"><p class="eyebrow">READY TO INSPECT THE SYSTEM?</p><h2>Use your own export.<br><em>See the evidence trail.</em></h2><a class="primary" href="/console">Launch the analyst console →</a></section>
+    <footer><span>AI-assisted decisions remain reviewable by a human analyst.</span><span><a href="/documentation">Documentation</a> · <a href="/docs">API reference</a></span></footer>
+  </main>
+</body>
+</html>

@@ -49,6 +49,8 @@ def test_timeout_unknown_allowlist_and_docker(finding_factory):
     issue = make_issue(finding_factory)
     assert sandbox_service.validate(issue.canonical_issue_id, ValidationRequest(simulate_timeout=True)).status == ValidationStatus.INCONCLUSIVE
     assert sandbox_service.validate(issue.canonical_issue_id, ValidationRequest(scenario="unknown")).status == ValidationStatus.INCONCLUSIVE
+    fixture_issue = make_issue(finding_factory, host="10.0.0.33", path="/fixture-host")
+    assert sandbox_service.validate(fixture_issue.canonical_issue_id, ValidationRequest()).status == ValidationStatus.SIMULATED_MATCH
     client = TestClient(app)
     assert client.post(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validate", json={"target_host": "public.example.com"}).status_code == 422
     assert client.post(f"/api/v1/canonical-issues/{issue.canonical_issue_id}/validate", json={"mode": "docker"}).status_code == 422

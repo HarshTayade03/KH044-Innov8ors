@@ -27,6 +27,17 @@ class ThreatEnrichment(BaseModel):
     fetched_at: Optional[datetime] = None
 
 
+class ThreatFeedStatus(BaseModel):
+    name: str
+    provider: str
+    endpoint: str
+    mode: str
+    available: bool
+    last_checked_at: Optional[datetime] = None
+    source_fingerprint: Optional[str] = None
+    note: str
+
+
 class RiskFactors(BaseModel):
     cvss_score: float = 0.0
     epss_score: float = 0.0

@@ -15,12 +15,14 @@ DATASETS = {
     "zap-xss": ("zap_xss.json", "zap", "Cross-site scripting", 20),
     "burp-ssrf": ("burp_ssrf.json", "burp", "Server-side request forgery", 10),
     "nessus-ssrf": ("nessus_ssrf.sarif", "nessus", "Server-side request forgery", 10),
+    "workflow-sample": ("sample_workflow_upload.json", "sample", "Mixed workflow sample", 6),
 }
 
 @router.get("/demo/datasets")
 async def list_demo_datasets():
-    return {"total_findings": 110, "datasets": [
-        {"id": key, "filename": value[0], "scanner": value[1], "category": value[2], "count": value[3]}
+    return {"total_findings": sum(value[3] for value in DATASETS.values()), "datasets": [
+        {"id": key, "filename": value[0], "scanner": value[1], "category": value[2], "count": value[3],
+         "origin": "included workflow resource" if key == "workflow-sample" else "repository fixture"}
         for key, value in DATASETS.items()
     ]}
 

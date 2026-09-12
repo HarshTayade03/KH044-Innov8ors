@@ -9,12 +9,14 @@ class CaseStatus(str, Enum):
     APPROVED = "approved"
     REJECTED = "rejected"
     EVIDENCE_REQUESTED = "more_evidence_requested"
+    RESOLVED = "resolved"
 
 class ReviewAction(str, Enum):
     APPROVE = "approved"
     REJECT = "rejected"
     REQUEST_EVIDENCE = "requested_evidence"
     PRIORITY_OVERRIDE = "priority_override"
+    RESOLVE = "resolved"
 
 class Case(BaseModel):
     case_id: str

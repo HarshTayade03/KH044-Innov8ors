@@ -4,6 +4,41 @@
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
 
+## Product information architecture and detection controls (2026-09-12)
+
+- Split the public product landing page (`/`) from the operational analyst console (`/console`).
+- Added official product documentation at `/documentation`; `/docs` remains the generated OpenAPI reference.
+- Added independent console actions for view/embedding extraction, duplicate detection, and risk scoring,
+  while retaining the complete pipeline action.
+- Documented evidence provenance, human review, simulated validation boundaries, and deferred integrations.
+- Verification: targeted route tests `4 passed`; `node --check src\\app\\static\\dashboard.js`;
+  `git diff --check`; live HTTP smoke checks for `/`, `/console`, `/documentation`, and `/health`.
+
+## Product surface and global audit log (2026-09-12)
+
+- Expanded the landing page into a longer product narrative covering intake, views, deduplication,
+  risk, controlled validation, cases, review, provenance, and safe boundaries.
+- Added `GET /api/v1/audit-events` with entity/actor filters and pagination over immutable audit events.
+- Added an Audit log tab to the analyst console with timestamp, action, entity, actor, and details.
+- Verification: targeted audit/routes `5 passed`; full suite `67 passed, 2 skipped`; frontend syntax and live route checks passed.
+
+## Threat feeds and analyst resolution (2026-09-12)
+
+- Added explicit CISA KEV, NIST NVD, and FIRST EPSS feed status contracts and console visibility.
+- Added opt-in live per-CVE NVD/EPSS refresh; local mock feeds remain the safe deterministic default.
+- Added analyst resolve action. Resolving a case records actor/reason/audit history, marks the case
+  resolved, retires the canonical issue from active queues, and preserves underlying evidence.
+- Verification: feed and resolution regression coverage added; full suite `69 passed, 2 skipped`;
+  `node --check`, `git diff --check`, and live feed/console/documentation route checks passed.
+
+## Responsive analyst console layout (2026-09-12)
+
+- Reworked console navigation, pipeline actions, evidence controls, metrics, feed cards, and
+  table containers to wrap or scroll within their own regions at tablet/mobile widths.
+- Fixed the pipeline action grid so long labels cannot push buttons outside the viewport.
+- Verification: console route tests `4 passed`; JavaScript syntax and whitespace checks passed;
+  browser geometry inspection found no non-decorative viewport overflow.
+
 ## Feature benchmark hardening (2026-09-12)
 
 - Replaced the dashboard metrics HTTP 501 stub with read-only aggregate queries and an
@@ -15,6 +50,16 @@
 - Verification: full suite `63 passed, 2 skipped`; `node --check src\\app\\static\\dashboard.js`,
   `git diff --check`, `pip check`, and live HTTP smoke checks for `/health` and
   `/api/v1/dashboard/metrics` all passed.
+
+## Analyst operations pass (2026-09-12)
+
+- Added a dedicated Cases view to the evidence explorer with pending-review, evidence-requested,
+  and resolved states visible in one searchable queue.
+- Added console actions to create a case from an active canonical issue, approve a case, request
+  more evidence, and resolve the linked issue while preserving the existing audit trail.
+- Added an export action for the current worklist view as a JSON artifact, keeping exports honest
+  about their source data and avoiding unsupported external integrations.
+- Verification: `node --check src\\app\\static\\dashboard.js` and `git diff --check` passed.
 
 ## Workflow partial-validation fix (2026-09-12)
 

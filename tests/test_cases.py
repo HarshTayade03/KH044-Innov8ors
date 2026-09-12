@@ -77,3 +77,32 @@ def test_priority_override_preserves_review_state_and_is_inspectable(finding_fac
     assert reviewed.status.value == "pending_review"
     assert case_repo.reviews(case.case_id)[0].action == ReviewAction.PRIORITY_OVERRIDE
     assert case_repo.audits(case.case_id)[0].actor == "analyst-2"
+
+
+def test_resolve_retires_issue_but_preserves_case_and_audit(finding_factory):
+    finding = finding_factory()
+    now = datetime.now(timezone.utc).isoformat()
+    issue_id = "issue-case-resolve"
+    with get_db() as db:
+        db.execute("""INSERT INTO canonical_issues
+            (canonical_issue_id,title,cluster_id,source_finding_ids,source_scanners,merge_method,
+             merge_confidence,merge_reason,review_status,created_at,updated_at,active)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,1)""",
+                   (issue_id, "Resolved SQL injection", None, json.dumps([finding.finding_id]),
+                    json.dumps(["burp"]), "fingerprint", 1.0, "[]", "pending", now, now))
+
+    case = case_service.assemble(issue_id)
+    resolved = case_service.review(
+        case.case_id,
+        ReviewAction.RESOLVE,
+        ReviewDecision(actor_id="analyst-resolver", reason="Patch deployed and verified"),
+    )
+    assert resolved.status.value == "resolved"
+    with get_db() as db:
+        row = db.execute(
+            "SELECT active, review_status FROM canonical_issues WHERE canonical_issue_id=?",
+            (issue_id,),
+        ).fetchone()
+    assert row["active"] == 0
+    assert row["review_status"] == "resolved"
+    assert case_repo.audits(case.case_id)[0].action == "resolved"
