@@ -221,7 +221,20 @@
   overflow: hidden;
 }
 .capability-detail .section-title { align-items: flex-end; }
-.capability-detail .section-title h2 { max-width: 600px; margin-top: 8px; }
+.capability-detail .section-title > div,
+.method .section-title > div,
+.boundaries .section-title > div {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.capability-detail .section-title h2,
+.method .section-title h2,
+.boundaries .section-title h2 {
+  max-width: 600px;
+  margin-top: 0;
+  white-space: normal;
+}
 .capability-rows {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -424,8 +437,8 @@ body { overflow-x: hidden; }
 
 /* --- Visual Polish: Section titles, tile auto-fit, button & control alignment --- */
 
-/* Hide number badges cleanly */
-.section-title span { display: none !important; }
+/* Hide number badges cleanly (scoped to console, not landing page) */
+.shell .section-title span { display: none !important; }
 
 /* Section Title layout */
 .section-title {
