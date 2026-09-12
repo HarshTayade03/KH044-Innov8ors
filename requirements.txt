@@ -1,4 +1,4 @@
-# VulnTriager — Python Dependencies
+# AI-Assisted Triage — Python Dependencies
 # Pin all versions for reproducibility across machines and agents.
 # Do NOT add packages here without updating docs/agent-instructions.md and getting team approval.
 

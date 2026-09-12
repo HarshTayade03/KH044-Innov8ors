@@ -16,7 +16,7 @@ from pydantic import model_validator
 
 class Settings(BaseSettings):
     # ── Database ──────────────────────────────────────────────────────────────
-    database_path: str = "./vulntriager.db"
+    database_path: str = "./ai-assisted-triage.db"
 
     # ── Sandbox ───────────────────────────────────────────────────────────────
     sandbox_enabled: bool = False

@@ -7,7 +7,7 @@ Applies to the entire repository. Read these before working:
 3. [Implementation plan](docs/IMPLEMENTATION_PLAN.md)
 4. [Task log](TASK_LOG.md)
 
-Use the public name **AI-Assisted Vulnerability Triage Platform**; VulnTriager is internal only.
+Use the public name **AI-Assisted Vulnerability Triage Platform**; AI-Assisted Triage is internal only.
 Inspect code before making claims. Distinguish implemented, verified, partial, and planned work.
 Work on feature branches and preserve unrelated changes. Keep schemas as contracts, business
 logic in services, and persistence in repositories. Preserve original evidence; sanitize derived
