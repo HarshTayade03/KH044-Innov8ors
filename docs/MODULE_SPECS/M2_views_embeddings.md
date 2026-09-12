@@ -357,3 +357,12 @@ When called on a batch (e.g., after uploading 25 findings), embed all views in o
 5. Call `POST /api/v1/batches/{batch_id}/generate-embeddings` — completes without error
 6. Query `finding_embeddings` table: `SELECT COUNT(*) FROM finding_embeddings WHERE view_type='combined'` should equal the number of normalized findings (one combined embedding per finding)
 7. Check `SELECT embedding_dimension FROM finding_embeddings LIMIT 1` returns 384
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    DB[(Findings Table)] --> Extractor[View Extractor]
+    Extractor --> Embed[SentenceTransformer / Fallback]
+    Embed --> DB2[(Embeddings Table)]
+```
