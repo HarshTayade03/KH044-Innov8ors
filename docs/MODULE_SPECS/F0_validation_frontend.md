@@ -16,3 +16,13 @@ Keep the existing FastAPI-served single HTML page; vanilla CSS/JS, no build step
 - Acceptance: browser checks against isolated local backend for empty/populated states,
   ingestion, workflow, details, split/merge, malformed input and narrow viewport; existing
   Python regression suite passes. This is not completion of all P8/P9 tasks.
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    API[Backend API] <--> UI[F0 Console UI]
+    UI --> Validation[Offline Validation View]
+    UI --> Cases[Case Review Queue]
+    UI --> Ingestion[Manual Ingestion]
+```
