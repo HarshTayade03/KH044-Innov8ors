@@ -27,3 +27,13 @@ is enabled. Target hosts must match `SANDBOX_ALLOWLIST`; validation performs no 
 All three scenarios persist and round-trip; unknown/timeout are inconclusive; allowlist and Docker
 requests fail; secrets are absent; hashes verify; repeated runs remain readable; prioritization
 reports the latest simulated verdict and contribution.
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    Issues[(Canonical Issues)] --> Sim[Sandbox Simulator]
+    Sim --> Validator[Evidence Validator]
+    Validator --> Hash[Evidence Hashing]
+    Hash --> EvidenceDB[(Evidence Table)]
+```
