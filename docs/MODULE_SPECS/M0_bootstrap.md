@@ -190,3 +190,13 @@ Expected results:
 - `GET http://localhost:8000/` returns the placeholder dashboard HTML page
 - `GET http://localhost:8000/docs` shows the FastAPI OpenAPI UI with all routes listed (even if they return 501)
 - The SQLite file at `DATABASE_PATH` is created on disk with all 13 tables (verify with `sqlite3 ai-assisted-triage.db .tables`)
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    App[FastAPI Application] --> Router[API Routers]
+    Router --> Config[Configuration Manager]
+    Config --> DB[(SQLite Database)]
+    Router --> Services[Core Services]
+```
