@@ -1,8 +1,23 @@
 # AI-Assisted Triage — Master Task Log & Progress Tracker
 
-> Last Updated: 2026-09-12 IST | P6 LAB VALIDATION COMPLETE | Next 12-hour critical path: P7 reviewable cases and integrated analyst flow
+> Last Updated: 2026-09-12 IST | M8 NEW SCOPES EXTENSION COMPLETE | Branch: feature/newscopes
 > This log is the source of truth for task state across all agents and computer systems.
 > Every agent must read this file before starting work and update it when completing tasks.
+
+## Application-Wide Design System & Color Schema Alignment — `feature/newscopes` (2026-09-12)
+
+- **Screenshot & Design System Alignment**: Applied the full ElevenLabs design system and screenshot specifications from `design.md` and user screenshots across the complete application flow (`index.html`, `landing.html`, `documentation.html`, `dashboard.css`, `pastel.css`, `product.css`, and `dashboard.js`).
+- **Typography & Visual Assets**: Integrated the `Doto` dot-matrix display font (`Doto-SemiBold.ttf`) for wordmark, section headers, dialog titles, and main hero headlines (`Make every finding accountable.`, `04 Evidence explorer`, `03 Run the intelligence pipeline`, `Feed coverage`).
+- **Pastel Gradients & Badge Styling**: Implemented 5 distinct pastel gradient cards for metrics (pink/rose, mint green, lavender, sky blue, peach/apricot), 4 pastel stage background tints (peach/rose, cream/mint, lavender, sky blue), near-black ink primary buttons (`#0c0a09` / `#292524`), black `Validate` pills, soft mint green `Mark solved` / `resolve` pills, and white outline buttons matching the reference screenshots.
+- **Verification**: `79 passed, 2 skipped` (`venv/Scripts/python.exe -m pytest tests/ -q`); `node --check src/app/static/dashboard.js` passed; `git diff --check` passed.
+
+## Module M8 New Scopes Extension — `feature/newscopes` (2026-09-12)
+
+- **AI Auto-Remediation & Patch Generator**: Implemented `PatchGeneratorService`, `RemediationPatchResponse`, and `POST /api/v1/canonical-issues/{id}/remediation-patch` generating git unified diffs, code fix snippets, and AST/syntax validation.
+- **Autonomous Integration & Notification Hub**: Implemented `IntegrationNotifierService` handling continuous scanner webhooks (`POST /api/v1/integrations/webhook/ingest`), outbound alert dispatchers (`POST /api/v1/integrations/test-webhook`), and Markdown ticket exporters for Jira & GitHub (`POST /api/v1/cases/{id}/export-ticket`).
+- **Small-Scale Ephemeral Docker Sandbox**: Implemented `DockerSandboxService` with host CLI/daemon availability probes, memory/CPU/network resource isolation limits, explicit policy guards, and SHA-256 evidence digests (`GET /api/v1/sandbox/docker/status`, `POST /api/v1/sandbox/docker/execute/{id}`).
+- **Live Groq LLM API Integration**: Configured user-provided Groq API key (`gsk_...`), set `openai/gpt-oss-20b` model, added `User-Agent: VulnTriager/1.0` request headers, and added substring JSON extraction to support live AI patch generation and LLM prioritization synthesis with automatic fallback.
+- **Verification**: `76 passed, 2 skipped` (`venv/Scripts/python.exe -m pytest tests/ -q`); live Groq API patch generation verified (HTTP 200, 0.95 confidence, clean git diff); Node syntax check passed for `dashboard.js`.
 
 ## Product information architecture and detection controls (2026-09-12)
 

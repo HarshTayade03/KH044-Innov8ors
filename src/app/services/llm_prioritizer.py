@@ -114,11 +114,14 @@ class LLMPrioritizerService:
         bounded.setdefault("provider_used", provider)
         bounded.setdefault("model_used", settings.llm_model or "unknown")
         bounded.setdefault("evidence_basis", [])
-        bounded.setdefault("uncertainty", [])
+        for key in ["exploitability_assessment", "business_impact_analysis", "remediation_guidance"]:
+            val = bounded.get(key)
+            if isinstance(val, list):
+                bounded[key] = "\n".join(str(item) for item in val)
         try:
             return LLMContext.model_validate(bounded).model_dump()
-        except (TypeError, ValueError):
-            logger.warning("LLM provider '%s' returned an invalid synthesis schema.", provider)
+        except (TypeError, ValueError) as err:
+            logger.warning("LLM provider '%s' returned an invalid synthesis schema: %s", provider, err)
             raise
 
     def synthesize_context(
@@ -199,7 +202,7 @@ class LLMPrioritizerService:
 
     def _call_groq(self, prompt: str, system: str, api_key: str) -> dict[str, Any]:
         """Call Groq API (OpenAI-compatible chat completions)."""
-        model = settings.llm_model or "llama-3.3-70b-versatile"
+        model = settings.llm_model or "openai/gpt-oss-20b"
         url = "https://api.groq.com/openai/v1/chat/completions"
         payload = {
             "model": model,
@@ -207,8 +210,7 @@ class LLMPrioritizerService:
                 {"role": "system", "content": system},
                 {"role": "user", "content": prompt},
             ],
-            "response_format": {"type": "json_object"},
-            "temperature": 0.2,
+            "temperature": 0.1,
         }
 
         req = urllib.request.Request(
@@ -224,8 +226,14 @@ class LLMPrioritizerService:
 
         with urllib.request.urlopen(req, timeout=15) as resp:
             data = json.loads(resp.read().decode("utf-8"))
-            content_str = data["choices"][0]["message"]["content"]
-            parsed = json.loads(content_str)
+            content_str = data["choices"][0]["message"]["content"].strip()
+            s = content_str.find("{")
+            e = content_str.rfind("}")
+            if s != -1 and e != -1 and e > s:
+                json_str = content_str[s : e + 1]
+            else:
+                json_str = content_str
+            parsed = json.loads(json_str)
             parsed["provider_used"] = "groq"
             parsed["model_used"] = model
             return parsed

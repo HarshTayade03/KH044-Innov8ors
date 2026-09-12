@@ -191,7 +191,7 @@ class RiskEngine:
             "contributions": contributions,
             "threat_intelligence": [item.model_dump(mode="json") for item in threat_enrichments],
             "threat_source": "mock",
-            "llm_context": llm_analysis.model_dump(mode="json") if llm_analysis else llm_synthesis,
+            "llm_context": llm_synthesis if (llm_synthesis and "evidence_basis" in llm_synthesis) else (llm_analysis.model_dump(mode="json") if llm_analysis else llm_synthesis),
         }
 
         now_dt = datetime.now(timezone.utc)

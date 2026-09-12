@@ -58,10 +58,10 @@ class Settings(BaseSettings):
     jira_url: str = ""
     jira_api_token: str = ""
 
-    # ── LLM Prioritization ────────────────────────────────────────────────────
-    llm_enabled: bool = False
+    # ── LLM Prioritization & Remediation Patching ──────────────────────────────
+    llm_enabled: bool = True
     llm_provider: str = "groq"
-    llm_model: str = "llama-3.3-70b-versatile"
+    llm_model: str = "openai/gpt-oss-20b"
     llm_api_key: str = ""
 
     # ── Application Metadata ──────────────────────────────────────────────────

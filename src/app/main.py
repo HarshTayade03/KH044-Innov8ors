@@ -33,6 +33,9 @@ from src.app.api.dashboard import router as dashboard_router
 from src.app.api.benchmarks import router as benchmarks_router
 from src.app.api.audit import router as audit_router
 from src.app.api.threat_intel import router as threat_intel_router
+from src.app.api.remediation import router as remediation_router
+from src.app.api.integrations import router as integrations_router
+from src.app.api.docker_validation import router as docker_validation_router
 
 
 @asynccontextmanager
@@ -78,6 +81,9 @@ app.include_router(dashboard_router,  prefix="/api/v1")
 app.include_router(benchmarks_router, prefix="/api/v1")
 app.include_router(audit_router, prefix="/api/v1")
 app.include_router(threat_intel_router, prefix="/api/v1")
+app.include_router(remediation_router, prefix="/api/v1")
+app.include_router(integrations_router, prefix="/api/v1")
+app.include_router(docker_validation_router, prefix="/api/v1")
 
 # Dashboard assets are local so the validation console works without a CDN.
 static_dir = os.path.join(os.path.dirname(__file__), "static")
@@ -116,7 +122,9 @@ async def serve_landing():
 @app.get("/console", include_in_schema=False)
 async def serve_console():
     """Serve the authenticated-style local analyst workspace."""
-    return FileResponse(os.path.join(static_dir, "index.html"))
+    response = FileResponse(os.path.join(static_dir, "index.html"))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    return response
 
 
 @app.get("/documentation", include_in_schema=False)
