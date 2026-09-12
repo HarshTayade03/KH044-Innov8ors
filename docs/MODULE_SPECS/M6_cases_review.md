@@ -10,3 +10,13 @@ non-blank actor and reason, is performed in one SQLite transaction, writes a rev
 row and append-only audit event, and transitions only `pending_review` or
 `more_evidence_requested` cases. Terminal decisions return a conflict. Evidence
 requests return the case to `more_evidence_requested`; no action auto-approves a case.
+
+
+## Architecture Diagram
+```mermaid
+graph TD
+    Risk[(Prioritized Issues)] --> CaseGen[Case Assembly]
+    CaseGen --> Dashboard[Analyst Review UI]
+    Dashboard --> Action[Approval / Rejection]
+    Action --> Audit[(Audit Log Table)]
+```
